@@ -11,6 +11,10 @@ if (!defined('DENUNCIAS_APP')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?? 'Canal de Denuncias' ?> - EPCO</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/img/Logo01.png">
+    <link rel="shortcut icon" type="image/png" href="/img/Logo01.png">
+
     <!-- Google Fonts - Barlow -->
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 

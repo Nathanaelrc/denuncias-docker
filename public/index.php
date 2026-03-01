@@ -11,24 +11,23 @@ require_once __DIR__ . '/../includes/encabezado.php';
 <nav class="navbar navbar-expand-lg navbar-epco fixed-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-            <i class="bi bi-shield-lock-fill fs-4"></i>
-            <span class="fw-bold">Canal de Denuncias <span class="fw-light">EPCO</span></span>
+            <img src="/img/Logo01.png" alt="EPCO" style="height: 32px; width: auto;">
+            <span class="fw-bold">Canal de Denuncias</span>
         </a>
-        <div class="d-flex align-items-center gap-2">
-            <a href="/acceso" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 14px;">
+        <div class="d-flex align-items-center gap-2 order-lg-last">
+            <a href="/acceso" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
                 <i class="bi bi-box-arrow-in-right"></i>
-                <span>Iniciar Sesión</span>
+                <span class="d-none d-sm-inline">Iniciar Sesión</span>
             </a>
             <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic">
                 <i class="bi bi-list text-white fs-4"></i>
             </button>
         </div>
         <div class="collapse navbar-collapse" id="navPublic">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto me-3">
                 <li class="nav-item"><a class="nav-link text-white" href="/"><i class="bi bi-house me-1"></i>Inicio</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/nueva_denuncia"><i class="bi bi-pencil-square me-1"></i>Realizar Denuncia</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/seguimiento"><i class="bi bi-search me-1"></i>Seguimiento</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/acceso"><i class="bi bi-box-arrow-in-right me-1"></i>Acceso Dashboard</a></li>
             </ul>
         </div>
     </div>
