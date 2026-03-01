@@ -1,0 +1,23 @@
+# Entorno
+.env
+.env.*
+
+# Logs
+logs/*.log
+
+# Uploads
+public/uploads/evidencia/*
+!public/uploads/evidencia/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker volumes
+docker-data/

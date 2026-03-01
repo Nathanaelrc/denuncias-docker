@@ -1,0 +1,255 @@
+<?php
+/**
+ * Portal de Denuncias EPCO - Dashboard Admin
+ */
+$pageTitle = 'Panel de Administración';
+require_once __DIR__ . '/../includes/bootstrap.php';
+requireRole([ROLE_ADMIN, ROLE_INVESTIGADOR, ROLE_VIEWER]);
+
+$user = getCurrentUser();
+$isAdmin = hasRole([ROLE_ADMIN]);
+$isInvestigador = hasRole([ROLE_INVESTIGADOR]);
+
+// Estadísticas generales
+$stats = $pdo->query("
+    SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'recibida' THEN 1 ELSE 0 END) as recibidas,
+        SUM(CASE WHEN status = 'en_investigacion' THEN 1 ELSE 0 END) as en_investigacion,
+        SUM(CASE WHEN status = 'resuelta' THEN 1 ELSE 0 END) as resueltas,
+        SUM(CASE WHEN status = 'desestimada' THEN 1 ELSE 0 END) as desestimadas,
+        SUM(CASE WHEN status = 'archivada' THEN 1 ELSE 0 END) as archivadas,
+        SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) as semana,
+        SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as mes
+    FROM complaints
+")->fetch();
+
+// Por tipo
+$byType = $pdo->query("
+    SELECT complaint_type, COUNT(*) as total 
+    FROM complaints 
+    GROUP BY complaint_type 
+    ORDER BY total DESC
+")->fetchAll();
+
+// Últimas denuncias
+$recent = $pdo->query("
+    SELECT id, complaint_number, complaint_type, status, is_anonymous, created_at
+    FROM complaints 
+    ORDER BY created_at DESC 
+    LIMIT 10
+")->fetchAll();
+
+// Por mes (últimos 6 meses)
+$monthly = $pdo->query("
+    SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total
+    FROM complaints 
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    GROUP BY month
+    ORDER BY month ASC
+")->fetchAll();
+
+require_once __DIR__ . '/../includes/encabezado.php';
+require_once __DIR__ . '/../includes/barra_lateral.php';
+?>
+
+<div class="main-content">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h4>
+            <p class="text-muted mb-0">Bienvenido, <?= htmlspecialchars($user['name']) ?></p>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge bg-light text-dark p-2"><i class="bi bi-calendar me-1"></i><?= date('d/m/Y') ?></span>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1">Total Denuncias</p>
+                            <h3 class="fw-bold mb-0"><?= $stats['total'] ?></h3>
+                        </div>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #dbeafe;">
+                            <i class="bi bi-folder2-open text-primary fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1">Nuevas (Recibidas)</p>
+                            <h3 class="fw-bold text-danger mb-0"><?= $stats['recibidas'] ?></h3>
+                        </div>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #fee2e2;">
+                            <i class="bi bi-inbox text-danger fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1">En Investigación</p>
+                            <h3 class="fw-bold text-warning mb-0"><?= $stats['en_investigacion'] ?></h3>
+                        </div>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #fef3c7;">
+                            <i class="bi bi-search text-warning fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small mb-1">Resueltas</p>
+                            <h3 class="fw-bold text-success mb-0"><?= $stats['resueltas'] ?></h3>
+                        </div>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: #dcfce7;">
+                            <i class="bi bi-check-circle text-success fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Gráfico por tipo -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2"></i>Por Tipo</h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="chartType" style="max-height: 280px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico mensual -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart me-2"></i>Últimos 6 Meses</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartMonthly" style="max-height: 280px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimas denuncias -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Últimas Denuncias</h6>
+            <a href="/denuncias_admin" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Número</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Modalidad</th>
+                            <th>Fecha</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($recent)): ?>
+                        <tr><td colspan="6" class="text-center text-muted py-4">No hay denuncias registradas</td></tr>
+                        <?php else: ?>
+                        <?php foreach ($recent as $row): ?>
+                        <tr>
+                            <td><code><?= htmlspecialchars($row['complaint_number']) ?></code></td>
+                            <td><?= getTypeBadge($row['complaint_type']) ?></td>
+                            <td><?= getStatusBadge($row['status']) ?></td>
+                            <td>
+                                <span class="badge bg-<?= $row['is_anonymous'] ? 'secondary' : 'info' ?>">
+                                    <?= $row['is_anonymous'] ? 'Anónima' : 'Identificada' ?>
+                                </span>
+                            </td>
+                            <td class="text-muted small"><?= timeAgo($row['created_at']) ?></td>
+                            <td>
+                                <?php if ($isAdmin || $isInvestigador): ?>
+                                <a href="/detalle_denuncia?id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Gráfico por tipo
+const typeLabels = <?= json_encode(array_map(fn($t) => COMPLAINT_TYPES[$t['complaint_type']]['label'] ?? $t['complaint_type'], $byType)) ?>;
+const typeData = <?= json_encode(array_map(fn($t) => (int)$t['total'], $byType)) ?>;
+const typeColors = ['#ef4444', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899', '#64748b'];
+
+new Chart(document.getElementById('chartType'), {
+    type: 'doughnut',
+    data: {
+        labels: typeLabels,
+        datasets: [{
+            data: typeData,
+            backgroundColor: typeColors.slice(0, typeData.length),
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom', labels: { padding: 15 } } }
+    }
+});
+
+// Gráfico mensual
+const monthLabels = <?= json_encode(array_map(fn($m) => $m['month'], $monthly)) ?>;
+const monthData = <?= json_encode(array_map(fn($m) => (int)$m['total'], $monthly)) ?>;
+
+new Chart(document.getElementById('chartMonthly'), {
+    type: 'bar',
+    data: {
+        labels: monthLabels,
+        datasets: [{
+            label: 'Denuncias',
+            data: monthData,
+            backgroundColor: '#0369a1',
+            borderRadius: 6,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+});
+</script>
+
+<?php require_once __DIR__ . '/../includes/pie_pagina.php'; ?>

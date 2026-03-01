@@ -1,0 +1,24 @@
+<?php $pageTitle = 'Error del Servidor'; ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Canal de Denuncias EPCO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        * { font-family: 'Barlow', sans-serif; }
+        body { background: linear-gradient(135deg, #0a2540 0%, #1e3a5f 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: white; }
+        .error-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 50px; text-align: center; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <div class="error-card">
+        <i class="bi bi-exclamation-circle" style="font-size: 4rem; color: #ef4444;"></i>
+        <h1 class="mt-3 fw-bold">500</h1>
+        <p class="opacity-75">Error interno del servidor. Intenta nuevamente más tarde.</p>
+        <a href="/" style="color: #60a5fa; text-decoration: none;"><i class="bi bi-arrow-left me-1"></i>Volver al inicio</a>
+    </div>
+</body>
+</html>
