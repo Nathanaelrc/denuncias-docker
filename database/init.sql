@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS complaint_logs (
 CREATE TABLE IF NOT EXISTS investigation_notes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     complaint_id INT NOT NULL,
-    user_id INT NOT NULL,
+    user_id INT DEFAULT NULL,
     content_encrypted BLOB NOT NULL,
     content_nonce VARBINARY(24) NOT NULL,
     is_confidential TINYINT(1) DEFAULT 1,

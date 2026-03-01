@@ -16,8 +16,8 @@ services:
     ports:
       - "${APP_PORT:-8091}:80"
     volumes:
-      - ./logs:/var/www/html/logs
-      - ./public/uploads:/var/www/html/public/uploads
+      - ./logs:/var/www/html/logs:z
+      - ./public/uploads:/var/www/html/public/uploads:z
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME:-denuncias}
@@ -61,7 +61,7 @@ services:
       TZ: America/Santiago
     volumes:
       - denuncias-db-data:/var/lib/mysql
-      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:z
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
