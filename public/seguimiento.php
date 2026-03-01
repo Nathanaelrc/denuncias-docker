@@ -26,9 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET['codigo'])) {
             <i class="bi bi-shield-lock-fill fs-4"></i>
             <span class="fw-bold">Canal de Denuncias <span class="fw-light">EPCO</span></span>
         </a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic">
-            <i class="bi bi-list text-white fs-4"></i>
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/acceso" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 14px;">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span>Iniciar Sesión</span>
+            </a>
+            <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic">
+                <i class="bi bi-list text-white fs-4"></i>
+            </button>
+        </div>
         <div class="collapse navbar-collapse" id="navPublic">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link text-white" href="/"><i class="bi bi-house me-1"></i>Inicio</a></li>
