@@ -80,6 +80,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                 <li class="nav-item"><a class="nav-link text-white" href="/"><i class="bi bi-house me-1"></i>Inicio</a></li>
                 <li class="nav-item"><a class="nav-link text-white active" href="/nueva_denuncia"><i class="bi bi-pencil-square me-1"></i>Realizar Denuncia</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/seguimiento"><i class="bi bi-search me-1"></i>Seguimiento</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/acceso"><i class="bi bi-box-arrow-in-right me-1"></i>Acceso Dashboard</a></li>
             </ul>
         </div>
     </div>

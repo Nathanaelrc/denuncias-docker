@@ -87,8 +87,8 @@ require_once __DIR__ . '/../includes/encabezado.php';
                 </div>
 
                 <div class="text-center mt-3">
-                    <a href="/" class="text-white-50 text-decoration-none small">
-                        <i class="bi bi-arrow-left me-1"></i>Volver al portal público
+                    <a href="/acceso" class="text-white-50 text-decoration-none small">
+                        <i class="bi bi-arrow-left me-1"></i>Ir al acceso del Dashboard
                     </a>
                 </div>
             </div>
