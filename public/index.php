@@ -65,12 +65,13 @@ require_once __DIR__ . '/../includes/encabezado.php';
                 </div>
                 <div class="col-lg-5 text-center mt-4 mt-lg-0 slide-in-right">
                     <div class="card-epco p-4" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
-                        <i class="bi bi-lock-fill text-white" style="font-size: 4rem;"></i>
+                        <i class="bi bi-shield-check text-white" style="font-size: 4rem;"></i>
                         <h5 class="text-white mt-3 fw-bold">100% Confidencial</h5>
-                        <p class="text-white-50 mb-3">Todos los datos sensibles son encriptados con <strong class="text-white">AES-256</strong></p>
+                        <p class="text-white-50 mb-3">Canal protegido por la <strong class="text-white">Ley N° 21.643 (Ley Karin)</strong></p>
                         <div class="d-flex justify-content-center gap-2 flex-wrap">
-                            <span class="encrypted-badge"><i class="bi bi-shield-lock"></i> Datos Encriptados</span>
-                            <span class="encrypted-badge"><i class="bi bi-incognito"></i> Denuncia Anónima</span>
+                            <span class="legal-badge"><i class="bi bi-journal-text"></i> Ley Karin</span>
+                            <span class="legal-badge"><i class="bi bi-incognito"></i> Denuncia Anónima</span>
+                            <span class="legal-badge"><i class="bi bi-shield-check"></i> Protección Legal</span>
                         </div>
                     </div>
                 </div>
@@ -82,7 +83,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
     <section class="py-5" style="background: #0d2f50;">
         <div class="container">
             <h2 class="text-center text-white fw-bold mb-5 fade-in">
-                <i class="bi bi-patch-check me-2"></i>Nuestras Garantías
+                <i class="bi bi-patch-check me-2"></i>Tus Derechos y Garantías
             </h2>
             <div class="row g-4">
                 <div class="col-md-4 fade-in">
@@ -91,16 +92,16 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <i class="bi bi-incognito text-white fs-3"></i>
                         </div>
                         <h5 class="text-dark fw-bold">Anonimato Garantizado</h5>
-                        <p class="text-muted">Puedes realizar tu denuncia de forma completamente anónima. No es obligatorio identificarse.</p>
+                        <p class="text-muted">Puedes realizar tu denuncia de forma completamente anónima. No es obligatorio identificarse para presentar una denuncia.</p>
                     </div>
                 </div>
                 <div class="col-md-4 fade-in">
                     <div class="card-epco p-4 text-center h-100">
-                        <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: linear-gradient(135deg, #059669, #10b981);">
-                            <i class="bi bi-shield-lock text-white fs-3"></i>
+                        <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: linear-gradient(135deg, #1e40af, #3b82f6);">
+                            <i class="bi bi-shield-check text-white fs-3"></i>
                         </div>
-                        <h5 class="text-dark fw-bold">Encriptación AES-256</h5>
-                        <p class="text-muted">Toda la información se almacena encriptada. Nadie que acceda a la base de datos puede leer el contenido.</p>
+                        <h5 class="text-dark fw-bold">Protección contra Represalias</h5>
+                        <p class="text-muted">La Ley Karin prohíbe cualquier tipo de represalia contra el denunciante. Tu empleo y condiciones laborales están protegidos.</p>
                     </div>
                 </div>
                 <div class="col-md-4 fade-in">
@@ -109,7 +110,38 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <i class="bi bi-people text-white fs-3"></i>
                         </div>
                         <h5 class="text-dark fw-bold">Investigación Imparcial</h5>
-                        <p class="text-muted">Tu denuncia será investigada por personal autorizado, de forma confidencial e imparcial.</p>
+                        <p class="text-muted">Tu denuncia será investigada por personal autorizado de forma confidencial, imparcial y dentro de los plazos legales.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marco Legal Ley Karin -->
+    <section class="py-5 gradient-bg">
+        <div class="container">
+            <h2 class="text-center text-white fw-bold mb-2 fade-in"><i class="bi bi-journal-text me-2"></i>¿Qué es la Ley Karin?</h2>
+            <p class="text-center text-white-50 mb-5 fade-in">Ley N° 21.643 — Vigente desde el 1 de agosto de 2024</p>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card-epco p-4 p-md-5 fade-in">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <h5 class="text-dark fw-bold mb-3"><i class="bi bi-info-circle text-primary me-2"></i>Sobre la Ley</h5>
+                                <p class="text-muted">La <strong>Ley Karin</strong> modifica el Código del Trabajo en materia de prevención, investigación y sanción del <strong>acoso laboral, acoso sexual y violencia en el trabajo</strong>.</p>
+                                <p class="text-muted">Obliga a los empleadores a implementar un <strong>protocolo de prevención</strong> y disponer de un <strong>canal de denuncias</strong> accesible para todos los trabajadores.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="text-dark fw-bold mb-3"><i class="bi bi-check-circle text-success me-2"></i>Tus Derechos</h5>
+                                <ul class="text-muted" style="line-height: 2;">
+                                    <li>Denunciar de forma <strong>anónima o identificada</strong></li>
+                                    <li>Protección contra <strong>represalias</strong> por denunciar</li>
+                                    <li>Investigación en un plazo máximo de <strong>30 días</strong></li>
+                                    <li>Derecho a ser <strong>informado/a del resultado</strong></li>
+                                    <li>Recurrir ante la <strong>Inspección del Trabajo</strong></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -117,10 +149,10 @@ require_once __DIR__ . '/../includes/encabezado.php';
     </section>
 
     <!-- Tipos de denuncia -->
-    <section class="py-5 gradient-bg">
+    <section class="py-5" style="background: #0d2f50;">
         <div class="container">
-            <h2 class="text-center text-white fw-bold mb-2 fade-in">¿Qué puedes denunciar?</h2>
-            <p class="text-center text-white-50 mb-5 fade-in">En cumplimiento de la Ley N° 21.643 (Ley Karin)</p>
+            <h2 class="text-center text-white fw-bold mb-2 fade-in">¿Qué conductas puedes denunciar?</h2>
+            <p class="text-center text-white-50 mb-5 fade-in">Según lo establecido en la Ley N° 21.643 (Ley Karin)</p>
             <div class="row g-4">
                 <?php
                 $tipos = [
@@ -149,16 +181,16 @@ require_once __DIR__ . '/../includes/encabezado.php';
     </section>
 
     <!-- Proceso -->
-    <section class="py-5" style="background: #0d2f50;">
+    <section class="py-5 gradient-bg">
         <div class="container">
-            <h2 class="text-center text-white fw-bold mb-5 fade-in">¿Cómo funciona?</h2>
+            <h2 class="text-center text-white fw-bold mb-5 fade-in">¿Cómo funciona el proceso?</h2>
             <div class="row g-4">
                 <?php
                 $pasos = [
-                    ['num' => '1', 'title' => 'Escribe tu denuncia', 'desc' => 'Completa el formulario con los detalles. Puedes hacerlo de forma anónima.', 'icon' => 'bi-pencil-square'],
-                    ['num' => '2', 'title' => 'Se encripta y almacena', 'desc' => 'Tu denuncia se encripta automáticamente. Nadie puede leerla en la base de datos.', 'icon' => 'bi-lock'],
-                    ['num' => '3', 'title' => 'Recibe un código', 'desc' => 'Recibirás un número de seguimiento único para consultar el estado.', 'icon' => 'bi-upc-scan'],
-                    ['num' => '4', 'title' => 'Investigación', 'desc' => 'Un investigador autorizado revisa tu caso de forma confidencial.', 'icon' => 'bi-search'],
+                    ['num' => '1', 'title' => 'Escribe tu denuncia', 'desc' => 'Completa el formulario con los detalles de los hechos. Puedes hacerlo de forma anónima.', 'icon' => 'bi-pencil-square'],
+                    ['num' => '2', 'title' => 'Recibe un código', 'desc' => 'Obtendrás un número de seguimiento único para consultar el estado de tu denuncia.', 'icon' => 'bi-upc-scan'],
+                    ['num' => '3', 'title' => 'Investigación', 'desc' => 'Un investigador autorizado revisa tu caso de forma confidencial e imparcial.', 'icon' => 'bi-search'],
+                    ['num' => '4', 'title' => 'Resolución', 'desc' => 'Se adoptan las medidas correspondientes y se te informa del resultado.', 'icon' => 'bi-check-circle'],
                 ];
                 foreach ($pasos as $paso): ?>
                 <div class="col-md-3 fade-in">
@@ -184,8 +216,8 @@ require_once __DIR__ . '/../includes/encabezado.php';
     <!-- Footer -->
     <footer class="py-4" style="background: #061827;">
         <div class="container text-center text-white-50">
-            <p class="mb-1"><i class="bi bi-shield-lock me-1"></i> Canal de Denuncias - Empresa Portuaria Coquimbo</p>
-            <p class="mb-0 small">Ley N° 21.643 (Ley Karin) · Todos los datos protegidos con encriptación AES-256</p>
+            <p class="mb-1"><i class="bi bi-shield-check me-1"></i> Canal de Denuncias - Empresa Portuaria Coquimbo</p>
+            <p class="mb-0 small">En cumplimiento de la Ley N° 21.643 (Ley Karin) · Todos los datos tratados de forma confidencial</p>
         </div>
     </footer>
 

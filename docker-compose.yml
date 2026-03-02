@@ -38,6 +38,7 @@ services:
       - SMTP_ENCRYPTION=${SMTP_ENCRYPTION:-tls}
       - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL:-denuncias@epco.cl}
       - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Canal de Denuncias - EPCO}
+      - SMTP_ADMIN_EMAIL=${SMTP_ADMIN_EMAIL:-}
     depends_on:
       db:
         condition: service_healthy

@@ -112,6 +112,7 @@ SMTP_PASS=
 SMTP_ENCRYPTION=tls
 SMTP_FROM_EMAIL=denuncias@epco.cl
 SMTP_FROM_NAME=Canal de Denuncias - EPCO
+SMTP_ADMIN_EMAIL=
 EOF
 
 echo ""

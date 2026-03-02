@@ -119,6 +119,20 @@ function createComplaint(array $data): array {
         // Log inicial (encriptado)
         addComplaintLog($complaintId, 'creada', 'Denuncia recibida en el sistema', null, false);
 
+        // Enviar notificaciones por correo
+        try {
+            // Notificar a administradores e investigadores
+            notifyAdminsNewComplaint($complaintNumber, $data['complaint_type'], (bool)($data['is_anonymous'] ?? 1));
+
+            // Notificar al denunciante si proporcionó email
+            if (!($data['is_anonymous'] ?? 1) && !empty($data['reporter_email'])) {
+                notifyComplainant($data['reporter_email'], $complaintNumber, $data['complaint_type']);
+            }
+        } catch (Exception $e) {
+            error_log("[Denuncias] Error enviando notificaciones: " . $e->getMessage());
+            // No falla la creación de la denuncia si el correo falla
+        }
+
         return ['success' => true, 'complaint_number' => $complaintNumber, 'id' => $complaintId];
 
     } catch (Exception $e) {

@@ -42,6 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
             $pdo->prepare($sql)->execute($paramsList);
             addComplaintLog($id, 'cambio_estado', "Estado cambiado a: " . COMPLAINT_STATUSES[$newStatus]['label'], $_SESSION['user_id']);
             logActivity($_SESSION['user_id'], 'cambio_estado', 'complaint', $id, "Nuevo estado: $newStatus");
+
+            // Notificar al denunciante del cambio de estado
+            try {
+                notifyStatusChange($id, $newStatus);
+            } catch (Exception $e) {
+                error_log("[Denuncias] Error notificando cambio de estado: " . $e->getMessage());
+            }
+
             redirect("/detalle_denuncia?id=$id", 'Estado actualizado correctamente.');
         }
     }
@@ -126,7 +134,6 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             <span class="badge bg-<?= $complaint['priority'] === 'urgente' ? 'danger' : ($complaint['priority'] === 'alta' ? 'warning text-dark' : 'secondary') ?> p-2">
                 <i class="bi bi-flag me-1"></i><?= ucfirst($complaint['priority']) ?>
             </span>
-            <span class="encrypted-badge"><i class="bi bi-shield-lock"></i> Desencriptado</span>
         </div>
     </div>
 

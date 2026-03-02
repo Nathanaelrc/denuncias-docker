@@ -80,6 +80,23 @@ if (!defined('DENUNCIAS_APP')) {
             backdrop-filter: blur(10px);
         }
 
+        .navbar-epco .navbar-brand,
+        .navbar-epco .navbar-brand span,
+        .navbar-epco .nav-link,
+        .navbar-epco .navbar-text {
+            color: #ffffff !important;
+        }
+
+        .navbar-epco .nav-link:hover,
+        .navbar-epco .nav-link:focus {
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+
+        .navbar-epco .nav-link.active {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.25rem rgba(10, 37, 64, 0.25);
@@ -89,20 +106,55 @@ if (!defined('DENUNCIAS_APP')) {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
         }
 
-        .fade-in { opacity: 0; transform: translateY(20px); }
+        .fade-in { opacity: 0; transform: translateY(30px); }
         .slide-in-left { opacity: 0; transform: translateX(-50px); }
         .slide-in-right { opacity: 0; transform: translateX(50px); }
+        .scale-in { opacity: 0; transform: scale(0.9); }
 
-        .encrypted-badge {
-            background: linear-gradient(135deg, #059669, #10b981);
+        /* Animación de entrada de página */
+        @keyframes pageEntrance {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes navSlideDown {
+            0% { opacity: 0; transform: translateY(-100%); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes subtlePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+        }
+
+        .page-entrance {
+            animation: pageEntrance 0.6s ease-out forwards;
+        }
+
+        .nav-animate {
+            animation: navSlideDown 0.5s ease-out forwards;
+        }
+
+        .pulse-soft {
+            animation: subtlePulse 3s ease-in-out infinite;
+        }
+
+        .legal-badge {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
             color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            font-weight: 600;
         }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
     </style>
 </head>
 <body>

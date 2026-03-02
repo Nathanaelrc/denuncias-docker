@@ -255,9 +255,9 @@ try {
                     <p>KPIs en tiempo real, gráficos y estadísticas.</p>
                 </div>
                 <div class="feat-card">
-                    <div class="feat-icon" style="background: linear-gradient(135deg, #059669, #34d399);"><i class="bi bi-shield-lock"></i></div>
-                    <h6>Datos Encriptados</h6>
-                    <p>AES-256 en toda la información sensible.</p>
+                    <div class="feat-icon" style="background: linear-gradient(135deg, #059669, #34d399);"><i class="bi bi-shield-check"></i></div>
+                    <h6>Datos Protegidos</h6>
+                    <p>Información confidencial y segura.</p>
                 </div>
                 <div class="feat-card">
                     <div class="feat-icon" style="background: linear-gradient(135deg, #7c3aed, #a78bfa);"><i class="bi bi-search"></i></div>
@@ -341,7 +341,7 @@ try {
                 <div class="sec-item"><i class="bi bi-shield-check"></i> Protección CSRF activa</div>
                 <div class="sec-item"><i class="bi bi-lock-fill"></i> Bloqueo tras 5 intentos fallidos</div>
                 <div class="sec-item"><i class="bi bi-clock-history"></i> Auditoría completa de accesos</div>
-                <div class="sec-item"><i class="bi bi-key-fill"></i> Encriptación AES-256</div>
+                <div class="sec-item"><i class="bi bi-shield-lock"></i> Datos protegidos y confidenciales</div>
             </div>
         </div>
 

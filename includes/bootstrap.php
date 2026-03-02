@@ -36,5 +36,6 @@ define('DENUNCIAS_ROOT', dirname(__DIR__));
 require_once DENUNCIAS_ROOT . '/config/app.php';
 require_once DENUNCIAS_ROOT . '/config/database.php';
 require_once DENUNCIAS_ROOT . '/includes/encriptacion.php';
+require_once DENUNCIAS_ROOT . '/includes/correo.php';
 require_once DENUNCIAS_ROOT . '/includes/utilidades.php';
 require_once DENUNCIAS_ROOT . '/includes/autenticacion.php';
