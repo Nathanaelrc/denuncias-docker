@@ -83,10 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                 <p style="color: #374151; font-size: 14px; line-height: 1.7;">Hola <strong>' . htmlspecialchars($targetUser['name']) . '</strong>,</p>
                 <p style="color: #374151; font-size: 14px; line-height: 1.7;">Este es un correo de prueba del Canal de Denuncias EPCO para verificar que las notificaciones por email están funcionando correctamente.</p>
                 <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: center;">
-                    <p style="color: #166534; font-weight: 700; font-size: 16px; margin: 0;">✅ ¡Correo configurado correctamente!</p>
+                    <p style="color: #166534; font-weight: 700; font-size: 16px; margin: 0;">Correo configurado correctamente</p>
                 </div>
                 <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">Enviado desde el panel de notificaciones el ' . date('d/m/Y H:i') . '</p>';
-            $result = sendEmail($targetUser['email'], '🔔 Prueba de Notificación - Canal de Denuncias', emailTemplate('Prueba de Correo', $testContent));
+            $result = sendEmail($targetUser['email'], 'Prueba de Notificación - Canal de Denuncias', emailTemplate('Prueba de Correo', $testContent));
             echo json_encode(['ok' => $result, 'error' => $result ? null : 'Error al enviar el correo']);
         } catch (Exception $e) {
             echo json_encode(['ok' => false, 'error' => $e->getMessage()]);

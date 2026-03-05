@@ -218,7 +218,7 @@ function emailTemplate(string $title, string $content): string {
                     <!-- Header -->
                     <tr>
                         <td style="background: linear-gradient(135deg, #0a2540, #1e3a5f); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700;">🛡️ Canal de Denuncias</h1>
+                            <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700;">Canal de Denuncias</h1>
                             <p style="color: rgba(255,255,255,0.7); margin: 5px 0 0; font-size: 13px;">Empresa Portuaria Coquimbo · Ley Karin N° 21.643</p>
                         </td>
                     </tr>
@@ -282,7 +282,7 @@ function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Modalidad:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-size: 14px;">' . ($isAnonymous ? '🔒 Anónima' : '👤 Identificada') . '</td>
+                <td style="padding: 8px 15px; color: #0a2540; font-size: 14px;">' . ($isAnonymous ? 'Anónima' : 'Identificada') . '</td>
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Fecha de registro:</td>
@@ -304,7 +304,7 @@ function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType
             </a>
         </div>';
 
-    $subject = "🛡️ Nueva Denuncia: $complaintNumber - $typeLabel";
+    $subject = "Nueva Denuncia: $complaintNumber - $typeLabel";
     $html = emailTemplate('Nueva Denuncia Recibida', $content);
 
     // Enviar a cada admin/investigador
@@ -352,7 +352,7 @@ function notifyComplainant(string $email, string $complaintNumber, string $compl
         
         <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 15px; margin: 15px 0;">
             <p style="color: #92400e; font-size: 13px; margin: 0; font-weight: 600;">
-                ⚠️ Importante: Guarde este código de seguimiento. Es la única forma de consultar el estado de su denuncia.
+                Importante: Guarde este código de seguimiento. Es la única forma de consultar el estado de su denuncia.
             </p>
         </div>
 
@@ -375,7 +375,7 @@ function notifyComplainant(string $email, string $complaintNumber, string $compl
             </p>
         </div>';
 
-    $subject = "✅ Denuncia registrada: $complaintNumber";
+    $subject = "Denuncia registrada: $complaintNumber";
     $html = emailTemplate('Confirmación de Denuncia', $content);
 
     sendEmail($email, $subject, $html);
@@ -455,7 +455,7 @@ function notifyStatusChange(int $complaintId, string $newStatus): void {
             </a>
         </div>';
 
-    $subject = "📋 Actualización denuncia {$complaint['complaint_number']}: {$statusConfig['label']}";
+    $subject = "Actualización denuncia {$complaint['complaint_number']}: {$statusConfig['label']}";
     $html = emailTemplate('Actualización de Estado', $content);
 
     sendEmail($email, $subject, $html);
