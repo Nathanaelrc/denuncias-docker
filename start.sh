@@ -86,9 +86,8 @@ echo -e "  phpMyAdmin:  ${BOLD}${PMA_PORT}${NC}"
 # =============================================
 if [ ! -f "$ENV_FILE" ]; then
     ENCRYPTION_KEY=$(openssl rand -base64 32 2>/dev/null || cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-fi
 
-cat > "$ENV_FILE" <<EOF
+    cat > "$ENV_FILE" <<EOF
 # Generado automáticamente - $(date)
 APP_PORT=${APP_PORT}
 DB_PORT=${DB_PORT}
@@ -99,10 +98,10 @@ APP_URL=http://localhost:${APP_PORT}
 
 DB_NAME=denuncias
 DB_USER=denuncias_user
-DB_PASS=denuncias-db-pass-$(date +%s | sha256sum | head -c 8)
-DB_ROOT_PASSWORD=root-pass-$(date +%s | sha256sum | head -c 8)
+DB_PASS='CAMBIAR-ESTA-CONTRASEÑA'
+DB_ROOT_PASSWORD='CAMBIAR-ESTA-CONTRASEÑA'
 
-ENCRYPTION_KEY=${ENCRYPTION_KEY:-$(openssl rand -base64 32 2>/dev/null || echo 'cambiar-esta-clave-en-produccion-32chars!')}
+ENCRYPTION_KEY=${ENCRYPTION_KEY}
 
 SMTP_ENABLED=false
 SMTP_HOST=smtp.gmail.com
@@ -115,8 +114,15 @@ SMTP_FROM_NAME=Canal de Denuncias - EPCO
 SMTP_ADMIN_EMAIL=
 EOF
 
-echo ""
-echo -e "${GREEN}✓ Archivo .env generado${NC}"
+    echo ""
+    echo -e "${GREEN}✓ Archivo .env generado${NC}"
+    echo -e "${RED}⚠ IMPORTANTE: Edita .env y cambia las contraseñas DB_PASS y DB_ROOT_PASSWORD${NC}"
+else
+    echo ""
+    echo -e "${GREEN}✓ Archivo .env existente encontrado (no se sobreescribe)${NC}"
+    # Actualizar puertos si cambiaron
+    source "$ENV_FILE"
+fi
 
 # =============================================
 # Construir y levantar
@@ -124,11 +130,11 @@ echo -e "${GREEN}✓ Archivo .env generado${NC}"
 echo ""
 echo -e "${CYAN}► Construyendo contenedores...${NC}"
 cd "$SCRIPT_DIR"
-docker compose build --no-cache
+docker compose --profile dev build --no-cache
 
 echo ""
-echo -e "${CYAN}► Iniciando servicios...${NC}"
-docker compose up -d
+echo -e "${CYAN}► Iniciando servicios (con phpMyAdmin)...${NC}"
+docker compose --profile dev up -d
 
 echo ""
 echo -e "${BOLD}=========================================="
