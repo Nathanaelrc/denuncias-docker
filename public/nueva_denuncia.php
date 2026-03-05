@@ -56,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = true;
             $complaintNumber = $result['complaint_number'];
             logActivity(null, 'denuncia_creada', 'complaint', $result['id'], "Tipo: $complaintType | Anónima: " . ($isAnonymous ? 'Sí' : 'No'));
+            sendNotification('denuncia_creada', 'Nueva denuncia: ' . $complaintNumber, 'Tipo: ' . (COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType), 'complaint', $result['id']);
         } else {
             $errors[] = $result['message'] ?? 'Error al registrar la denuncia.';
         }
@@ -73,10 +74,21 @@ require_once __DIR__ . '/../includes/encabezado.php';
             <span class="fw-bold">Canal de Denuncias</span>
         </a>
         <div class="d-flex align-items-center gap-2 order-lg-last">
-            <a href="/acceso" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                <i class="bi bi-box-arrow-in-right"></i>
-                <span class="d-none d-sm-inline">Iniciar Sesión</span>
-            </a>
+            <?php if (isLoggedIn()): ?>
+                <a href="/panel" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="d-none d-sm-inline">Dashboard</span>
+                </a>
+                <a href="/cerrar_sesion" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="d-none d-sm-inline">Cerrar Sesión</span>
+                </a>
+            <?php else: ?>
+                <a href="/acceso" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span class="d-none d-sm-inline">Iniciar Sesión</span>
+                </a>
+            <?php endif; ?>
             <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic">
                 <i class="bi bi-list text-white fs-4"></i>
             </button>

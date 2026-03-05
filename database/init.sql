@@ -199,6 +199,76 @@ CREATE TABLE IF NOT EXISTS password_resets (
 -- DATOS INICIALES
 -- =============================================================================
 
+-- =============================================
+-- TABLA: GRUPOS DE NOTIFICACIÓN
+-- =============================================
+CREATE TABLE IF NOT EXISTS notification_groups (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    slug VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255) DEFAULT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_slug (slug)
+) ENGINE=InnoDB;
+
+-- =============================================
+-- TABLA: SUSCRIPCIÓN DE USUARIOS A GRUPOS
+-- =============================================
+CREATE TABLE IF NOT EXISTS notification_subscriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    group_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES notification_groups(id) ON DELETE CASCADE,
+    UNIQUE KEY uk_user_group (user_id, group_id),
+    INDEX idx_user (user_id),
+    INDEX idx_group (group_id)
+) ENGINE=InnoDB;
+
+-- =============================================
+-- TABLA: NOTIFICACIONES INDIVIDUALES
+-- =============================================
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    group_slug VARCHAR(50) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    message TEXT DEFAULT NULL,
+    entity_type VARCHAR(50) DEFAULT NULL,
+    entity_id INT DEFAULT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    read_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_read (user_id, is_read),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB;
+
+-- Grupos de notificación predefinidos
+INSERT INTO notification_groups (name, slug, description) VALUES
+('Todas las Notificaciones', 'todas', 'Recibir absolutamente todas las notificaciones del sistema'),
+('Creación de Denuncias', 'denuncia_creada', 'Cuando se crea una nueva denuncia en el portal'),
+('Asignación de Casos', 'asignacion', 'Cuando un caso es asignado a un investigador'),
+('Investigación en Curso', 'investigacion', 'Actualizaciones durante la investigación de un caso'),
+('Denuncias Resueltas', 'resuelta', 'Cuando una denuncia es marcada como resuelta'),
+('Denuncias Cerradas', 'cerrada', 'Cuando una denuncia es archivada o desestimada');
+
+-- Suscribir admins a todas las notificaciones por defecto
+INSERT INTO notification_subscriptions (user_id, group_id)
+SELECT u.id, ng.id
+FROM users u
+CROSS JOIN notification_groups ng
+WHERE u.role = 'admin' AND ng.slug = 'todas';
+
+-- Suscribir investigadores a creación, asignación e investigación
+INSERT INTO notification_subscriptions (user_id, group_id)
+SELECT u.id, ng.id
+FROM users u
+CROSS JOIN notification_groups ng
+WHERE u.role = 'investigador' AND ng.slug IN ('denuncia_creada', 'asignacion', 'investigacion');
+
 -- Usuarios del portal de denuncias (Contraseña: password)
 INSERT INTO users (name, username, email, password, role, department, position) VALUES
 ('Administrador Denuncias', 'admin.denuncias', 'admin.denuncias@epco.cl',

@@ -50,6 +50,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
                 error_log("[Denuncias] Error notificando cambio de estado: " . $e->getMessage());
             }
 
+            // Notificación interna según nuevo estado
+            $statusLabel = COMPLAINT_STATUSES[$newStatus]['label'] ?? $newStatus;
+            $complaintNum = $complaint['complaint_number'] ?? "#$id";
+            if (in_array($newStatus, ['resuelta'])) {
+                sendNotification('resuelta', "Denuncia resuelta: $complaintNum", "Estado: $statusLabel", 'complaint', $id);
+            } elseif (in_array($newStatus, ['desestimada', 'archivada'])) {
+                sendNotification('cerrada', "Denuncia cerrada: $complaintNum", "Estado: $statusLabel", 'complaint', $id);
+            } elseif ($newStatus === 'en_investigacion') {
+                sendNotification('investigacion', "Investigación iniciada: $complaintNum", "Estado: $statusLabel", 'complaint', $id);
+            }
+
             redirect("/detalle_denuncia?id=$id", 'Estado actualizado correctamente.');
         }
     }
@@ -60,6 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
             ->execute([$investigatorId ?: null, $id]);
         addComplaintLog($id, 'asignacion', 'Investigador asignado al caso', $_SESSION['user_id']);
         logActivity($_SESSION['user_id'], 'asignar_investigador', 'complaint', $id, "Investigador ID: $investigatorId");
+        $complaintNum = $complaint['complaint_number'] ?? "#$id";
+        sendNotification('asignacion', "Caso asignado: $complaintNum", 'Un investigador ha sido asignado a este caso', 'complaint', $id);
         redirect("/detalle_denuncia?id=$id", 'Investigador asignado.');
     }
 

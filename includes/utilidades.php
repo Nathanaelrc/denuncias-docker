@@ -4,6 +4,93 @@
  */
 
 /**
+ * Enviar notificación a usuarios suscritos a un grupo
+ */
+function sendNotification(string $groupSlug, string $title, string $message = '', string $entityType = null, int $entityId = null): void {
+    global $pdo;
+    try {
+        // Obtener usuarios suscritos a este grupo o a "todas" con su email
+        $stmt = $pdo->prepare("
+            SELECT DISTINCT u.id, u.email, u.name
+            FROM notification_subscriptions ns
+            JOIN notification_groups ng ON ns.group_id = ng.id
+            JOIN users u ON ns.user_id = u.id
+            WHERE ng.slug IN (?, 'todas') AND ng.is_active = 1 AND u.is_active = 1
+        ");
+        $stmt->execute([$groupSlug]);
+        $subscribers = $stmt->fetchAll();
+
+        if (empty($subscribers)) return;
+
+        $ins = $pdo->prepare("
+            INSERT INTO notifications (user_id, group_slug, title, message, entity_type, entity_id)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+
+        // Slugs a etiquetas legibles para el correo
+        $groupLabels = [
+            'denuncia_creada' => 'Nueva Denuncia',
+            'asignacion' => 'Asignación de Caso',
+            'investigacion' => 'Investigación en Curso',
+            'resuelta' => 'Denuncia Resuelta',
+            'cerrada' => 'Denuncia Cerrada',
+        ];
+        $groupLabel = $groupLabels[$groupSlug] ?? 'Notificación';
+
+        foreach ($subscribers as $user) {
+            // Guardar notificación en BD
+            $ins->execute([$user['id'], $groupSlug, $title, $message, $entityType, $entityId]);
+
+            // Enviar correo electrónico
+            if (!empty($user['email'])) {
+                $detailLink = '';
+                if ($entityType === 'complaint' && $entityId) {
+                    $appUrl = getenv('APP_URL') ?: 'http://localhost:8091';
+                    $detailLink = '<p style="margin-top: 20px; text-align: center;">
+                        <a href="' . htmlspecialchars($appUrl) . '/detalle_denuncia?id=' . (int)$entityId . '" 
+                           style="background: #0a2540; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">
+                            Ver Detalle
+                        </a>
+                    </p>';
+                }
+
+                $emailContent = '
+                    <p style="color: #374151; font-size: 14px; line-height: 1.7;">Hola <strong>' . htmlspecialchars($user['name']) . '</strong>,</p>
+                    <p style="color: #374151; font-size: 14px; line-height: 1.7;">Tienes una nueva notificación en el Canal de Denuncias:</p>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 15px 0;">
+                        <tr>
+                            <td style="padding: 8px 15px; color: #6b7280; font-size: 13px; width: 35%;">Categoría:</td>
+                            <td style="padding: 8px 15px; color: #0a2540; font-weight: 600; font-size: 14px;">' . htmlspecialchars($groupLabel) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Asunto:</td>
+                            <td style="padding: 8px 15px; color: #0a2540; font-weight: 700; font-size: 14px;">' . htmlspecialchars($title) . '</td>
+                        </tr>' . ($message ? '
+                        <tr>
+                            <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Detalle:</td>
+                            <td style="padding: 8px 15px; color: #374151; font-size: 14px;">' . htmlspecialchars($message) . '</td>
+                        </tr>' : '') . '
+                        <tr>
+                            <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Fecha:</td>
+                            <td style="padding: 8px 15px; color: #0a2540; font-size: 14px;">' . date('d/m/Y H:i') . '</td>
+                        </tr>
+                    </table>
+                    ' . $detailLink . '
+                    <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">Puedes gestionar tus suscripciones de notificación desde el panel de administración.</p>';
+
+                try {
+                    sendEmail($user['email'], "$groupLabel: $title", emailTemplate($groupLabel, $emailContent));
+                } catch (Exception $e) {
+                    error_log("[Notificaciones] Error enviando correo a {$user['email']}: " . $e->getMessage());
+                }
+            }
+        }
+    } catch (Exception $e) {
+        error_log("[Notificaciones] Error: " . $e->getMessage());
+    }
+}
+
+/**
  * Generar número de denuncia único
  */
 function generateComplaintNumber(): string {

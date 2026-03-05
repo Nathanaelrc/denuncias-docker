@@ -24,6 +24,11 @@ $stats = $pdo->query("
         SUM(CASE WHEN status = 'en_investigacion' THEN 1 ELSE 0 END) as en_investigacion
     FROM complaints
 ")->fetch();
+
+// Notificaciones no leídas
+$stmtUnread = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+$stmtUnread->execute([$user['id']]);
+$unreadNotifs = $stmtUnread->fetchColumn();
 ?>
 
 <!-- Topbar -->
@@ -226,6 +231,14 @@ $stats = $pdo->query("
             <i class="bi bi-clock"></i>
             <span id="topbarClock">--:--</span>
         </div>
+        <a href="/notificaciones" class="position-relative text-white text-decoration-none me-3" title="Notificaciones" style="font-size:1.2rem;">
+            <i class="bi bi-bell"></i>
+            <?php if ($unreadNotifs > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.6rem;">
+                <?= $unreadNotifs > 99 ? '99+' : $unreadNotifs ?>
+            </span>
+            <?php endif; ?>
+        </a>
         <div class="topbar-user">
             <span class="d-none d-md-inline small">
                 <?= htmlspecialchars($user['name']) ?>
@@ -288,6 +301,17 @@ $stats = $pdo->query("
     </div>
     <?php endif; ?>
 
+    <!-- Notificaciones -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Comunicaciones</div>
+        <a href="/notificaciones" class="sidebar-link <?= $currentPage === 'notificaciones' ? 'active' : '' ?>">
+            <i class="bi bi-bell"></i> Notificaciones
+            <?php if ($unreadNotifs > 0): ?>
+            <span class="badge bg-danger"><?= $unreadNotifs > 99 ? '99+' : $unreadNotifs ?></span>
+            <?php endif; ?>
+        </a>
+    </div>
+
     <!-- Administración -->
     <?php if ($isAdmin): ?>
     <div class="sidebar-section">
@@ -307,7 +331,7 @@ $stats = $pdo->query("
     <!-- Acciones -->
     <div class="sidebar-section mt-auto">
         <div class="sidebar-section-title">Sesión</div>
-        <a href="/" class="sidebar-link" target="_blank">
+        <a href="/" class="sidebar-link">
             <i class="bi bi-globe"></i> Portal Público
         </a>
         <a href="/cerrar_sesion" class="sidebar-link" style="color: #f87171;">
