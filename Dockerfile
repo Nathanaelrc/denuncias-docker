@@ -1,7 +1,7 @@
-# =============================================
+# ====================================================
 # Portal de Denuncias EPCO - Dockerfile
-# PHP 8.2 con Apache + extensiones necesarias
-# =============================================
+# PHP 8.2 con Apache y algunas extensiones necesarias
+# ====================================================
 FROM php:8.2-apache
 
 # Instalar extensiones de PHP necesarias
