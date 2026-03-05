@@ -40,6 +40,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
         exit;
     }
 
+    if ($ajaxAction === 'update_email' && $isAdmin) {
+        $targetUserId = (int)($_POST['target_user_id'] ?? 0);
+        $newEmail = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL);
+
+        if (!$targetUserId) {
+            echo json_encode(['ok' => false, 'error' => 'Usuario inválido']);
+            exit;
+        }
+        if (!$newEmail) {
+            echo json_encode(['ok' => false, 'error' => 'Email inválido']);
+            exit;
+        }
+
+        // Verificar que no esté en uso por otro usuario
+        $check = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+        $check->execute([$newEmail, $targetUserId]);
+        if ($check->fetch()) {
+            echo json_encode(['ok' => false, 'error' => 'Este email ya está en uso por otro usuario']);
+            exit;
+        }
+
+        $pdo->prepare("UPDATE users SET email = ? WHERE id = ?")->execute([$newEmail, $targetUserId]);
+        logActivity($userId, 'actualizar_email', 'user', $targetUserId, "Email actualizado a: $newEmail");
+        echo json_encode(['ok' => true]);
+        exit;
+    }
+
+    if ($ajaxAction === 'test_email' && $isAdmin) {
+        $targetUserId = (int)($_POST['target_user_id'] ?? 0);
+        $stmt = $pdo->prepare("SELECT email, name FROM users WHERE id = ?");
+        $stmt->execute([$targetUserId]);
+        $targetUser = $stmt->fetch();
+
+        if (!$targetUser || empty($targetUser['email'])) {
+            echo json_encode(['ok' => false, 'error' => 'Usuario sin email configurado']);
+            exit;
+        }
+
+        try {
+            $testContent = '
+                <p style="color: #374151; font-size: 14px; line-height: 1.7;">Hola <strong>' . htmlspecialchars($targetUser['name']) . '</strong>,</p>
+                <p style="color: #374151; font-size: 14px; line-height: 1.7;">Este es un correo de prueba del Canal de Denuncias EPCO para verificar que las notificaciones por email están funcionando correctamente.</p>
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: center;">
+                    <p style="color: #166534; font-weight: 700; font-size: 16px; margin: 0;">✅ ¡Correo configurado correctamente!</p>
+                </div>
+                <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">Enviado desde el panel de notificaciones el ' . date('d/m/Y H:i') . '</p>';
+            $result = sendEmail($targetUser['email'], '🔔 Prueba de Notificación - Canal de Denuncias', emailTemplate('Prueba de Correo', $testContent));
+            echo json_encode(['ok' => $result, 'error' => $result ? null : 'Error al enviar el correo']);
+        } catch (Exception $e) {
+            echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
+        }
+        exit;
+    }
+
     if ($ajaxAction === 'save_subscriptions' && $isAdmin) {
         $targetUserId = (int)($_POST['target_user_id'] ?? 0);
         $groupIds = json_decode($_POST['group_ids'] ?? '[]', true);
@@ -334,6 +388,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     <div class="row g-3">
         <?php foreach ($panelUsers as $idx => $pu):
             $subs = $userSubscriptions[$pu['id']] ?? [];
+            $hasEmail = !empty($pu['email']);
         ?>
         <div class="col-md-6 col-xl-4" style="animation-delay: <?= $idx * 0.05 ?>s">
             <div class="user-card" data-user-id="<?= $pu['id'] ?>">
@@ -341,7 +396,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                     <div style="width:44px; height:44px; border-radius:12px; background: linear-gradient(135deg, #0a2540, #1e3a5f); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.1rem;">
                         <?= strtoupper(mb_substr($pu['name'], 0, 1)) ?>
                     </div>
-                    <div style="min-width:0;">
+                    <div style="min-width:0; flex:1;">
                         <div class="fw-bold text-truncate"><?= htmlspecialchars($pu['name']) ?></div>
                         <div class="d-flex align-items-center gap-2">
                             <small class="text-muted"><?= htmlspecialchars($pu['username']) ?></small>
@@ -349,6 +404,31 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         </div>
                     </div>
                 </div>
+
+                <!-- Email editable -->
+                <div class="email-row mb-3" data-user-id="<?= $pu['id'] ?>">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-envelope<?= $hasEmail ? '-fill text-primary' : ' text-muted' ?>" style="font-size: 0.9rem;"></i>
+                        <input type="email" class="email-input form-control form-control-sm"
+                               value="<?= htmlspecialchars($pu['email'] ?? '') ?>"
+                               placeholder="Agregar email..."
+                               data-original="<?= htmlspecialchars($pu['email'] ?? '') ?>"
+                               oninput="onEmailChange(this)"
+                               style="border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.82rem; padding: 6px 10px;">
+                        <button class="btn btn-sm email-save-btn" style="display:none; border-radius: 8px; padding: 4px 10px;"
+                                onclick="saveEmail(<?= $pu['id'] ?>, this)">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                        <?php if ($hasEmail): ?>
+                        <button class="btn btn-sm btn-outline-secondary" style="border-radius: 8px; padding: 4px 8px; font-size: 0.75rem;"
+                                onclick="testEmail(<?= $pu['id'] ?>, this)" title="Enviar correo de prueba">
+                            <i class="bi bi-send"></i>
+                        </button>
+                        <?php endif; ?>
+                    </div>
+                    <div class="email-feedback mt-1" style="font-size: 0.75rem; display: none;"></div>
+                </div>
+
                 <div class="d-flex flex-wrap gap-2">
                     <?php foreach ($groups as $g):
                         $gs = getGroupStyle($g['slug']);
@@ -366,7 +446,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                 </div>
                 <div class="save-btn-wrap mt-3" id="save-<?= $pu['id'] ?>">
                     <button class="btn btn-primary btn-sm w-100" style="border-radius: 10px;" onclick="saveSubscriptions(<?= $pu['id'] ?>)">
-                        <i class="bi bi-check-lg me-1"></i>Guardar cambios
+                        <i class="bi bi-check-lg me-1"></i>Guardar suscripciones
                     </button>
                 </div>
             </div>
@@ -462,6 +542,98 @@ function saveSubscriptions(userId) {
                 btn.classList.replace('btn-danger', 'btn-primary');
             }, 2000);
         }
+    });
+}
+
+function onEmailChange(input) {
+    const original = input.dataset.original;
+    const saveBtn = input.parentElement.querySelector('.email-save-btn');
+    if (input.value !== original) {
+        saveBtn.style.display = 'inline-flex';
+        saveBtn.className = 'btn btn-sm btn-primary email-save-btn';
+    } else {
+        saveBtn.style.display = 'none';
+    }
+}
+
+function saveEmail(userId, btn) {
+    const row = btn.closest('.email-row');
+    const input = row.querySelector('.email-input');
+    const feedback = row.querySelector('.email-feedback');
+    const email = input.value.trim();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        feedback.style.display = 'block';
+        feedback.className = 'email-feedback mt-1 text-danger';
+        feedback.style.fontSize = '0.75rem';
+        feedback.textContent = 'Email inválido';
+        return;
+    }
+
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    btn.disabled = true;
+
+    fetch('/notificaciones', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `ajax_action=update_email&target_user_id=${userId}&email=${encodeURIComponent(email)}&<?= CSRF_TOKEN_NAME ?>=${csrfToken}`
+    }).then(r => r.json()).then(d => {
+        feedback.style.display = 'block';
+        feedback.style.fontSize = '0.75rem';
+        if (d.ok) {
+            feedback.className = 'email-feedback mt-1 text-success';
+            feedback.textContent = '✓ Email guardado';
+            input.dataset.original = email;
+            btn.style.display = 'none';
+            // Update envelope icon
+            const icon = row.querySelector('.bi-envelope, .bi-envelope-fill');
+            if (icon) { icon.className = 'bi bi-envelope-fill text-primary'; icon.style.fontSize = '0.9rem'; }
+            // Show test button if not present
+            let testBtn = row.querySelector('[onclick^="testEmail"]');
+            if (!testBtn) {
+                testBtn = document.createElement('button');
+                testBtn.className = 'btn btn-sm btn-outline-secondary';
+                testBtn.style.cssText = 'border-radius: 8px; padding: 4px 8px; font-size: 0.75rem;';
+                testBtn.setAttribute('onclick', `testEmail(${userId}, this)`);
+                testBtn.title = 'Enviar correo de prueba';
+                testBtn.innerHTML = '<i class="bi bi-send"></i>';
+                input.parentElement.appendChild(testBtn);
+            }
+            setTimeout(() => { feedback.style.display = 'none'; }, 3000);
+        } else {
+            feedback.className = 'email-feedback mt-1 text-danger';
+            feedback.textContent = d.error || 'Error al guardar';
+        }
+        btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+        btn.disabled = false;
+    });
+}
+
+function testEmail(userId, btn) {
+    const original = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    btn.disabled = true;
+
+    const row = btn.closest('.email-row');
+    const feedback = row.querySelector('.email-feedback');
+
+    fetch('/notificaciones', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `ajax_action=test_email&target_user_id=${userId}&<?= CSRF_TOKEN_NAME ?>=${csrfToken}`
+    }).then(r => r.json()).then(d => {
+        feedback.style.display = 'block';
+        feedback.style.fontSize = '0.75rem';
+        if (d.ok) {
+            feedback.className = 'email-feedback mt-1 text-success';
+            feedback.textContent = '✓ Correo de prueba enviado';
+        } else {
+            feedback.className = 'email-feedback mt-1 text-danger';
+            feedback.textContent = d.error || 'Error al enviar';
+        }
+        btn.innerHTML = original;
+        btn.disabled = false;
+        setTimeout(() => { feedback.style.display = 'none'; }, 4000);
     });
 }
 </script>
