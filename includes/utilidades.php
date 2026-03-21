@@ -48,7 +48,7 @@ function sendNotification(string $groupSlug, string $title, string $message = ''
                     $appUrl = getenv('APP_URL') ?: 'http://localhost:8091';
                     $detailLink = '<p style="margin-top: 20px; text-align: center;">
                         <a href="' . htmlspecialchars($appUrl) . '/detalle_denuncia?id=' . (int)$entityId . '" 
-                           style="background: #0a2540; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">
+                           style="background: #1a6591; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">
                             Ver Detalle
                         </a>
                     </p>';
@@ -60,11 +60,11 @@ function sendNotification(string $groupSlug, string $title, string $message = ''
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 15px 0;">
                         <tr>
                             <td style="padding: 8px 15px; color: #6b7280; font-size: 13px; width: 35%;">Categoría:</td>
-                            <td style="padding: 8px 15px; color: #0a2540; font-weight: 600; font-size: 14px;">' . htmlspecialchars($groupLabel) . '</td>
+                            <td style="padding: 8px 15px; color: #1a6591; font-weight: 600; font-size: 14px;">' . htmlspecialchars($groupLabel) . '</td>
                         </tr>
                         <tr>
                             <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Asunto:</td>
-                            <td style="padding: 8px 15px; color: #0a2540; font-weight: 700; font-size: 14px;">' . htmlspecialchars($title) . '</td>
+                            <td style="padding: 8px 15px; color: #1a6591; font-weight: 700; font-size: 14px;">' . htmlspecialchars($title) . '</td>
                         </tr>' . ($message ? '
                         <tr>
                             <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Detalle:</td>
@@ -72,7 +72,7 @@ function sendNotification(string $groupSlug, string $title, string $message = ''
                         </tr>' : '') . '
                         <tr>
                             <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Fecha:</td>
-                            <td style="padding: 8px 15px; color: #0a2540; font-size: 14px;">' . date('d/m/Y H:i') . '</td>
+                            <td style="padding: 8px 15px; color: #1a6591; font-size: 14px;">' . date('d/m/Y H:i') . '</td>
                         </tr>
                     </table>
                     ' . $detailLink . '

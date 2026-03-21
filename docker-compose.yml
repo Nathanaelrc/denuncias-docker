@@ -26,6 +26,8 @@ services:
       - DB_CHARSET=utf8mb4
       - APP_ENV=${APP_ENV:-production}
       - APP_URL=${APP_URL:-http://localhost:8091}
+      - LANDING_URL=${LANDING_URL:-http://localhost:8090}
+      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:8093}
       - TZ=America/Santiago
       # Clave de encriptación (CAMBIAR EN PRODUCCIÓN)
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:-cambiar-esta-clave-en-produccion-32chars!}
@@ -39,6 +41,10 @@ services:
       - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL:-denuncias@epco.cl}
       - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Canal de Denuncias - EPCO}
       - SMTP_ADMIN_EMAIL=${SMTP_ADMIN_EMAIL:-}
+      # Verificación SSL del servidor SMTP (true en producción, false solo con certs autofirmados)
+      - SMTP_VERIFY_SSL=${SMTP_VERIFY_SSL:-true}
+      # Token para el endpoint /salud (dejar vacío para deshabilitar protección)
+      - HEALTH_CHECK_TOKEN=${HEALTH_CHECK_TOKEN:-}
     depends_on:
       db:
         condition: service_healthy
@@ -77,6 +83,98 @@ services:
       - denuncias-network
 
   # =============================================
+  # Portal Ciudadano de Denuncias (Generales)
+  # =============================================
+  app-generales:
+    build:
+      context: ./denuncias-generales
+      dockerfile: Dockerfile
+    container_name: denuncias-generales-app
+    restart: unless-stopped
+    ports:
+      - "${APP_GENERALES_PORT:-8093}:80"
+    volumes:
+      - ./denuncias-generales/logs:/var/www/html/logs:z
+      - ./denuncias-generales/public/uploads:/var/www/html/public/uploads:z
+    environment:
+      - DB_HOST=db-generales
+      - DB_NAME=${DB_GENERALES_NAME:-denuncias_generales}
+      - DB_USER=${DB_GENERALES_USER:-generales_user}
+      - DB_PASS=${DB_GENERALES_PASS:-cambiar-db-pass}
+      - DB_CHARSET=utf8mb4
+      - APP_ENV=${APP_ENV:-production}
+      - APP_URL=${APP_URL_GENERAL:-http://localhost:8093}
+      - LANDING_URL=${LANDING_URL:-http://localhost:8090}
+      - APP_URL_KARIN=${APP_URL:-http://localhost:8091}
+      - TZ=America/Santiago
+      - ENCRYPTION_KEY=${GENERALES_ENCRYPTION_KEY:-cambiar-clave-generales-32chars!}
+      - SMTP_ENABLED=${SMTP_ENABLED:-true}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - SMTP_ENCRYPTION=${SMTP_ENCRYPTION:-tls}
+      - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL:-denuncias@epco.cl}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Portal Ciudadano - EPCO}
+      - SMTP_ADMIN_EMAIL=${SMTP_ADMIN_EMAIL:-}
+      - SMTP_VERIFY_SSL=${SMTP_VERIFY_SSL:-true}
+      - HEALTH_CHECK_TOKEN=${HEALTH_CHECK_TOKEN:-}
+    depends_on:
+      db-generales:
+        condition: service_healthy
+    networks:
+      - denuncias-network
+
+  # =============================================
+  # Base de Datos MySQL - Portal Ciudadano
+  # =============================================
+  db-generales:
+    image: mysql:8.0
+    container_name: denuncias-generales-db
+    restart: unless-stopped
+    ports:
+      - "${DB_GENERALES_PORT:-3308}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-cambiar-root-pass}
+      MYSQL_DATABASE: ${DB_GENERALES_NAME:-denuncias_generales}
+      MYSQL_USER: ${DB_GENERALES_USER:-generales_user}
+      MYSQL_PASSWORD: ${DB_GENERALES_PASS:-cambiar-db-pass}
+      TZ: America/Santiago
+    volumes:
+      - denuncias-generales-db-data:/var/lib/mysql
+      - ./denuncias-generales/database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:z
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    networks:
+      - denuncias-network
+
+  # =============================================
+  # Landing Page - Selector de Portales
+  # =============================================
+  landing:
+    build:
+      context: ./landing
+      dockerfile: Dockerfile
+    container_name: denuncias-landing
+    restart: unless-stopped
+    ports:
+      - "${LANDING_PORT:-8090}:80"
+    environment:
+      - APP_URL_KARIN=${APP_URL:-http://localhost:8091}
+      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:8093}
+      - TZ=America/Santiago
+    networks:
+      - denuncias-network
+
+  # =============================================
   # phpMyAdmin (solo desarrollo)
   # =============================================
   phpmyadmin:
@@ -99,6 +197,7 @@ services:
 
 volumes:
   denuncias-db-data:
+  denuncias-generales-db-data:
 
 networks:
   denuncias-network:

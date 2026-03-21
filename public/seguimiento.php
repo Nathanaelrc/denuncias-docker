@@ -19,44 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET['codigo'])) {
 }
 ?>
 
-<!-- Navbar pública -->
-<nav class="navbar navbar-expand-lg navbar-epco fixed-top">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-            <img src="/img/Logo01.png" alt="EPCO" style="height: 32px; width: auto;">
-            <span class="fw-bold">Canal de Denuncias</span>
-        </a>
-        <div class="d-flex align-items-center gap-2 order-lg-last">
-            <?php if (isLoggedIn()): ?>
-                <a href="/panel" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-speedometer2"></i>
-                    <span class="d-none d-sm-inline">Dashboard</span>
-                </a>
-                <a href="/cerrar_sesion" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span class="d-none d-sm-inline">Cerrar Sesión</span>
-                </a>
-            <?php else: ?>
-                <a href="/acceso" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <span class="d-none d-sm-inline">Iniciar Sesión</span>
-                </a>
-            <?php endif; ?>
-            <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic">
-                <i class="bi bi-list text-white fs-4"></i>
-            </button>
-        </div>
-        <div class="collapse navbar-collapse" id="navPublic">
-            <ul class="navbar-nav ms-auto me-3">
-                <li class="nav-item"><a class="nav-link text-white" href="/"><i class="bi bi-house me-1"></i>Inicio</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/nueva_denuncia"><i class="bi bi-pencil-square me-1"></i>Realizar Denuncia</a></li>
-                <li class="nav-item"><a class="nav-link text-white active" href="/seguimiento"><i class="bi bi-search me-1"></i>Seguimiento</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<?php require_once __DIR__ . '/../includes/navbar_publica.php'; ?>
 
-<div style="padding-top: 80px;">
+<div style="padding-top: 70px;">
     <section class="gradient-bg py-5 min-vh-100">
         <div class="container">
             <div class="row justify-content-center">
@@ -153,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET['codigo'])) {
                                 ?>
                                 <div class="text-center flex-fill">
                                     <div class="rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center"
-                                         style="width: 40px; height: 40px; background: <?= $isDone ? '#059669' : '#e2e8f0' ?>; transition: all 0.3s;">
+                                         style="width: 40px; height: 40px; background: <?= $isDone ? '#1a6591' : '#e2e8f0' ?>; transition: all 0.3s;">
                                         <i class="bi <?= $isDone ? 'bi-check' : $config['icon'] ?>" style="color: <?= $isDone ? 'white' : '#64748b' ?>;"></i>
                                     </div>
                                     <small class="<?= $isCurrent ? 'fw-bold text-dark' : 'text-muted' ?>"><?= $config['label'] ?></small>

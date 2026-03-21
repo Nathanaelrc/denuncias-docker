@@ -29,6 +29,7 @@ $stats = $pdo->query("
 $stmtUnread = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
 $stmtUnread->execute([$user['id']]);
 $unreadNotifs = $stmtUnread->fetchColumn();
+
 ?>
 
 <!-- Topbar -->
@@ -122,7 +123,7 @@ $unreadNotifs = $stmtUnread->fetchColumn();
         left: -300px;
         width: 300px;
         height: calc(100vh - 60px);
-        background: linear-gradient(180deg, #0a2540 0%, #0c3d5f 100%);
+        background: linear-gradient(180deg, #1a6591 0%, #0c3d5f 100%);
         z-index: 1000;
         transition: left 0.35s cubic-bezier(.17,.67,.36,.99);
         overflow-y: auto;

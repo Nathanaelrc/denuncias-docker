@@ -66,44 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once __DIR__ . '/../includes/encabezado.php';
 ?>
 
-<!-- Navbar pública -->
-<nav class="navbar navbar-expand-lg navbar-epco fixed-top">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-            <img src="/img/Logo01.png" alt="EPCO" style="height: 32px; width: auto;">
-            <span class="fw-bold">Canal de Denuncias</span>
-        </a>
-        <div class="d-flex align-items-center gap-2 order-lg-last">
-            <?php if (isLoggedIn()): ?>
-                <a href="/panel" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-speedometer2"></i>
-                    <span class="d-none d-sm-inline">Dashboard</span>
-                </a>
-                <a href="/cerrar_sesion" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span class="d-none d-sm-inline">Cerrar Sesión</span>
-                </a>
-            <?php else: ?>
-                <a href="/acceso" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <span class="d-none d-sm-inline">Iniciar Sesión</span>
-                </a>
-            <?php endif; ?>
-            <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic">
-                <i class="bi bi-list text-white fs-4"></i>
-            </button>
-        </div>
-        <div class="collapse navbar-collapse" id="navPublic">
-            <ul class="navbar-nav ms-auto me-3">
-                <li class="nav-item"><a class="nav-link text-white" href="/"><i class="bi bi-house me-1"></i>Inicio</a></li>
-                <li class="nav-item"><a class="nav-link text-white active" href="/nueva_denuncia"><i class="bi bi-pencil-square me-1"></i>Realizar Denuncia</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/seguimiento"><i class="bi bi-search me-1"></i>Seguimiento</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<?php require_once __DIR__ . '/../includes/navbar_publica.php'; ?>
 
-<div style="padding-top: 80px;">
+<div style="padding-top: 70px;">
 
 <?php if ($success): ?>
     <!-- Denuncia exitosa -->
@@ -112,7 +77,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
             <div class="row justify-content-center">
                 <div class="col-lg-7">
                     <div class="card-epco p-5 text-center fade-in">
-                        <div class="rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 90px; height: 90px; background: linear-gradient(135deg, #059669, #10b981);">
+                        <div class="rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 90px; height: 90px; background: linear-gradient(135deg, #1a6591, #2d9ad0);">
                             <i class="bi bi-check-lg text-white" style="font-size: 3rem;"></i>
                         </div>
                         <h2 class="text-dark fw-bold">Denuncia Registrada</h2>

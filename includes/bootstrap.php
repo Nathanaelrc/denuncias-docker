@@ -19,6 +19,18 @@ if (!headers_sent()) {
     header('X-XSS-Protection: 1; mode=block');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+    // Content Security Policy: permite CDNs necesarios (Bootstrap, Icons, Chart.js, GSAP, Tailwind)
+    // 'unsafe-inline' requerido por estilos/scripts inline existentes en toda la app
+    header(
+        "Content-Security-Policy: " .
+        "default-src 'self'; " .
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com; " .
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdn.tailwindcss.com; " .
+        "font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; " .
+        "img-src 'self' data:; " .
+        "connect-src 'self'; " .
+        "frame-ancestors 'none';"
+    );
 
     if (session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION['logged_in'])) {
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');

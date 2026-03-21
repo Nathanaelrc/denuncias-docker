@@ -8,6 +8,17 @@ requireRole([ROLE_ADMIN, ROLE_INVESTIGADOR]);
 
 $user = getCurrentUser();
 
+// Paginación
+$perPage = 12;
+$page    = max(1, (int)($_GET['page'] ?? 1));
+$offset  = ($page - 1) * $perPage;
+
+$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints WHERE investigator_id = ?");
+$stmtTotal->execute([$user['id']]);
+$totalComplaints = (int)$stmtTotal->fetchColumn();
+$totalPages      = max(1, (int)ceil($totalComplaints / $perPage));
+$page            = min($page, $totalPages);
+
 $stmt = $pdo->prepare("
     SELECT c.*, u.name as investigator_name 
     FROM complaints c 
@@ -20,6 +31,7 @@ $stmt = $pdo->prepare("
             ELSE 3 
         END,
         c.created_at DESC
+    LIMIT $perPage OFFSET $offset
 ");
 $stmt->execute([$user['id']]);
 $myComplaints = $stmt->fetchAll();
@@ -31,10 +43,10 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 <div class="main-content">
     <div class="mb-4">
         <h4 class="fw-bold text-dark mb-1"><i class="bi bi-search me-2"></i>Mis Investigaciones</h4>
-        <p class="text-muted mb-0"><?= count($myComplaints) ?> caso(s) asignado(s)</p>
+        <p class="text-muted mb-0"><?= $totalComplaints ?> caso(s) asignado(s)</p>
     </div>
 
-    <?php if (empty($myComplaints)): ?>
+    <?php if ($totalComplaints === 0): ?>
     <div class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
             <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
@@ -71,6 +83,26 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
         </div>
         <?php endforeach; ?>
     </div>
+
+    <?php if ($totalPages > 1): ?>
+    <nav class="mt-4" aria-label="Paginación">
+        <ul class="pagination justify-content-center">
+            <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                <a class="page-link" href="?page=<?= $page - 1 ?>"><i class="bi bi-chevron-left"></i></a>
+            </li>
+            <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+            <li class="page-item <?= $p === $page ? 'active' : '' ?>">
+                <a class="page-link" href="?page=<?= $p ?>"><?= $p ?></a>
+            </li>
+            <?php endfor; ?>
+            <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+                <a class="page-link" href="?page=<?= $page + 1 ?>"><i class="bi bi-chevron-right"></i></a>
+            </li>
+        </ul>
+        <p class="text-center text-muted small">Página <?= $page ?> de <?= $totalPages ?></p>
+    </nav>
+    <?php endif; ?>
+
     <?php endif; ?>
 </div>
 

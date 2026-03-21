@@ -57,7 +57,7 @@ try {
     <style>
         * { font-family: 'Barlow', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
 
-        body { background: #0a2540; min-height: 100vh; overflow-x: hidden; }
+        body { background: #1a6591; min-height: 100vh; overflow-x: hidden; }
 
         /* ===== NAVBAR ===== */
         .access-nav {
@@ -91,7 +91,7 @@ try {
         /* LEFT PANEL */
         .access-left {
             flex: 1; padding: 50px 45px;
-            background: linear-gradient(160deg, #0a2540, #0f3d66 50%, #1a5276);
+            background: linear-gradient(160deg, #1a6591, #0f3d66 50%, #1a5276);
             display: flex; flex-direction: column; justify-content: center;
             position: relative; overflow: hidden;
         }
@@ -104,7 +104,7 @@ try {
         .badge-restricted {
             display: inline-flex; align-items: center; gap: 6px;
             background: rgba(5,150,105,0.15); border: 1px solid rgba(5,150,105,0.3);
-            color: #34d399; padding: 5px 12px; border-radius: 20px;
+            color: #4db8e0; padding: 5px 12px; border-radius: 20px;
             font-size: 0.78rem; font-weight: 600; margin-bottom: 22px;
         }
         .access-title { font-size: 2rem; font-weight: 800; color: white; line-height: 1.25; margin-bottom: 12px; }
@@ -152,7 +152,7 @@ try {
         .login-head { text-align: center; margin-bottom: 28px; }
         .login-logo { margin-bottom: 15px; }
         .login-logo img { height: 55px; width: auto; }
-        .login-head h4 { font-weight: 700; color: #0a2540; margin-bottom: 4px; font-size: 1.2rem; }
+        .login-head h4 { font-weight: 700; color: #1a6591; margin-bottom: 4px; font-size: 1.2rem; }
         .login-head p { color: #94a3b8; font-size: 0.88rem; }
 
         .form-label { font-weight: 600; color: #334155; font-size: 0.85rem; }
@@ -166,8 +166,8 @@ try {
         .login-input-group .form-control {
             border: 2px solid #e2e8f0; border-left: none; padding: 11px 14px; font-size: 0.93rem;
         }
-        .login-input-group .form-control:focus { border-color: #0a2540; box-shadow: none; }
-        .login-input-group:focus-within .input-group-text { border-color: #0a2540; }
+        .login-input-group .form-control:focus { border-color: #1a6591; box-shadow: none; }
+        .login-input-group:focus-within .input-group-text { border-color: #1a6591; }
         .btn-eye {
             background: #f1f5f9; border: 2px solid #e2e8f0; border-left: none;
             color: #64748b; cursor: pointer;
@@ -175,7 +175,7 @@ try {
         .btn-eye:hover { background: #e2e8f0; color: #334155; }
 
         .btn-access {
-            width: 100%; background: linear-gradient(135deg, #0a2540, #1e3a5f);
+            width: 100%; background: linear-gradient(135deg, #1a6591, #2380b0);
             color: white; border: none; padding: 13px; font-weight: 700;
             font-size: 0.98rem; border-radius: 10px; transition: all 0.3s; cursor: pointer;
         }
@@ -190,7 +190,7 @@ try {
         .sec-list { display: flex; flex-direction: column; gap: 8px; }
         .sec-item { display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.8rem; }
         .sec-item i {
-            width: 26px; height: 26px; background: #ecfdf5; color: #059669;
+            width: 26px; height: 26px; background: #e8f0f6; color: #1a6591;
             border-radius: 7px; display: flex; align-items: center; justify-content: center;
             font-size: 0.75rem; flex-shrink: 0;
         }
@@ -199,7 +199,7 @@ try {
             position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
             color: #94a3b8; text-decoration: none; font-size: 0.83rem; transition: color 0.3s;
         }
-        .back-link:hover { color: #0a2540; }
+        .back-link:hover { color: #1a6591; }
 
         .alert-box { border-radius: 10px; border: none; padding: 10px 14px; font-size: 0.87rem; display: flex; align-items: center; gap: 8px; }
 
@@ -255,7 +255,7 @@ try {
                     <p>KPIs en tiempo real, gráficos y estadísticas.</p>
                 </div>
                 <div class="feat-card">
-                    <div class="feat-icon" style="background: linear-gradient(135deg, #059669, #34d399);"><i class="bi bi-shield-check"></i></div>
+                    <div class="feat-icon" style="background: linear-gradient(135deg, #1a6591, #4db8e0);"><i class="bi bi-shield-check"></i></div>
                     <h6>Datos Protegidos</h6>
                     <p>Información confidencial y segura.</p>
                 </div>

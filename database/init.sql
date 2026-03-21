@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS users (
     locked_until TIMESTAMP NULL,
     department VARCHAR(100) DEFAULT NULL,
     position VARCHAR(100) DEFAULT NULL,
+    must_change_password TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_username (username),
@@ -270,22 +271,22 @@ CROSS JOIN notification_groups ng
 WHERE u.role = 'investigador' AND ng.slug IN ('denuncia_creada', 'asignacion', 'investigacion');
 
 -- Usuarios del portal de denuncias (Contraseña: password)
-INSERT INTO users (name, username, email, password, role, department, position) VALUES
+INSERT INTO users (name, username, email, password, role, department, position, must_change_password) VALUES
 ('Administrador Denuncias', 'admin.denuncias', 'admin.denuncias@epco.cl',
  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
- 'admin', 'Recursos Humanos', 'Administrador Canal de Denuncias'),
+ 'admin', 'Recursos Humanos', 'Administrador Canal de Denuncias', 1),
 
 ('Comité de Ética', 'comite.etica', 'etica@epco.cl',
  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
- 'admin', 'Recursos Humanos', 'Presidente Comité de Ética'),
+ 'admin', 'Recursos Humanos', 'Presidente Comité de Ética', 1),
 
 ('Investigador 1', 'investigador1', 'investigador1@epco.cl',
  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
- 'investigador', 'Recursos Humanos', 'Investigador Ley Karin'),
+ 'investigador', 'Recursos Humanos', 'Investigador Ley Karin', 1),
 
 ('Investigador 2', 'investigador2', 'investigador2@epco.cl',
  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
- 'investigador', 'Legal', 'Abogado Investigador');
+ 'investigador', 'Legal', 'Abogado Investigador', 1);
 
 -- =============================================
 -- VERIFICACIÓN FINAL

@@ -75,7 +75,7 @@ $uniqueUsers = $pdo->query("SELECT COUNT(DISTINCT user_id) FROM activity_logs WH
 // Mapeo de acciones a iconos y colores
 function getActionStyle($action) {
     $map = [
-        'login' => ['icon' => 'bi-box-arrow-in-right', 'color' => '#10b981', 'bg' => 'rgba(16,185,129,0.1)', 'label' => 'Inicio de sesión'],
+        'login' => ['icon' => 'bi-box-arrow-in-right', 'color' => '#2d9ad0', 'bg' => 'rgba(26,101,145,0.1)', 'label' => 'Inicio de sesión'],
         'logout' => ['icon' => 'bi-box-arrow-left', 'color' => '#6b7280', 'bg' => 'rgba(107,114,128,0.1)', 'label' => 'Cierre de sesión'],
         'login_fallido' => ['icon' => 'bi-shield-x', 'color' => '#ef4444', 'bg' => 'rgba(239,68,68,0.1)', 'label' => 'Login fallido'],
         'denuncia_creada' => ['icon' => 'bi-plus-circle', 'color' => '#3b82f6', 'bg' => 'rgba(59,130,246,0.1)', 'label' => 'Denuncia creada'],
@@ -187,10 +187,10 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     padding: 8px 14px;
 }
 .pagination-modern .page-item.active .page-link {
-    background: #0a2540; color: white;
+    background: #1a6591; color: white;
 }
 .pagination-modern .page-link:hover {
-    background: #f1f5f9; color: #0a2540;
+    background: #f1f5f9; color: #1a6591;
 }
 .empty-state {
     text-align: center; padding: 60px 20px;
@@ -252,7 +252,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
         <div class="col-6 col-lg-3">
             <div class="stat-card-activity">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="stat-icon" style="background: rgba(16,185,129,0.1); color: #10b981;">
+                    <div class="stat-icon" style="background: rgba(26,101,145,0.1); color: #2d9ad0;">
                         <i class="bi bi-box-arrow-in-right"></i>
                     </div>
                     <div>

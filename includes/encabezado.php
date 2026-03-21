@@ -33,9 +33,9 @@ if (!defined('DENUNCIAS_APP')) {
 
     <style>
         :root {
-            --primary-color: #0a2540;
+            --primary-color: #1a6591;
             --secondary-color: #ffffff;
-            --accent-color: #1e3a5f;
+            --accent-color: #2380b0;
             --accent-light: #2d4a6f;
         }
 

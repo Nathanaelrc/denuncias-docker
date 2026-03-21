@@ -7,42 +7,8 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 require_once __DIR__ . '/../includes/encabezado.php';
 ?>
 
-<!-- Navbar pública -->
-<nav class="navbar navbar-expand-lg navbar-epco fixed-top">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-            <img src="/img/Logo01.png" alt="EPCO" style="height: 32px; width: auto;">
-            <span class="fw-bold">Canal de Denuncias</span>
-        </a>
-        <div class="d-flex align-items-center gap-2 order-lg-last">
-            <?php if (isLoggedIn()): ?>
-                <a href="/panel" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-speedometer2"></i>
-                    <span class="d-none d-sm-inline">Dashboard</span>
-                </a>
-                <a href="/cerrar_sesion" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span class="d-none d-sm-inline">Cerrar Sesión</span>
-                </a>
-            <?php else: ?>
-                <a href="/acceso" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; padding: 6px 16px;">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    <span class="d-none d-sm-inline">Iniciar Sesión</span>
-                </a>
-            <?php endif; ?>
-            <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navPublic">
-                <i class="bi bi-list text-white fs-4"></i>
-            </button>
-        </div>
-        <div class="collapse navbar-collapse" id="navPublic">
-            <ul class="navbar-nav ms-auto me-3">
-                <li class="nav-item"><a class="nav-link text-white" href="/"><i class="bi bi-house me-1"></i>Inicio</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/nueva_denuncia"><i class="bi bi-pencil-square me-1"></i>Realizar Denuncia</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="/seguimiento"><i class="bi bi-search me-1"></i>Seguimiento</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<!-- Navbar unificada -->
+<?php require_once __DIR__ . '/../includes/navbar_publica.php'; ?>
 
 <div style="padding-top: 70px;">
 
@@ -75,14 +41,46 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     </div>
                 </div>
                 <div class="col-lg-5 text-center mt-4 mt-lg-0 slide-in-right">
-                    <div class="card-epco p-4" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
-                        <i class="bi bi-shield-check text-white" style="font-size: 4rem;"></i>
-                        <h5 class="text-white mt-3 fw-bold">100% Confidencial</h5>
-                        <p class="text-white-50 mb-3">Canal protegido por la <strong class="text-white">Ley N° 21.643 (Ley Karin)</strong></p>
-                        <div class="d-flex justify-content-center gap-2 flex-wrap">
-                            <span class="legal-badge"><i class="bi bi-journal-text"></i> Ley Karin</span>
-                            <span class="legal-badge"><i class="bi bi-incognito"></i> Denuncia Anónima</span>
-                            <span class="legal-badge"><i class="bi bi-shield-check"></i> Protección Legal</span>
+                    <div class="p-4 p-md-5" style="background:rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.15);border-radius:20px;">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:80px;height:80px;background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border-radius:50%;border:2px solid rgba(255,255,255,.2);">
+                            <i class="bi bi-shield-lock-fill" style="font-size:2.4rem;color:#93c5fd;"></i>
+                        </div>
+                        <h4 class="text-white fw-bold mb-1">100% Confidencial</h4>
+                        <p class="mb-4" style="color:rgba(255,255,255,.6);font-size:.92rem;">Canal protegido por la <strong class="text-white">Ley N° 21.643</strong></p>
+                        <div class="row g-2 text-start">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center gap-3 p-2 rounded-3" style="background:rgba(255,255,255,.06);">
+                                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px;background:rgba(147,197,253,.15);border-radius:10px;">
+                                        <i class="bi bi-incognito" style="color:#93c5fd;"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-semibold" style="font-size:.85rem;">Denuncia Anónima</div>
+                                        <div style="font-size:.72rem;color:rgba(255,255,255,.45);">No es obligatorio identificarse</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex align-items-center gap-3 p-2 rounded-3" style="background:rgba(255,255,255,.06);">
+                                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px;background:rgba(147,197,253,.15);border-radius:10px;">
+                                        <i class="bi bi-shield-check" style="color:#93c5fd;"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-semibold" style="font-size:.85rem;">Protección Legal</div>
+                                        <div style="font-size:.72rem;color:rgba(255,255,255,.45);">Prohibidas las represalias</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex align-items-center gap-3 p-2 rounded-3" style="background:rgba(255,255,255,.06);">
+                                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px;background:rgba(147,197,253,.15);border-radius:10px;">
+                                        <i class="bi bi-lock-fill" style="color:#93c5fd;"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-white fw-semibold" style="font-size:.85rem;">Datos Encriptados</div>
+                                        <div style="font-size:.72rem;color:rgba(255,255,255,.45);">Cifrado AES-256</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -215,11 +213,6 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     </div>
                 </div>
                 <?php endforeach; ?>
-            </div>
-            <div class="text-center mt-5 fade-in">
-                <a href="/nueva_denuncia" class="btn btn-light btn-lg px-5 fw-semibold">
-                    <i class="bi bi-pencil-square me-2"></i>Realizar Denuncia Ahora
-                </a>
             </div>
         </div>
     </section>

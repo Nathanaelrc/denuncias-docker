@@ -187,7 +187,7 @@ function getGroupStyle($slug) {
         'denuncia_creada' => ['icon' => 'bi-plus-circle-fill', 'color' => '#3b82f6', 'bg' => 'rgba(59,130,246,0.1)'],
         'asignacion' => ['icon' => 'bi-person-check-fill', 'color' => '#0ea5e9', 'bg' => 'rgba(14,165,233,0.1)'],
         'investigacion' => ['icon' => 'bi-search', 'color' => '#f59e0b', 'bg' => 'rgba(245,158,11,0.1)'],
-        'resuelta' => ['icon' => 'bi-check-circle-fill', 'color' => '#10b981', 'bg' => 'rgba(16,185,129,0.1)'],
+        'resuelta' => ['icon' => 'bi-check-circle-fill', 'color' => '#2d9ad0', 'bg' => 'rgba(26,101,145,0.1)'],
         'cerrada' => ['icon' => 'bi-archive-fill', 'color' => '#6b7280', 'bg' => 'rgba(107,114,128,0.1)'],
     ];
     return $map[$slug] ?? ['icon' => 'bi-bell', 'color' => '#6b7280', 'bg' => 'rgba(107,114,128,0.1)'];
@@ -216,10 +216,10 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     transition: all 0.2s;
 }
 .notif-tabs .nav-link.active {
-    background: #0a2540; color: white;
+    background: #1a6591; color: white;
 }
 .notif-tabs .nav-link:hover:not(.active) {
-    background: #f1f5f9; color: #0a2540;
+    background: #f1f5f9; color: #1a6591;
 }
 .notif-item {
     display: flex; gap: 14px; padding: 16px 20px;
@@ -393,7 +393,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
         <div class="col-md-6 col-xl-4" style="animation-delay: <?= $idx * 0.05 ?>s">
             <div class="user-card" data-user-id="<?= $pu['id'] ?>">
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width:44px; height:44px; border-radius:12px; background: linear-gradient(135deg, #0a2540, #1e3a5f); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.1rem;">
+                    <div style="width:44px; height:44px; border-radius:12px; background: linear-gradient(135deg, #1a6591, #2380b0); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:1.1rem;">
                         <?= strtoupper(mb_substr($pu['name'], 0, 1)) ?>
                     </div>
                     <div style="min-width:0; flex:1;">

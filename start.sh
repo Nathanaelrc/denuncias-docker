@@ -1,6 +1,7 @@
 #!/bin/bash
 # =============================================
-# Portal de Denuncias EPCO - Script de Inicio
+# Plataforma de Denuncias EPCO - Script de Inicio
+# Portales: Landing / Ley Karin / Portal Ciudadano
 # Detecta puertos disponibles automáticamente
 # Uso: bash start.sh
 # =============================================
@@ -19,7 +20,7 @@ ENV_FILE="${SCRIPT_DIR}/.env"
 
 echo ""
 echo -e "${BOLD}=========================================="
-echo -e "  Portal de Denuncias EPCO - Inicio v1.0"
+echo -e "  Plataforma de Denuncias EPCO - v2.0"
 echo -e "==========================================${NC}"
 echo ""
 
@@ -74,35 +75,57 @@ USED_PORTS=$(get_all_used_ports)
 APP_PORT=$(find_free_port 8091 "$USED_PORTS")
 DB_PORT=$(find_free_port 3307 "$USED_PORTS")
 PMA_PORT=$(find_free_port 8092 "$USED_PORTS")
+APP_GENERALES_PORT=$(find_free_port 8093 "$USED_PORTS")
+DB_GENERALES_PORT=$(find_free_port 3308 "$USED_PORTS")
+LANDING_PORT=$(find_free_port 8090 "$USED_PORTS")
 
 echo ""
 echo -e "${GREEN}Puertos asignados:${NC}"
-echo -e "  App:        ${BOLD}${APP_PORT}${NC}"
-echo -e "  MySQL:      ${BOLD}${DB_PORT}${NC}"
-echo -e "  phpMyAdmin:  ${BOLD}${PMA_PORT}${NC}"
+echo -e "  Landing:              ${BOLD}${LANDING_PORT}${NC}"
+echo -e "  App Ley Karin:        ${BOLD}${APP_PORT}${NC}"
+echo -e "  App Portal Ciudadano: ${BOLD}${APP_GENERALES_PORT}${NC}"
+echo -e "  MySQL Ley Karin:      ${BOLD}${DB_PORT}${NC}"
+echo -e "  MySQL Ciudadano:      ${BOLD}${DB_GENERALES_PORT}${NC}"
+echo -e "  phpMyAdmin:           ${BOLD}${PMA_PORT}${NC}"
 
 # =============================================
 # Generar .env
 # =============================================
 if [ ! -f "$ENV_FILE" ]; then
     ENCRYPTION_KEY=$(openssl rand -base64 32 2>/dev/null || cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+    GENERALES_ENCRYPTION_KEY=$(openssl rand -base64 32 2>/dev/null || cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
     cat > "$ENV_FILE" <<EOF
 # Generado automáticamente - $(date)
+# ─── Puertos ───────────────────────────────────
+LANDING_PORT=${LANDING_PORT}
 APP_PORT=${APP_PORT}
 DB_PORT=${DB_PORT}
 PMA_PORT=${PMA_PORT}
+APP_GENERALES_PORT=${APP_GENERALES_PORT}
+DB_GENERALES_PORT=${DB_GENERALES_PORT}
 
+# ─── URLs públicas ─────────────────────────────
 APP_ENV=production
 APP_URL=http://localhost:${APP_PORT}
+APP_URL_GENERAL=http://localhost:${APP_GENERALES_PORT}
 
+# ─── Base de datos Ley Karin ───────────────────
 DB_NAME=denuncias
 DB_USER=denuncias_user
 DB_PASS='CAMBIAR-ESTA-CONTRASEÑA'
 DB_ROOT_PASSWORD='CAMBIAR-ESTA-CONTRASEÑA'
 
-ENCRYPTION_KEY=${ENCRYPTION_KEY}
+# ─── Base de datos Portal Ciudadano ───────────
+DB_GENERALES_NAME=denuncias_generales
+DB_GENERALES_USER=generales_user
+DB_GENERALES_PASS='CAMBIAR-ESTA-CONTRASEÑA'
 
+# ─── Claves de cifrado (AES-256) ───────────────
+ENCRYPTION_KEY=${ENCRYPTION_KEY}
+GENERALES_ENCRYPTION_KEY=${GENERALES_ENCRYPTION_KEY}
+
+# ─── SMTP (compartido entre portales) ─────────
 SMTP_ENABLED=false
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
@@ -138,18 +161,23 @@ docker compose --profile dev up -d
 
 echo ""
 echo -e "${BOLD}=========================================="
-echo -e "${GREEN}  ✓ Portal de Denuncias EPCO Iniciado"
+echo -e "${GREEN}  ✓ Plataforma de Denuncias EPCO Lista"
 echo -e "${NC}${BOLD}=========================================="
 echo ""
-echo -e "  🌐 Portal:     ${CYAN}http://localhost:${APP_PORT}${NC}"
-echo -e "  🔒 Admin:      ${CYAN}http://localhost:${APP_PORT}/iniciar_sesion${NC}"
-echo -e "  🗄️  phpMyAdmin:  ${CYAN}http://localhost:${PMA_PORT}${NC} (dev)"
+echo -e "  🌐 Selector:       ${CYAN}http://localhost:${LANDING_PORT}${NC}"
+echo -e "  🏢 Ley Karin:      ${CYAN}http://localhost:${APP_PORT}${NC}"
+echo -e "  👥 Portal Ciudadano: ${CYAN}http://localhost:${APP_GENERALES_PORT}${NC}"
+echo -e "  🗄️  phpMyAdmin:      ${CYAN}http://localhost:${PMA_PORT}${NC} (dev)"
 echo ""
-echo -e "  ${YELLOW}Usuarios iniciales:${NC}"
+echo -e "  ${YELLOW}Usuarios iniciales — Ley Karin:${NC}"
 echo -e "    admin.denuncias / password"
 echo -e "    comite.etica / password"
 echo -e "    investigador1 / password"
 echo ""
-echo -e "  ${RED}⚠ Cambiar contraseñas en producción${NC}"
-echo -e "==========================================${NC}"
+echo -e "  ${YELLOW}Usuarios iniciales — Portal Ciudadano:${NC}"
+echo -e "    admin.ciudadano / password"
+echo -e "    delegado1 / password"
+echo ""
+echo -e "  ${RED}⚠ Cambiar contraseñas en el primer inicio de sesión${NC}"
+echo -e "=========================================="
 echo ""

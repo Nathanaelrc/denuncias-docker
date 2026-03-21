@@ -77,9 +77,9 @@ define('APP_COMPANY', 'Empresa Portuaria Coquimbo');
 // =============================================
 // COLORES DEL TEMA (mismo que soporte TI)
 // =============================================
-define('PRIMARY_COLOR', '#0a2540');
+define('PRIMARY_COLOR', '#1a6591');
 define('SECONDARY_COLOR', '#ffffff');
-define('ACCENT_COLOR', '#1e3a5f');
+define('ACCENT_COLOR', '#2380b0');
 define('DANGER_COLOR', '#dc2626');
 define('SUCCESS_COLOR', '#16a34a');
 define('WARNING_COLOR', '#f59e0b');
@@ -114,7 +114,7 @@ define('COMPLAINT_TYPES', [
 // =============================================
 // CONFIGURACIÓN DE ARCHIVOS
 // =============================================
-define('MAX_UPLOAD_SIZE', 10 * 1024 * 1024); // 10 MB
+define('MAX_UPLOAD_SIZE', 20 * 1024 * 1024); // 20 MB (alineado con upload_max_filesize en php.ini)
 define('ALLOWED_FILE_TYPES', [
     'image/jpeg', 'image/png', 'image/gif', 'image/webp',
     'application/pdf',

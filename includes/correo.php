@@ -70,11 +70,14 @@ class SmtpMailer {
     }
 
     private function connect(): void {
+        // Verificación SSL habilitada por defecto. Para entornos de desarrollo
+        // con certificados autofirmados, establece SMTP_VERIFY_SSL=false en el .env
+        $verifyPeer = filter_var(getenv('SMTP_VERIFY_SSL') ?: 'true', FILTER_VALIDATE_BOOLEAN);
         $context = stream_context_create([
             'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
+                'verify_peer'       => $verifyPeer,
+                'verify_peer_name'  => $verifyPeer,
+                'allow_self_signed' => !$verifyPeer
             ]
         ]);
 
@@ -217,7 +220,7 @@ function emailTemplate(string $title, string $content): string {
                 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%;">
                     <!-- Header -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #0a2540, #1e3a5f); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+                        <td style="background: linear-gradient(135deg, #1a6591, #2380b0); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700;">Canal de Denuncias</h1>
                             <p style="color: rgba(255,255,255,0.7); margin: 5px 0 0; font-size: 13px;">Empresa Portuaria Coquimbo · Ley Karin N° 21.643</p>
                         </td>
@@ -225,7 +228,7 @@ function emailTemplate(string $title, string $content): string {
                     <!-- Title -->
                     <tr>
                         <td style="background: #ffffff; padding: 25px 30px 10px; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;">
-                            <h2 style="color: #0a2540; margin: 0; font-size: 18px; font-weight: 700;">' . htmlspecialchars($title) . '</h2>
+                            <h2 style="color: #1a6591; margin: 0; font-size: 18px; font-weight: 700;">' . htmlspecialchars($title) . '</h2>
                         </td>
                     </tr>
                     <!-- Content -->
@@ -236,7 +239,7 @@ function emailTemplate(string $title, string $content): string {
                     </tr>
                     <!-- Footer -->
                     <tr>
-                        <td style="background: #0a2540; padding: 20px 30px; border-radius: 0 0 12px 12px; text-align: center;">
+                        <td style="background: #1a6591; padding: 20px 30px; border-radius: 0 0 12px 12px; text-align: center;">
                             <p style="color: rgba(255,255,255,0.6); margin: 0; font-size: 12px;">
                                 Este es un correo automático del Canal de Denuncias.<br>
                                 En cumplimiento de la Ley N° 21.643 (Ley Karin) · Información confidencial.
@@ -274,19 +277,19 @@ function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 15px 0;">
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px; width: 40%;">N° de Denuncia:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-weight: 700; font-size: 14px;">' . htmlspecialchars($complaintNumber) . '</td>
+                <td style="padding: 8px 15px; color: #1a6591; font-weight: 700; font-size: 14px;">' . htmlspecialchars($complaintNumber) . '</td>
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Tipo:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-weight: 600; font-size: 14px;">' . htmlspecialchars($typeLabel) . '</td>
+                <td style="padding: 8px 15px; color: #1a6591; font-weight: 600; font-size: 14px;">' . htmlspecialchars($typeLabel) . '</td>
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Modalidad:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-size: 14px;">' . ($isAnonymous ? 'Anónima' : 'Identificada') . '</td>
+                <td style="padding: 8px 15px; color: #1a6591; font-size: 14px;">' . ($isAnonymous ? 'Anónima' : 'Identificada') . '</td>
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Fecha de registro:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-size: 14px;">' . $fecha . '</td>
+                <td style="padding: 8px 15px; color: #1a6591; font-size: 14px;">' . $fecha . '</td>
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Estado:</td>
@@ -299,7 +302,7 @@ function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType
             Ingrese al <strong>Dashboard</strong> para revisar los detalles y asignar la investigación correspondiente.
         </p>
         <div style="text-align: center; margin: 25px 0 10px;">
-            <a href="' . (getenv('APP_URL') ?: 'http://localhost:8091') . '/acceso" style="display: inline-block; background: linear-gradient(135deg, #0a2540, #1e3a5f); color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+            <a href="' . (getenv('APP_URL') ?: 'http://localhost:8091') . '/acceso" style="display: inline-block; background: linear-gradient(135deg, #1a6591, #2380b0); color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; font-size: 14px;">
                 Ir al Dashboard
             </a>
         </div>';
@@ -342,11 +345,11 @@ function notifyComplainant(string $email, string $complaintNumber, string $compl
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Tipo de denuncia:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-weight: 600; font-size: 14px;">' . htmlspecialchars($typeLabel) . '</td>
+                <td style="padding: 8px 15px; color: #1a6591; font-weight: 600; font-size: 14px;">' . htmlspecialchars($typeLabel) . '</td>
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Fecha:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-size: 14px;">' . date('d/m/Y H:i') . '</td>
+                <td style="padding: 8px 15px; color: #1a6591; font-size: 14px;">' . date('d/m/Y H:i') . '</td>
             </tr>
         </table>
         
@@ -360,7 +363,7 @@ function notifyComplainant(string $email, string $complaintNumber, string $compl
             Puede consultar el estado de su denuncia en cualquier momento usando su código de seguimiento:
         </p>
         <div style="text-align: center; margin: 25px 0 10px;">
-            <a href="' . (getenv('APP_URL') ?: 'http://localhost:8091') . '/seguimiento?codigo=' . urlencode($complaintNumber) . '" style="display: inline-block; background: linear-gradient(135deg, #0a2540, #1e3a5f); color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+            <a href="' . (getenv('APP_URL') ?: 'http://localhost:8091') . '/seguimiento?codigo=' . urlencode($complaintNumber) . '" style="display: inline-block; background: linear-gradient(135deg, #1a6591, #2380b0); color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; font-size: 14px;">
                 Consultar Estado
             </a>
         </div>
@@ -433,11 +436,11 @@ function notifyStatusChange(int $complaintId, string $newStatus): void {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 15px 0;">
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px; width: 45%;">N° de Denuncia:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-weight: 700; font-size: 14px;">' . htmlspecialchars($complaint['complaint_number']) . '</td>
+                <td style="padding: 8px 15px; color: #1a6591; font-weight: 700; font-size: 14px;">' . htmlspecialchars($complaint['complaint_number']) . '</td>
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Tipo:</td>
-                <td style="padding: 8px 15px; color: #0a2540; font-size: 14px;">' . htmlspecialchars($typeLabel) . '</td>
+                <td style="padding: 8px 15px; color: #1a6591; font-size: 14px;">' . htmlspecialchars($typeLabel) . '</td>
             </tr>
             <tr>
                 <td style="padding: 8px 15px; color: #6b7280; font-size: 13px;">Nuevo estado:</td>
@@ -450,7 +453,7 @@ function notifyStatusChange(int $complaintId, string $newStatus): void {
             Puede consultar más detalles de su denuncia utilizando su código de seguimiento.
         </p>
         <div style="text-align: center; margin: 25px 0 10px;">
-            <a href="' . (getenv('APP_URL') ?: 'http://localhost:8091') . '/seguimiento?codigo=' . urlencode($complaint['complaint_number']) . '" style="display: inline-block; background: linear-gradient(135deg, #0a2540, #1e3a5f); color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+            <a href="' . (getenv('APP_URL') ?: 'http://localhost:8091') . '/seguimiento?codigo=' . urlencode($complaint['complaint_number']) . '" style="display: inline-block; background: linear-gradient(135deg, #1a6591, #2380b0); color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; font-size: 14px;">
                 Ver Estado de Denuncia
             </a>
         </div>';

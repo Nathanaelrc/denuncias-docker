@@ -1,0 +1,20 @@
+Options -Indexes -ExecCGI
+
+# Bloquear ejecución de PHP en esta carpeta
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>
+
+# Forzar MIME seguro para imágenes y PDF
+<FilesMatch "\.(jpg|jpeg)$">
+    ForceType image/jpeg
+</FilesMatch>
+<FilesMatch "\.png$">
+    ForceType image/png
+</FilesMatch>
+<FilesMatch "\.pdf$">
+    ForceType application/pdf
+</FilesMatch>
+<FilesMatch "\.gif$">
+    ForceType image/gif
+</FilesMatch>

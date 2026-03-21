@@ -152,7 +152,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     display: flex; align-items: center; justify-content: center;
     font-size: 1.3rem; color: white; flex-shrink: 0;
 }
-.stats-value { font-size: 1.6rem; font-weight: 800; color: #0a2540; line-height: 1; }
+.stats-value { font-size: 1.6rem; font-weight: 800; color: #1a6591; line-height: 1; }
 .stats-label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
 
 .u-card {
@@ -200,14 +200,14 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     border: 2px solid #e5e7eb; border-radius: 14px; padding: 10px 16px;
     font-size: 0.9rem; transition: all 0.3s; background: white;
 }
-.search-box:focus { border-color: #0a2540; box-shadow: 0 0 0 3px rgba(10,37,64,0.1); outline: none; }
+.search-box:focus { border-color: #1a6591; box-shadow: 0 0 0 3px rgba(10,37,64,0.1); outline: none; }
 .filter-chip {
     display: inline-flex; align-items: center; gap: 5px;
     padding: 6px 14px; border-radius: 10px; font-size: 0.82rem;
     font-weight: 600; cursor: pointer; transition: all 0.2s;
     border: 2px solid #e5e7eb; background: white; color: #64748b;
 }
-.filter-chip.active { border-color: #0a2540; background: #0a2540; color: white; }
+.filter-chip.active { border-color: #1a6591; background: #1a6591; color: white; }
 .filter-chip:hover:not(.active) { border-color: #94a3b8; }
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(12px); }
@@ -249,7 +249,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     <div class="row g-3 mb-4">
         <div class="col-6 col-lg-3">
             <div class="user-stats-card">
-                <div class="stats-icon" style="background: linear-gradient(135deg, #0a2540, #1e3a5f);">
+                <div class="stats-icon" style="background: linear-gradient(135deg, #1a6591, #2380b0);">
                     <i class="bi bi-people-fill"></i>
                 </div>
                 <div>
@@ -331,7 +331,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <div class="status-dot" style="background: <?= $u['is_active'] ? '#22c55e' : '#ef4444' ?>;"></div>
                     </div>
                     <div style="min-width: 0; flex: 1;">
-                        <div class="fw-bold text-truncate" style="font-size: 1rem; color: #0a2540;">
+                        <div class="fw-bold text-truncate" style="font-size: 1rem; color: #1a6591;">
                             <?= htmlspecialchars($u['name']) ?>
                         </div>
                         <div class="d-flex align-items-center gap-2 mt-1">

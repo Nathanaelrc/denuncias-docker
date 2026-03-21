@@ -14,6 +14,16 @@ if (!isset($pdo)) {
 function login($identifier, $password) {
     global $pdo;
 
+    // Bloqueo por IP: máx. 10 intentos fallidos en 15 minutos
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $stmtIp = $pdo->prepare(
+        "SELECT COUNT(*) FROM activity_logs WHERE action = 'login_fallido' AND ip_address = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 15 MINUTE)"
+    );
+    $stmtIp->execute([$ip]);
+    if ((int)$stmtIp->fetchColumn() >= 10) {
+        return false;
+    }
+
     $stmt = $pdo->prepare('SELECT * FROM users WHERE (email = ? OR username = ?) AND is_active = 1');
     $stmt->execute([$identifier, $identifier]);
     $user = $stmt->fetch();
@@ -36,6 +46,7 @@ function login($identifier, $password) {
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['logged_in'] = true;
+        $_SESSION['must_change_password'] = (bool)($user['must_change_password'] ?? false);
 
         return true;
     }
@@ -73,6 +84,12 @@ function hasRole($roles) {
 function requireAuth($redirect = '/iniciar_sesion') {
     if (!isLoggedIn()) {
         header("Location: $redirect");
+        exit;
+    }
+    // Forzar cambio de contraseña si es requerido (excepto en la propia página y cerrar sesión)
+    $currentPage = basename($_SERVER['PHP_SELF'], '.php');
+    if (!empty($_SESSION['must_change_password']) && !in_array($currentPage, ['cambiar_contrasena', 'cerrar_sesion'], true)) {
+        header('Location: /cambiar_contrasena');
         exit;
     }
 }
