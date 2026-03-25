@@ -55,6 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result['success']) {
             $success = true;
             $complaintNumber = $result['complaint_number'];
+            // Guardar archivos adjuntos si los hay
+            if (!empty($_FILES['attachments']['tmp_name'][0])) {
+                saveComplaintAttachments($result['id'], $_FILES['attachments']);
+            }
             logActivity(null, 'denuncia_creada', 'complaint', $result['id'], "Tipo: $complaintType | Anónima: " . ($isAnonymous ? 'Sí' : 'No'));
             sendNotification('denuncia_creada', 'Nueva denuncia: ' . $complaintNumber, 'Tipo: ' . (COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType), 'complaint', $result['id']);
         } else {
@@ -193,7 +197,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     <?php endif; ?>
 
                     <div class="card-epco p-4 p-md-5 fade-in">
-                        <form method="POST" action="/nueva_denuncia" id="formDenuncia">
+                        <form method="POST" action="/nueva_denuncia" id="formDenuncia" enctype="multipart/form-data">
                             <?= csrfInput() ?>
 
                             <!-- Tipo de denuncia -->
@@ -281,6 +285,22 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                 <textarea name="evidence_description" class="form-control" rows="3" placeholder="Describe la evidencia disponible: correos, mensajes, cámaras, documentos..."><?= htmlspecialchars($_POST['evidence_description'] ?? '') ?></textarea>
                             </div>
 
+                            <!-- Archivos adjuntos -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-dark"><i class="bi bi-paperclip me-1"></i>Archivos adjuntos <span class="fw-normal text-muted">(opcional)</span></label>
+                                <div id="dropZone" onclick="document.getElementById('fileInput').click()" style="
+                                    border: 2px dashed #cbd5e1; border-radius: 12px;
+                                    padding: 28px 20px; text-align: center; cursor: pointer;
+                                    background: #f8fafc; transition: all 0.2s;
+                                " ondragover="event.preventDefault();this.style.cssText='border:2px dashed #2380b0;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;background:#eff6ff;transition:all 0.2s;'" ondragleave="this.style.cssText='border:2px dashed #cbd5e1;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;background:#f8fafc;transition:all 0.2s;'" ondrop="handleDrop(event)">
+                                    <i class="bi bi-cloud-arrow-up" style="font-size:2.2rem; color:#94a3b8;"></i>
+                                    <p class="mb-1 mt-2" style="color:#475569; font-size:0.92rem;">Arrastra archivos aquí o <strong style="color:#1a6591;">haz clic para seleccionar</strong></p>
+                                    <p class="mb-0" style="color:#94a3b8; font-size:0.78rem;">Imágenes, PDF, Word, Excel, video &middot; Máx. 20 MB &middot; Hasta 10 archivos</p>
+                                </div>
+                                <input type="file" id="fileInput" name="attachments[]" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.mp4,.mov" style="display:none" onchange="updateFileList(this.files)">
+                                <ul id="fileList" class="list-unstyled mt-2 mb-0"></ul>
+                            </div>
+
                             <hr class="my-4">
 
                             <!-- Anonimato -->
@@ -353,6 +373,57 @@ function toggleReporterFields() {
     fields.style.display = chk.checked ? 'none' : 'block';
 }
 toggleReporterFields();
+
+let selectedFiles = new DataTransfer();
+
+function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+
+function getFileIcon(type) {
+    if (type.startsWith('image/')) return 'bi-file-image text-success';
+    if (type === 'application/pdf') return 'bi-file-pdf text-danger';
+    if (type.includes('word')) return 'bi-file-word text-primary';
+    if (type.includes('excel') || type.includes('spreadsheet')) return 'bi-file-excel text-success';
+    if (type.startsWith('video/')) return 'bi-file-play text-warning';
+    return 'bi-file-text';
+}
+
+function renderFileList() {
+    const list = document.getElementById('fileList');
+    list.innerHTML = '';
+    if (selectedFiles.files.length === 0) return;
+    Array.from(selectedFiles.files).forEach((f, i) => {
+        const li = document.createElement('li');
+        li.className = 'd-flex align-items-center gap-2 py-2 px-3 rounded mt-2';
+        li.style.cssText = 'background:#f1f5f9; border:1px solid #e2e8f0; font-size:0.85rem;';
+        li.innerHTML = `<i class="bi ${getFileIcon(f.type)} fs-5"></i><span class="flex-grow-1" style="color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</span><span style="color:#64748b;white-space:nowrap;">${formatSize(f.size)}</span><button type="button" class="btn btn-sm p-0 ms-1" style="color:#ef4444;background:none;border:none;" onclick="removeFile(${i})"><i class="bi bi-x-lg"></i></button>`;
+        list.appendChild(li);
+    });
+    document.getElementById('fileInput').files = selectedFiles.files;
+}
+
+function updateFileList(newFiles) {
+    Array.from(newFiles).forEach(f => {
+        if (selectedFiles.files.length < 10) selectedFiles.items.add(f);
+    });
+    renderFileList();
+}
+
+function removeFile(index) {
+    const dt = new DataTransfer();
+    Array.from(selectedFiles.files).forEach((f, i) => { if (i !== index) dt.items.add(f); });
+    selectedFiles = dt;
+    renderFileList();
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropZone').style.cssText = 'border:2px dashed #cbd5e1;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;background:#f8fafc;transition:all 0.2s;';
+    updateFileList(e.dataTransfer.files);
+}
 </script>
 
 <?php require_once __DIR__ . '/../includes/pie_pagina.php'; ?>

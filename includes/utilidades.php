@@ -229,6 +229,67 @@ function createComplaint(array $data): array {
 }
 
 /**
+ * Guardar archivos adjuntos de una denuncia
+ */
+function saveComplaintAttachments(int $complaintId, array $files): int {
+    global $pdo;
+    $saved = 0;
+    if (empty($files['tmp_name'])) return 0;
+
+    $allowedMime = [
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain',
+        'video/mp4', 'video/quicktime',
+    ];
+    $maxSize   = 20 * 1024 * 1024; // 20 MB
+    $uploadDir = __DIR__ . '/../public/uploads/evidencia/';
+    $enc       = getEncryptionService();
+
+    $tmpNames = (array)$files['tmp_name'];
+    $names    = (array)$files['name'];
+    $errors   = (array)$files['error'];
+    $sizes    = (array)$files['size'];
+
+    for ($i = 0; $i < count($tmpNames); $i++) {
+        if ($errors[$i] !== UPLOAD_ERR_OK) continue;
+        if ($sizes[$i] > $maxSize)          continue;
+
+        $finfo    = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $tmpNames[$i]);
+        finfo_close($finfo);
+        if (!in_array($mimeType, $allowedMime, true)) continue;
+
+        $ext        = strtolower(pathinfo($names[$i], PATHINFO_EXTENSION));
+        $safeExt    = preg_replace('/[^a-z0-9]/', '', $ext);
+        $storedName = bin2hex(random_bytes(16)) . ($safeExt ? '.' . $safeExt : '');
+        $destPath   = $uploadDir . $storedName;
+
+        if (!move_uploaded_file($tmpNames[$i], $destPath)) continue;
+
+        $encName = $enc->encryptForDb($names[$i]);
+        $pdo->prepare(
+            'INSERT INTO complaint_attachments (complaint_id, filename, original_name_encrypted, original_name_nonce, file_path, file_type, file_size)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
+        )->execute([
+            $complaintId,
+            $storedName,
+            $encName['encrypted'],
+            $encName['nonce'],
+            'uploads/evidencia/' . $storedName,
+            $mimeType,
+            $sizes[$i],
+        ]);
+        $saved++;
+    }
+    return $saved;
+}
+
+/**
  * Obtener denuncia desencriptada (solo admin/investigador)
  */
 function getComplaintDecrypted(int $id): ?array {
