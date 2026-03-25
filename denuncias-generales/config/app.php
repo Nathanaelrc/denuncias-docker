@@ -54,8 +54,8 @@ define('UPLOADS_URL', '/uploads/');
 // =============================================
 // IDENTIDAD DEL PORTAL
 // =============================================
-define('APP_NAME',      'Denuncias Ciudadanas');
-define('APP_FULL_NAME', 'Portal Ciudadano de Denuncias - EPCO');
+define('APP_NAME',      'Canal de Denuncias');
+define('APP_FULL_NAME', 'Canal de Denuncias - EPCO');
 define('APP_VERSION',   '1.0.0');
 define('APP_COMPANY',   'Empresa Portuaria Coquimbo');
 
@@ -88,20 +88,18 @@ define('COMPLAINT_STATUSES', [
 ]);
 
 // =============================================
-// TIPOS DE DENUNCIA (legislación chilena general)
+// TIPOS DE DENUNCIA (ámbito portuario EPCO)
 // =============================================
 define('COMPLAINT_TYPES', [
-    'consumidor'        => ['label' => 'Protección al Consumidor',  'icon' => 'bi-bag-x',            'ley' => 'Ley N° 19.496'],
-    'servicios_basicos' => ['label' => 'Servicios Básicos',         'icon' => 'bi-lightning-charge', 'ley' => 'DFL N° 382 / Ley 18.168'],
-    'salud'             => ['label' => 'Servicios de Salud',        'icon' => 'bi-heart-pulse',      'ley' => 'Ley N° 19.966'],
-    'transporte'        => ['label' => 'Transporte y Movilidad',    'icon' => 'bi-truck',            'ley' => 'Ley N° 18.290'],
-    'municipal'         => ['label' => 'Servicios Municipales',     'icon' => 'bi-buildings',        'ley' => 'Ley N° 18.695'],
-    'sector_publico'    => ['label' => 'Sector Público / Estado',   'icon' => 'bi-bank',             'ley' => 'Ley N° 19.880'],
-    'medioambiente'     => ['label' => 'Medio Ambiente',            'icon' => 'bi-tree',             'ley' => 'Ley N° 19.300'],
-    'financiero'        => ['label' => 'Servicios Financieros',     'icon' => 'bi-credit-card',      'ley' => 'DFL N° 3 / CMF'],
-    'educacion'         => ['label' => 'Educación',                 'icon' => 'bi-mortarboard',      'ley' => 'Ley N° 20.529'],
-    'inmobiliario'      => ['label' => 'Vivienda y Construcción',   'icon' => 'bi-house',            'ley' => 'Ley N° 20.703'],
-    'otro'              => ['label' => 'Otro',                      'icon' => 'bi-question-circle',  'ley' => 'General'],
+    'operaciones'       => ['label' => 'Operaciones Portuarias',        'icon' => 'bi-box-seam',            'ley' => 'Ley N° 18.696 / DFL N° 340'],
+    'medioambiente'     => ['label' => 'Medio Ambiente y Contaminación','icon' => 'bi-water',               'ley' => 'Ley N° 19.300'],
+    'seguridad'         => ['label' => 'Seguridad en Recintos',         'icon' => 'bi-shield-exclamation',  'ley' => 'DS N° 90 / Normativa ISPS'],
+    'contratos'         => ['label' => 'Contratos y Licitaciones',      'icon' => 'bi-file-earmark-text',   'ley' => 'Ley N° 19.886'],
+    'corrupcion'        => ['label' => 'Corrupción o Fraude',           'icon' => 'bi-cash-coin',           'ley' => 'Ley N° 20.393'],
+    'impacto_comunidad' => ['label' => 'Impacto en la Comunidad',       'icon' => 'bi-people',              'ley' => 'Ley N° 19.300 / Ley N° 20.936'],
+    'servicios'         => ['label' => 'Servicios al Usuario',          'icon' => 'bi-person-check',        'ley' => 'Ley N° 19.880'],
+    'infraestructura'   => ['label' => 'Infraestructura y Obras',       'icon' => 'bi-tools',               'ley' => 'Ley N° 19.886'],
+    'otro'              => ['label' => 'Otro',                          'icon' => 'bi-question-circle',     'ley' => 'General'],
 ]);
 
 // =============================================

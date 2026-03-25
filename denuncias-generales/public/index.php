@@ -2,7 +2,7 @@
 /**
  * Portal Denuncias Ciudadanas EPCO - Inicio
  */
-$pageTitle = 'Inicio';
+$pageTitle = 'Canal de Denuncias';
 require_once __DIR__ . '/../includes/bootstrap.php';
 require_once __DIR__ . '/../includes/encabezado.php';
 ?>
@@ -17,16 +17,16 @@ require_once __DIR__ . '/../includes/encabezado.php';
         <div class="row align-items-center gy-5">
             <div class="col-lg-7 slide-in-left">
                 <span class="legal-badge mb-3">
-                    <i class="bi bi-globe2"></i>Portal Ciudadano · SERNAC · Ley 19.496
+                    <i class="bi bi-anchor"></i>Empresa Portuaria Coquimbo · Puerto y Entorno
                 </span>
                 <h1 class="fw-bold text-white display-5 mb-3" style="line-height:1.2;">
                     Canal de Denuncias<br>
-                    <span style="color:#93c5fd;">para el ciudadano</span>
+                    <span style="color:#93c5fd;">Generales EPCO</span>
                 </h1>
                 <p class="text-white opacity-75 fs-5 mb-4">
-                    Presenta tu denuncia de forma confidencial ante situaciones de incumplimiento de derechos como
-                    consumidor, servicios deficientes, infracciones ambientales y más, en cumplimiento
-                    de la legislación chilena vigente.
+                    Presenta tu denuncia de forma confidencial sobre irregularidades en las operaciones del puerto,
+                    contratos, impacto ambiental, seguridad o cualquier situación que afecte al Puerto de Coquimbo
+                    y su entorno costero.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
                     <a href="/nueva_denuncia" class="btn btn-light btn-lg fw-semibold px-4 py-3">
@@ -112,16 +112,16 @@ require_once __DIR__ . '/../includes/encabezado.php';
 <section class="py-5 section-dark">
     <div class="container py-3">
         <div class="text-center mb-5 fade-in">
-            <h2 class="fw-bold text-white">Tus Derechos como Ciudadano</h2>
-            <p style="color:rgba(255,255,255,0.6);">Legislación chilena que respalda tu denuncia</p>
+            <h2 class="fw-bold text-white">Áreas Fiscalizables en el Puerto</h2>
+            <p style="color:rgba(255,255,255,0.6);">Ámbitos de denuncia en el entorno de la Empresa Portuaria Coquimbo</p>
         </div>
         <div class="row g-4">
             <?php
             $rights = [
-                ['icon' => 'bi-bag-check', 'title' => 'Protección al Consumidor', 'desc' => 'Ley N° 19.496', 'detail' => 'Derecho a productos y servicios seguros, información veraz, reparación por daños y representación ante SERNAC.'],
-                ['icon' => 'bi-droplet', 'title' => 'Servicios Básicos', 'desc' => 'DFL N° 382 / Ley 18.168', 'detail' => 'Derecho a servicios de agua potable, electricidad y telecomunicaciones de calidad sin interrupciones arbitrarias.'],
-                ['icon' => 'bi-bank', 'title' => 'Servicios Públicos', 'desc' => 'Ley N° 19.880', 'detail' => 'Derecho a procedimientos administrativos justos, plazos razonables y trato imparcial por parte de organismos del Estado.'],
-                ['icon' => 'bi-tree', 'title' => 'Medio Ambiente', 'desc' => 'Ley N° 19.300', 'detail' => 'Derecho a vivir en un ambiente libre de contaminación y a denunciar actividades que causen daño ambiental.'],
+                ['icon' => 'bi-water', 'title' => 'Medio Ambiente Portuario', 'desc' => 'Ley N° 19.300', 'detail' => 'Contaminación del borde costero, derrames de sustancias, emisiones de polvo y agentes contaminantes generados por la actividad portuaria.'],
+                ['icon' => 'bi-file-earmark-text', 'title' => 'Transparencia en Contratos', 'desc' => 'Ley N° 19.886', 'detail' => 'Irregularidades en licitaciones, adjudicaciones de contratos, concesiones y uso indebido de recursos públicos de EPCO.'],
+                ['icon' => 'bi-people-fill', 'title' => 'Impacto en la Comunidad', 'desc' => 'Ley N° 20.936', 'detail' => 'Afectaciones a vecinos, usuarios y comunidades del entorno portuario: ruido excesivo, corte de vías, obras sin señalética o daños a terceros.'],
+                ['icon' => 'bi-shield-exclamation', 'title' => 'Seguridad Operacional', 'desc' => 'DS N° 90 / Normativa ISPS', 'detail' => 'Incumplimiento de normas de seguridad en recintos portuarios, accidentes no reportados o riesgos para trabajadores y visitantes.'],
             ];
             foreach ($rights as $i => $r): ?>
             <div class="col-md-6 col-lg-3 fade-in">

@@ -42,7 +42,7 @@ $_generalUrl = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
         <img src="/img/Logo01.png" alt="EPCO" onerror="this.style.display='none'">
         <div class="brand-text">
             <div class="brand-title">Empresa Portuaria Coquimbo</div>
-            <div class="brand-sub">Canal de Denuncias · Ley Karin</div>
+            <div class="brand-sub">Canal de Denuncias Ley Karin</div>
         </div>
     </a>
     <button class="epco-nav-toggle" onclick="document.getElementById('navCollapseK').classList.toggle('show')">

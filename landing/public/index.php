@@ -8,15 +8,16 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EPCO – Portales de Denuncia</title>
+    <link rel="icon" type="image/png" href="/img/Logo01.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             min-height: 100vh;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Onest', system-ui, sans-serif;
             background: #1a6591;
             color: #ffffff;
             display: flex;
@@ -31,6 +32,14 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
             text-align: center;
             margin-bottom: 44px;
             animation: fadeIn 0.5s ease both;
+        }
+        .header-logo {
+            display: block;
+            height: 64px;
+            width: auto;
+            margin: 0 auto 16px;
+            filter: brightness(0) invert(1);
+            object-fit: contain;
         }
         .badge {
             display: inline-flex;
@@ -216,6 +225,7 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
 <body>
 
     <div class="header">
+        <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo" class="header-logo">
         <div class="badge"><i class="bi bi-shield-check"></i> Plataforma segura de denuncias</div>
         <h1>Portales de denuncia <em>EPCO</em></h1>
         <p>Selecciona el portal que corresponde a tu situación</p>
@@ -249,7 +259,7 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
         <div class="card">
             <div class="card-icon"><i class="bi bi-people-fill"></i></div>
             <div class="card-label">Legislación Chilena General</div>
-            <div class="card-title">Portal Ciudadano de Denuncias</div>
+            <div class="card-title">Canal de Denuncias</div>
             <p class="card-desc">
                 Para ciudadanos que desean ejercer sus derechos como consumidores,
                 usuarios de servicios públicos o en otros ámbitos de la ley chilena.

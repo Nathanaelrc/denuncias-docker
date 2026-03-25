@@ -14,7 +14,7 @@ services:
     container_name: denuncias-app
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-8091}:80"
+      - "${APP_PORT:-9091}:80"
     volumes:
       - ./logs:/var/www/html/logs:z
       - ./public/uploads:/var/www/html/public/uploads:z
@@ -25,9 +25,9 @@ services:
       - DB_PASS=${DB_PASS:-cambiar-db-pass}
       - DB_CHARSET=utf8mb4
       - APP_ENV=${APP_ENV:-production}
-      - APP_URL=${APP_URL:-http://localhost:8091}
-      - LANDING_URL=${LANDING_URL:-http://localhost:8090}
-      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:8093}
+      - APP_URL=${APP_URL:-http://localhost:9091}
+      - LANDING_URL=${LANDING_URL:-http://localhost:9090}
+      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:9093}
       - TZ=America/Santiago
       # Clave de encriptación (CAMBIAR EN PRODUCCIÓN)
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:-cambiar-esta-clave-en-produccion-32chars!}
@@ -55,7 +55,7 @@ services:
   # Base de Datos MySQL
   # =============================================
   db:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: denuncias-db
     restart: unless-stopped
     ports:
@@ -72,7 +72,7 @@ services:
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
-      --default-authentication-plugin=mysql_native_password
+      --mysql-native-password=ON
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
       interval: 10s
@@ -83,7 +83,7 @@ services:
       - denuncias-network
 
   # =============================================
-  # Portal Ciudadano de Denuncias (Generales)
+  # Portal de Denuncias (Generales)
   # =============================================
   app-generales:
     build:
@@ -92,7 +92,7 @@ services:
     container_name: denuncias-generales-app
     restart: unless-stopped
     ports:
-      - "${APP_GENERALES_PORT:-8093}:80"
+      - "${APP_GENERALES_PORT:-9093}:80"
     volumes:
       - ./denuncias-generales/logs:/var/www/html/logs:z
       - ./denuncias-generales/public/uploads:/var/www/html/public/uploads:z
@@ -103,9 +103,9 @@ services:
       - DB_PASS=${DB_GENERALES_PASS:-cambiar-db-pass}
       - DB_CHARSET=utf8mb4
       - APP_ENV=${APP_ENV:-production}
-      - APP_URL=${APP_URL_GENERAL:-http://localhost:8093}
-      - LANDING_URL=${LANDING_URL:-http://localhost:8090}
-      - APP_URL_KARIN=${APP_URL:-http://localhost:8091}
+      - APP_URL=${APP_URL_GENERAL:-http://localhost:9093}
+      - LANDING_URL=${LANDING_URL:-http://localhost:9090}
+      - APP_URL_KARIN=${APP_URL:-http://localhost:9091}
       - TZ=America/Santiago
       - ENCRYPTION_KEY=${GENERALES_ENCRYPTION_KEY:-cambiar-clave-generales-32chars!}
       - SMTP_ENABLED=${SMTP_ENABLED:-true}
@@ -129,7 +129,7 @@ services:
   # Base de Datos MySQL - Portal Ciudadano
   # =============================================
   db-generales:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: denuncias-generales-db
     restart: unless-stopped
     ports:
@@ -146,7 +146,7 @@ services:
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
-      --default-authentication-plugin=mysql_native_password
+      --mysql-native-password=ON
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
       interval: 10s
@@ -166,10 +166,10 @@ services:
     container_name: denuncias-landing
     restart: unless-stopped
     ports:
-      - "${LANDING_PORT:-8090}:80"
+      - "${LANDING_PORT:-9090}:80"
     environment:
-      - APP_URL_KARIN=${APP_URL:-http://localhost:8091}
-      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:8093}
+      - APP_URL_KARIN=${APP_URL:-http://localhost:9091}
+      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:9093}
       - TZ=America/Santiago
     networks:
       - denuncias-network
@@ -182,7 +182,7 @@ services:
     container_name: denuncias-phpmyadmin
     restart: unless-stopped
     ports:
-      - "${PMA_PORT:-8092}:80"
+      - "${PMA_PORT:-9092}:80"
     environment:
       PMA_HOST: db
       PMA_USER: root

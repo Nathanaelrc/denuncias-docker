@@ -9,13 +9,13 @@ if (!defined('GENERALES_APP')) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?? 'Denuncias Ciudadanas' ?> - EPCO</title>
+    <title><?= $pageTitle ?? 'Canal de Denuncias' ?> - EPCO</title>
 
     <link rel="icon" type="image/png" href="/img/Logo01.png">
     <link rel="shortcut icon" type="image/png" href="/img/Logo01.png">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Onest -->
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -38,7 +38,7 @@ if (!defined('GENERALES_APP')) {
             --accent-light: #2d9ad0;
         }
 
-        * { font-family: 'Barlow', sans-serif; }
+        * { font-family: 'Onest', sans-serif; }
 
         body {
             background: var(--primary-color);

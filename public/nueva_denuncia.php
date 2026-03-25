@@ -68,6 +68,68 @@ require_once __DIR__ . '/../includes/encabezado.php';
 
 <?php require_once __DIR__ . '/../includes/navbar_publica.php'; ?>
 
+<!-- ============================================================
+     MODAL: Confirmación de canal correcto - Ley Karin
+     ============================================================ -->
+<div id="modalCanalKarin" style="
+    display:flex; position:fixed; inset:0; z-index:9999;
+    align-items:center; justify-content:center;
+    background:rgba(10,22,40,0.75); backdrop-filter:blur(4px);
+" role="dialog" aria-modal="true" aria-labelledby="modalCanalTitulo">
+    <div style="
+        background:#fff; border-radius:20px; max-width:520px; width:90%;
+        padding:2.2rem 2rem; box-shadow:0 20px 60px rgba(0,0,0,0.3);
+        animation:slideUp .3s ease both;
+    ">
+        <style>
+            @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+        </style>
+
+        <!-- Cabecera -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.1rem;">
+            <div style="width:48px;height:48px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="bi bi-shield-check" style="color:#1a6591;font-size:1.5rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#1a6591;">Estás en el canal</div>
+                <div id="modalCanalTitulo" style="font-size:1.1rem;font-weight:800;color:#1e293b;">Canal de Denuncias Ley Karin</div>
+            </div>
+        </div>
+
+        <!-- Descripción -->
+        <p style="color:#475569;font-size:.92rem;line-height:1.65;margin-bottom:1.3rem;">
+            Este canal está destinado a denuncias de <strong>acoso laboral, acoso sexual y violencia en el trabajo</strong>
+            en el marco de la <strong>Ley N° 21.643 (Ley Karin)</strong>.
+        </p>
+        <p style="color:#475569;font-size:.88rem;line-height:1.6;margin-bottom:1.5rem;
+            background:#f8fafc;border-radius:10px;padding:.75rem 1rem;border-left:3px solid #93c5fd;">
+            <i class="bi bi-info-circle me-1" style="color:#1a6591;"></i>
+            Si tu denuncia es sobre <strong>operaciones del puerto, contratos, medio ambiente u otras materias</strong>,
+            puedes ir al <strong>Canal de Denuncias</strong>.
+        </p>
+
+        <!-- Acciones -->
+        <div style="display:flex;flex-direction:column;gap:.7rem;">
+            <button onclick="document.getElementById('modalCanalKarin').style.display='none'" style="
+                background:#1a6591;color:#fff;border:none;border-radius:10px;
+                padding:.75rem 1.2rem;font-size:.93rem;font-weight:700;cursor:pointer;
+                display:flex;align-items:center;justify-content:center;gap:8px;
+                transition:background .15s;
+            " onmouseover="this.style.background='#145275'" onmouseout="this.style.background='#1a6591'">
+                <i class="bi bi-pencil-square"></i> Continuar aquí — Realizar denuncia Ley Karin
+            </button>
+            <a href="<?= htmlspecialchars(getenv('APP_URL_GENERAL') ?: 'http://localhost:9093') ?>/nueva_denuncia" style="
+                background:#f1f5f9;color:#1a6591;border:2px solid #cbd5e1;border-radius:10px;
+                padding:.7rem 1.2rem;font-size:.88rem;font-weight:600;cursor:pointer;
+                display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;
+                transition:background .15s;
+            " onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
+                <i class="bi bi-arrow-right-circle"></i> Ir al Canal de Denuncias
+            </a>
+        </div>
+    </div>
+</div>
+
 <div style="padding-top: 70px;">
 
 <?php if ($success): ?>

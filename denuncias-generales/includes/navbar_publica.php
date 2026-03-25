@@ -45,7 +45,7 @@ $_karinUrl   = getenv('APP_URL_KARIN') ?: 'http://localhost:8091';
         <img src="/img/Logo01.png" alt="EPCO" onerror="this.style.display='none'">
         <div class="brand-text">
             <div class="brand-title">Empresa Portuaria Coquimbo</div>
-            <div class="brand-sub">Portal Ciudadano de Denuncias</div>
+            <div class="brand-sub">Canal de Denuncias</div>
         </div>
     </a>
     <button class="epco-nav-toggle" onclick="document.getElementById('navCollapseG').classList.toggle('show')">

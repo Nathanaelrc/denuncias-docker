@@ -15,8 +15,8 @@ if (!defined('DENUNCIAS_APP')) {
     <link rel="icon" type="image/png" href="/img/Logo01.png">
     <link rel="shortcut icon" type="image/png" href="/img/Logo01.png">
 
-    <!-- Google Fonts - Barlow -->
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Onest -->
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -39,7 +39,7 @@ if (!defined('DENUNCIAS_APP')) {
             --accent-light: #2d4a6f;
         }
 
-        * { font-family: 'Barlow', sans-serif; }
+        * { font-family: 'Onest', sans-serif; }
 
         body {
             background: var(--primary-color);

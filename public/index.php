@@ -2,7 +2,7 @@
 /**
  * Portal de Denuncias EPCO - Página Principal
  */
-$pageTitle = 'Canal de Denuncias';
+$pageTitle = 'Canal de Denuncias Ley Karin';
 require_once __DIR__ . '/../includes/bootstrap.php';
 require_once __DIR__ . '/../includes/encabezado.php';
 ?>
@@ -22,7 +22,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <i class="bi bi-shield-check fs-2"></i>
                         </div>
                         <div>
-                            <h1 class="display-5 fw-bold mb-0">Canal de Denuncias</h1>
+                            <h1 class="display-5 fw-bold mb-0">Canal de Denuncias Ley Karin</h1>
                             <p class="mb-0 opacity-75">Empresa Portuaria Coquimbo</p>
                         </div>
                     </div>

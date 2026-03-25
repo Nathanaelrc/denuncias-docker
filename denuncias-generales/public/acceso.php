@@ -39,11 +39,11 @@ try {
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso - Portal Ciudadano de Denuncias EPCO</title>
     <link rel="icon" type="image/png" href="/img/Logo01.png">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        * { font-family: 'Barlow', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        * { font-family: 'Onest', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #1a6591; min-height: 100vh; }
 
         .access-nav {
@@ -95,46 +95,56 @@ try {
         .stat-lbl { font-size: 0.7rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.5px; }
 
         .access-right {
-            width: 460px; min-width: 460px;
-            background: #145275;
+            width: 480px; min-width: 480px;
+            background: linear-gradient(160deg, #1a6591 0%, #2380b0 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 50px 35px; position: relative;
+            padding: 50px 40px; position: relative;
         }
-        .login-box { width: 100%; max-width: 370px; }
+        .login-card {
+            width: 100%; max-width: 380px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 38px 36px 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .login-box { width: 100%; }
         .login-head { text-align: center; margin-bottom: 28px; }
-        .login-logo img { height: 55px; width: auto; }
-        .login-head h4 { font-weight: 700; color: #93c5fd; margin-bottom: 4px; font-size: 1.2rem; }
-        .login-head p { color: rgba(255,255,255,0.55); font-size: 0.88rem; }
+        .login-logo img { height: 58px; width: auto; margin-bottom: 14px; }
+        .login-head h4 { font-weight: 800; color: #1a6591; margin-bottom: 4px; font-size: 1.2rem; }
+        .login-head p { color: #64748b; font-size: 0.87rem; }
 
-        .login-input-group { border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.15); margin-bottom: 16px; }
-        .login-input-group .input-group-text { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-right: none; color: rgba(255,255,255,0.5); }
-        .login-input-group .form-control { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-left: none; padding: 11px 14px; font-size: 0.93rem; color: #fff; }
-        .login-input-group .form-control::placeholder { color: rgba(255,255,255,0.35); }
-        .login-input-group .form-control:focus { border-color: #2d9ad0; box-shadow: none; background: rgba(255,255,255,0.1); }
-        .login-input-group:focus-within .input-group-text { border-color: #2d9ad0; }
-        .btn-eye { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-left: none; color: rgba(255,255,255,0.5); cursor: pointer; }
-        .btn-eye:hover { background: rgba(255,255,255,0.12); }
+        .login-input-group { border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 14px; }
+        .login-input-group .input-group-text { background: #f1f5f9; border: 1.5px solid #e2e8f0; border-right: none; color: #94a3b8; }
+        .login-input-group .form-control { background: #f8fafc; border: 1.5px solid #e2e8f0; border-left: none; padding: 12px 14px; font-size: 0.93rem; color: #1e293b; }
+        .login-input-group .form-control::placeholder { color: #94a3b8; }
+        .login-input-group .form-control:focus { border-color: #2380b0; box-shadow: none; background: #fff; outline: none; }
+        .login-input-group:focus-within .input-group-text { border-color: #2380b0; background: #eff6ff; color: #2380b0; }
+        .btn-eye { background: #f8fafc; border: 1.5px solid #e2e8f0; border-left: none; color: #94a3b8; cursor: pointer; transition: all 0.2s; }
+        .btn-eye:hover { background: #eff6ff; color: #2380b0; }
 
         .btn-access {
             width: 100%; background: linear-gradient(135deg, #1a6591, #2380b0);
             color: white; border: none; padding: 13px; font-weight: 700;
-            font-size: 0.98rem; border-radius: 10px; transition: all 0.3s; cursor: pointer;
+            font-size: 0.97rem; border-radius: 10px; transition: all 0.3s; cursor: pointer;
+            margin-top: 6px; letter-spacing: 0.2px;
         }
-        .btn-access:hover { background: linear-gradient(135deg, #2380b0, #2d9ad0); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(26,101,145,0.35); }
+        .btn-access:hover { background: linear-gradient(135deg, #2380b0, #2d9ad0); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,101,145,0.4); }
 
-        .sec-list { display: flex; flex-direction: column; gap: 8px; }
-        .sec-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.6); font-size: 0.8rem; }
-        .sec-item i { width: 26px; height: 26px; background: rgba(255,255,255,0.08); color: #93c5fd; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
+        .login-divider { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0 16px; }
 
-        .back-link { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.45); text-decoration: none; font-size: 0.83rem; transition: color 0.3s; }
-        .back-link:hover { color: #93c5fd; }
+        .sec-list { display: flex; flex-direction: column; gap: 7px; }
+        .sec-item { display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.78rem; }
+        .sec-item i { width: 24px; height: 24px; background: #eff6ff; color: #2380b0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; flex-shrink: 0; }
+
+        .back-link { display: block; text-align: center; margin-top: 18px; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.83rem; transition: color 0.3s; }
+        .back-link:hover { color: #ffffff; }
 
         @media (max-width: 992px) {
             .access-split { flex-direction: column; }
             .access-left { padding: 35px 20px; }
             .access-right { width: 100%; min-width: 100%; padding: 35px 20px; }
+            .login-card { max-width: 100%; }
             .feat-grid { grid-template-columns: 1fr; }
-            .back-link { position: static; transform: none; display: block; text-align: center; margin-top: 18px; }
         }
     </style>
 </head>
@@ -188,44 +198,48 @@ try {
     </div>
 
     <div class="access-right">
-        <div class="login-box">
-            <div class="login-head">
-                <div class="login-logo mb-3">
-                    <img src="/img/Logo01.png" alt="EPCO" onerror="this.style.display='none'">
+        <div class="login-card">
+            <div class="login-box">
+                <div class="login-head">
+                    <div class="login-logo">
+                        <img src="/img/Logo01.png" alt="EPCO" onerror="this.style.display='none'">
+                    </div>
+                    <h4>Iniciar Sesión</h4>
+                    <p>Acceso para delegados y administradores</p>
                 </div>
-                <h4>Iniciar Sesión</h4>
-                <p>Acceso para delegados y administradores</p>
-            </div>
 
-            <?php $flash = getFlashMessage(); if ($flash): ?>
-            <div class="alert alert-<?= $flash['type'] === 'success' ? 'success' : 'info' ?> py-2 small mb-3"><?= htmlspecialchars($flash['message']) ?></div>
-            <?php endif; ?>
+                <?php $flash = getFlashMessage(); if ($flash): ?>
+                <div class="alert alert-<?= $flash['type'] === 'success' ? 'success' : 'info' ?> py-2 small mb-3"><?= htmlspecialchars($flash['message']) ?></div>
+                <?php endif; ?>
 
-            <?php if ($error): ?>
-            <div class="alert alert-danger py-2 small mb-3"><i class="bi bi-exclamation-circle me-2"></i><?= htmlspecialchars($error) ?></div>
-            <?php endif; ?>
+                <?php if ($error): ?>
+                <div class="alert alert-danger py-2 small mb-3"><i class="bi bi-exclamation-circle me-2"></i><?= htmlspecialchars($error) ?></div>
+                <?php endif; ?>
 
-            <form method="POST" action="/acceso">
-                <?= csrfInput() ?>
-                <div class="login-input-group input-group mb-3">
-                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" name="identifier" class="form-control" placeholder="Usuario o correo" value="<?= htmlspecialchars($_POST['identifier'] ?? '') ?>" required autofocus>
+                <form method="POST" action="/acceso">
+                    <?= csrfInput() ?>
+                    <div class="login-input-group input-group mb-3">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" name="identifier" class="form-control" placeholder="Usuario o correo" value="<?= htmlspecialchars($_POST['identifier'] ?? '') ?>" required autofocus>
+                    </div>
+                    <div class="login-input-group input-group mb-4">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" name="password" id="passInput" class="form-control" placeholder="Contraseña" required>
+                        <button type="button" class="btn-eye" onclick="togglePass()"><i class="bi bi-eye" id="eyeIcon"></i></button>
+                    </div>
+                    <button type="submit" class="btn-access"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión</button>
+                </form>
+
+                <hr class="login-divider">
+
+                <div class="sec-list">
+                    <div class="sec-item"><i class="bi bi-shield-lock"></i>Conexión segura y datos encriptados</div>
+                    <div class="sec-item"><i class="bi bi-clock-history"></i>Sesión con expiración automática</div>
+                    <div class="sec-item"><i class="bi bi-journal-text"></i>Acceso registrado en auditoría</div>
                 </div>
-                <div class="login-input-group input-group mb-4">
-                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" name="password" id="passInput" class="form-control" placeholder="Contraseña" required>
-                    <button type="button" class="btn-eye" onclick="togglePass()"><i class="bi bi-eye" id="eyeIcon"></i></button>
-                </div>
-                <button type="submit" class="btn-access"><i class="bi bi-box-arrow-in-right me-2"></i>Ingresar al Sistema</button>
-            </form>
-
-            <div class="sec-list mt-4">
-                <div class="sec-item"><i class="bi bi-shield-lock"></i>Conexión segura y datos encriptados</div>
-                <div class="sec-item"><i class="bi bi-clock-history"></i>Sesión con expiración automática</div>
-                <div class="sec-item"><i class="bi bi-journal-text"></i>Acceso registrado en auditoría</div>
             </div>
         </div>
-        <a href="/" class="back-link"><i class="bi bi-arrow-left me-1"></i>Volver al Portal Ciudadano</a>
+        <a href="/" class="back-link"><i class="bi bi-arrow-left me-1"></i>Volver al portal público</a>
     </div>
 </div>
 
