@@ -61,10 +61,13 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
             font-weight: 800;
             color: #ffffff;
         }
-        .header h1 em {
-            font-style: normal;
-            color: #fff;
-            -webkit-text-fill-color: #fff;
+        .header-org {
+            font-size: 1rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.75);
+            margin-top: -4px;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
         }
         .header p {
             margin-top: 8px;
@@ -227,7 +230,8 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
     <div class="header">
         <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo" class="header-logo">
         <div class="badge"><i class="bi bi-shield-check"></i> Plataforma segura de denuncias</div>
-        <h1>Portales de denuncia <em>EPCO</em></h1>
+        <h1>Portales de denuncia</h1>
+        <p class="header-org">Empresa Portuaria Coquimbo</p>
         <p>Selecciona el portal que corresponde a tu situación</p>
     </div>
 
