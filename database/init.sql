@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS complaints (
     -- Datos del denunciado (encriptados)
     accused_name_encrypted BLOB DEFAULT NULL,
     accused_name_nonce VARBINARY(24) DEFAULT NULL,
+    accused_name_hmac VARCHAR(64) DEFAULT NULL,   -- HMAC del nombre normalizado para filtrado de conflictos
 
     accused_department_encrypted BLOB DEFAULT NULL,
     accused_department_nonce VARBINARY(24) DEFAULT NULL,
@@ -111,7 +112,8 @@ CREATE TABLE IF NOT EXISTS complaints (
     INDEX idx_complaint_number (complaint_number),
     INDEX idx_status (status),
     INDEX idx_type (complaint_type),
-    INDEX idx_created (created_at)
+    INDEX idx_created (created_at),
+    INDEX idx_accused_name_hmac (accused_name_hmac)
 ) ENGINE=InnoDB;
 
 -- =============================================

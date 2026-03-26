@@ -142,6 +142,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET['codigo'])) {
                     </div>
                     <?php endif; ?>
 
+                    <div class="text-center mt-4">
+                        <a href="/" class="btn btn-outline-light px-4">
+                            <i class="bi bi-house me-2"></i>Volver al inicio
+                        </a>
+                    </div>
+
                 </div>
             </div>
         </div>

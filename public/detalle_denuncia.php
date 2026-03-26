@@ -20,6 +20,17 @@ if (!$complaint) {
     redirect('/denuncias_admin', 'Denuncia no encontrada.', 'danger');
 }
 
+// Protección de conflicto de interés: investigadores no pueden ver denuncias donde son el acusado
+if ($user['role'] === ROLE_INVESTIGADOR) {
+    $selfHmac = getEncryptionService()->computeSearchHash($user['name']);
+    $stmt = $pdo->prepare("SELECT accused_name_hmac FROM complaints WHERE id = ?");
+    $stmt->execute([$id]);
+    $hmacRow = $stmt->fetchColumn();
+    if ($hmacRow && $hmacRow === $selfHmac) {
+        redirect('/denuncias_admin', 'No tienes acceso a esta denuncia.', 'danger');
+    }
+}
+
 logActivity($_SESSION['user_id'], 'ver_denuncia', 'complaint', $id, 'Acceso a denuncia desencriptada');
 
 // Procesar acciones POST
@@ -137,7 +148,9 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
         <div>
-            <a href="/denuncias_admin" class="text-muted text-decoration-none small"><i class="bi bi-arrow-left me-1"></i>Volver</a>
+            <a href="/denuncias_admin" class="btn btn-outline-secondary btn-sm" style="border-radius: 10px; font-weight: 600; padding: 6px 16px;">
+                <i class="bi bi-arrow-left me-1"></i>Volver al listado
+            </a>
             <h4 class="fw-bold text-dark mb-0 mt-1">
                 <i class="bi bi-file-earmark-lock me-2"></i><?= htmlspecialchars($complaint['complaint_number']) ?>
             </h4>

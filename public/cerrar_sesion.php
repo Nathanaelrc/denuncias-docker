@@ -9,5 +9,5 @@ if (isLoggedIn()) {
 }
 
 logout();
-header('Location: /iniciar_sesion');
+header('Location: /acceso');
 exit;

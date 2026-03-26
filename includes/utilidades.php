@@ -140,6 +140,7 @@ function createComplaint(array $data): array {
         $reporterPhone = $enc->encryptForDb($data['reporter_phone'] ?? null);
         $reporterDept = $enc->encryptForDb($data['reporter_department'] ?? null);
         $accusedName = $enc->encryptForDb($data['accused_name'] ?? null);
+        $accusedNameHmac = $enc->computeSearchHash($data['accused_name'] ?? null);
         $accusedDept = $enc->encryptForDb($data['accused_department'] ?? null);
         $accusedPos = $enc->encryptForDb($data['accused_position'] ?? null);
         $witnesses = $enc->encryptForDb($data['witnesses'] ?? null);
@@ -155,7 +156,7 @@ function createComplaint(array $data): array {
             reporter_email_encrypted, reporter_email_nonce,
             reporter_phone_encrypted, reporter_phone_nonce,
             reporter_department_encrypted, reporter_department_nonce,
-            accused_name_encrypted, accused_name_nonce,
+            accused_name_encrypted, accused_name_nonce, accused_name_hmac,
             accused_department_encrypted, accused_department_nonce,
             accused_position_encrypted, accused_position_nonce,
             witnesses_encrypted, witnesses_nonce,
@@ -172,7 +173,7 @@ function createComplaint(array $data): array {
             ?, ?,
             ?, ?,
             ?, ?,
-            ?, ?,
+            ?, ?, ?,
             ?, ?,
             ?, ?,
             ?, ?,
@@ -193,7 +194,7 @@ function createComplaint(array $data): array {
             $reporterEmail['encrypted'], $reporterEmail['nonce'],
             $reporterPhone['encrypted'], $reporterPhone['nonce'],
             $reporterDept['encrypted'], $reporterDept['nonce'],
-            $accusedName['encrypted'], $accusedName['nonce'],
+            $accusedName['encrypted'], $accusedName['nonce'], $accusedNameHmac,
             $accusedDept['encrypted'], $accusedDept['nonce'],
             $accusedPos['encrypted'], $accusedPos['nonce'],
             $witnesses['encrypted'], $witnesses['nonce'],

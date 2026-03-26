@@ -10,7 +10,7 @@
             const navbar = document.querySelector('.navbar');
             if (navbar) navbar.classList.add('nav-animate');
 
-            gsap.from('body > div', {
+            gsap.from('body > div:not(.modal):not(.modal-backdrop)', {
                 opacity: 0, y: 20, duration: 0.7, ease: 'power2.out', delay: 0.2
             });
         });

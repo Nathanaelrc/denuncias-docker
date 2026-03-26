@@ -13,8 +13,17 @@ $perPage = 12;
 $page    = max(1, (int)($_GET['page'] ?? 1));
 $offset  = ($page - 1) * $perPage;
 
-$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints WHERE investigator_id = ?");
-$stmtTotal->execute([$user['id']]);
+// Filtro de conflicto de interés: ocultar denuncias donde el investigador es el acusado
+$selfHmac = ($user['role'] === ROLE_INVESTIGADOR)
+    ? getEncryptionService()->computeSearchHash($user['name'])
+    : null;
+$conflictFilter = $selfHmac
+    ? "AND (c.accused_name_hmac IS NULL OR c.accused_name_hmac != ?)"
+    : '';
+$conflictParam = $selfHmac ? [$selfHmac] : [];
+
+$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints WHERE investigator_id = ? $conflictFilter");
+$stmtTotal->execute(array_merge([$user['id']], $conflictParam));
 $totalComplaints = (int)$stmtTotal->fetchColumn();
 $totalPages      = max(1, (int)ceil($totalComplaints / $perPage));
 $page            = min($page, $totalPages);
@@ -23,7 +32,7 @@ $stmt = $pdo->prepare("
     SELECT c.*, u.name as investigator_name 
     FROM complaints c 
     LEFT JOIN users u ON c.investigator_id = u.id 
-    WHERE c.investigator_id = ? 
+    WHERE c.investigator_id = ? $conflictFilter
     ORDER BY 
         CASE c.status 
             WHEN 'recibida' THEN 1 
@@ -33,7 +42,7 @@ $stmt = $pdo->prepare("
         c.created_at DESC
     LIMIT $perPage OFFSET $offset
 ");
-$stmt->execute([$user['id']]);
+$stmt->execute(array_merge([$user['id']], $conflictParam));
 $myComplaints = $stmt->fetchAll();
 
 require_once __DIR__ . '/../includes/encabezado.php';

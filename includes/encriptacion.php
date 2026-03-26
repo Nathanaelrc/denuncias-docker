@@ -78,6 +78,23 @@ class EncryptionService
     }
 
     /**
+     * Generar hash determinístico para búsqueda/comparación de texto encriptado.
+     * Usa HMAC-SHA256 con una clave derivada del ENCRYPTION_KEY.
+     * No permite desencriptar el valor original.
+     */
+    public function computeSearchHash(?string $plaintext): ?string
+    {
+        if ($plaintext === null || $plaintext === '') {
+            return null;
+        }
+        // Normalizar: minúsculas + trim + colapsar espacios múltiples
+        $normalized = mb_strtolower(trim(preg_replace('/\s+/', ' ', $plaintext)), 'UTF-8');
+        // Derivar clave HMAC desde la clave de encriptación con contexto diferente
+        $hmacKey = sodium_crypto_generichash($this->key . ':searchhash', '', 32);
+        return hash_hmac('sha256', $normalized, $hmacKey);
+    }
+
+    /**
      * Limpiar memoria sensible
      */
     public function __destruct()

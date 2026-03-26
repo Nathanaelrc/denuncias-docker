@@ -7,7 +7,7 @@ if (!isset($user)) {
     $user = isLoggedIn() ? getCurrentUser() : null;
 }
 if (!$user) {
-    header('Location: /iniciar_sesion');
+    header('Location: /acceso');
     exit;
 }
 
@@ -17,13 +17,22 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 
 // Estadísticas para badges
 global $pdo;
-$stats = $pdo->query("
+$_sidebarConflictWhere = '';
+$_sidebarConflictParams = [];
+if ($user['role'] === ROLE_INVESTIGADOR) {
+    $_sidebarHmac = getEncryptionService()->computeSearchHash($user['name']);
+    $_sidebarConflictWhere = 'WHERE (accused_name_hmac IS NULL OR accused_name_hmac != ?)';
+    $_sidebarConflictParams = [$_sidebarHmac];
+}
+$_sidebarStmt = $pdo->prepare("
     SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN status = 'recibida' THEN 1 ELSE 0 END) as nuevas,
         SUM(CASE WHEN status = 'en_investigacion' THEN 1 ELSE 0 END) as en_investigacion
-    FROM complaints
-")->fetch();
+    FROM complaints $_sidebarConflictWhere
+");
+$_sidebarStmt->execute($_sidebarConflictParams);
+$stats = $_sidebarStmt->fetch();
 
 // Notificaciones no leídas
 $stmtUnread = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");

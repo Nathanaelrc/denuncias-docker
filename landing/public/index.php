@@ -62,9 +62,9 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
             color: #ffffff;
         }
         .header-org {
-            font-size: 1rem;
-            font-weight: 600;
-            color: rgba(255,255,255,0.75);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.9);
             margin-top: -4px;
             margin-bottom: 4px;
             letter-spacing: 0.5px;
@@ -287,7 +287,7 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
     <div class="footer">
         &copy; <?php echo date('Y'); ?> EPCO &nbsp;&middot;&nbsp; Cifrado AES-256
         &nbsp;&middot;&nbsp;
-        <a href="<?php echo htmlspecialchars($urlKarin); ?>/iniciar_sesion">Acceso interno Ley Karin</a>
+        <a href="<?php echo htmlspecialchars($urlKarin); ?>/acceso">Acceso interno Ley Karin</a>
         &nbsp;&middot;&nbsp;
         <a href="<?php echo htmlspecialchars($urlGeneral); ?>/iniciar_sesion">Acceso interno Portal Ciudadano</a>
     </div>

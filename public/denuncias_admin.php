@@ -33,6 +33,13 @@ if ($search) {
     $params[] = "%$search%";
 }
 
+// Filtro de conflicto de interés: los investigadores no pueden ver denuncias donde son el acusado
+if ($user['role'] === ROLE_INVESTIGADOR) {
+    $selfHmac = getEncryptionService()->computeSearchHash($user['name']);
+    $where[] = "(c.accused_name_hmac IS NULL OR c.accused_name_hmac != ?)";
+    $params[] = $selfHmac;
+}
+
 $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
 // Contar total

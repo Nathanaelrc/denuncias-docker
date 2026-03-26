@@ -81,7 +81,7 @@ function hasRole($roles) {
     return in_array($_SESSION['user_role'], $roles);
 }
 
-function requireAuth($redirect = '/iniciar_sesion') {
+function requireAuth($redirect = '/acceso') {
     if (!isLoggedIn()) {
         header("Location: $redirect");
         exit;

@@ -10,8 +10,19 @@ $user = getCurrentUser();
 $isAdmin = hasRole([ROLE_ADMIN]);
 $isInvestigador = hasRole([ROLE_INVESTIGADOR]);
 
+// Filtro de conflicto de interés para investigadores
+$conflictWhere = '';
+$conflictWhereAnd = '';
+$conflictParams = [];
+if ($user['role'] === ROLE_INVESTIGADOR) {
+    $selfHmac = getEncryptionService()->computeSearchHash($user['name']);
+    $conflictWhere = 'WHERE (accused_name_hmac IS NULL OR accused_name_hmac != ?)';
+    $conflictWhereAnd = 'AND (accused_name_hmac IS NULL OR accused_name_hmac != ?)';
+    $conflictParams = [$selfHmac];
+}
+
 // Estadísticas generales
-$stats = $pdo->query("
+$stmtStats = $pdo->prepare("
     SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN status = 'recibida' THEN 1 ELSE 0 END) as recibidas,
@@ -21,33 +32,41 @@ $stats = $pdo->query("
         SUM(CASE WHEN status = 'archivada' THEN 1 ELSE 0 END) as archivadas,
         SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) as semana,
         SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as mes
-    FROM complaints
-")->fetch();
+    FROM complaints $conflictWhere
+");
+$stmtStats->execute($conflictParams);
+$stats = $stmtStats->fetch();
 
 // Por tipo
-$byType = $pdo->query("
+$stmtType = $pdo->prepare("
     SELECT complaint_type, COUNT(*) as total 
-    FROM complaints 
+    FROM complaints $conflictWhere
     GROUP BY complaint_type 
     ORDER BY total DESC
-")->fetchAll();
+");
+$stmtType->execute($conflictParams);
+$byType = $stmtType->fetchAll();
 
 // Últimas denuncias
-$recent = $pdo->query("
+$stmtRecent = $pdo->prepare("
     SELECT id, complaint_number, complaint_type, status, is_anonymous, created_at
-    FROM complaints 
+    FROM complaints $conflictWhere
     ORDER BY created_at DESC 
     LIMIT 10
-")->fetchAll();
+");
+$stmtRecent->execute($conflictParams);
+$recent = $stmtRecent->fetchAll();
 
 // Por mes (últimos 6 meses)
-$monthly = $pdo->query("
+$stmtMonthly = $pdo->prepare("
     SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total
     FROM complaints 
-    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) $conflictWhereAnd
     GROUP BY month
     ORDER BY month ASC
-")->fetchAll();
+");
+$stmtMonthly->execute($conflictParams);
+$monthly = $stmtMonthly->fetchAll();
 
 require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';

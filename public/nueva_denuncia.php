@@ -75,6 +75,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
 <!-- ============================================================
      MODAL: Confirmación de canal correcto - Ley Karin
      ============================================================ -->
+<?php if ($_SERVER['REQUEST_METHOD'] !== 'POST'): ?>
 <div id="modalCanalKarin" style="
     display:flex; position:fixed; inset:0; z-index:9999;
     align-items:center; justify-content:center;
@@ -133,6 +134,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <div style="padding-top: 70px;">
 

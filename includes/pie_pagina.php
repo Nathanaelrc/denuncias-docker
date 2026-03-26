@@ -15,7 +15,7 @@
             }
 
             // Animación de entrada suave para toda la página
-            gsap.from('body > div', {
+            gsap.from('body > div:not(.modal):not(.modal-backdrop)', {
                 opacity: 0,
                 y: 20,
                 duration: 0.7,
