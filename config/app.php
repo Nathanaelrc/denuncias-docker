@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Configuración Principal
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Configuración Principal
  */
 
 if (!defined('DENUNCIAS_APP')) {
@@ -57,32 +57,12 @@ if (ENVIRONMENT === 'development') {
 // RUTAS
 // =============================================
 define('ROOT_PATH', dirname(__DIR__));
-define('CONFIG_PATH', ROOT_PATH . '/config');
-define('INCLUDES_PATH', ROOT_PATH . '/includes');
-define('PUBLIC_PATH', ROOT_PATH . '/public');
-define('UPLOADS_PATH', ROOT_PATH . '/public/uploads');
 define('LOGS_PATH', ROOT_PATH . '/logs');
-
-define('BASE_URL', '/');
-define('UPLOADS_URL', '/uploads/');
 
 // =============================================
 // INFORMACIÓN DE LA APLICACIÓN
 // =============================================
 define('APP_NAME', 'Canal de Denuncias');
-define('APP_FULL_NAME', 'Canal de Denuncias - EPCO');
-define('APP_VERSION', '1.0.0');
-define('APP_COMPANY', 'Empresa Portuaria Coquimbo');
-
-// =============================================
-// COLORES DEL TEMA (mismo que soporte TI)
-// =============================================
-define('PRIMARY_COLOR', '#1a6591');
-define('SECONDARY_COLOR', '#ffffff');
-define('ACCENT_COLOR', '#2380b0');
-define('DANGER_COLOR', '#dc2626');
-define('SUCCESS_COLOR', '#16a34a');
-define('WARNING_COLOR', '#f59e0b');
 
 // =============================================
 // ROLES

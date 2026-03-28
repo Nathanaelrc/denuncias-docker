@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Reportes
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Reportes
  */
 $pageTitle = 'Reportes';
 require_once __DIR__ . '/../includes/bootstrap.php';

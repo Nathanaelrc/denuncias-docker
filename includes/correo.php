@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Servicio de Correo (Gmail SMTP)
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Servicio de Correo (Gmail SMTP)
  * 
  * Envía correos usando SMTP de Gmail con autenticación.
  * Requiere configurar SMTP_USER y SMTP_PASS en las variables de entorno.
@@ -21,7 +21,7 @@ define('SMTP_USER', getenv('SMTP_USER') ?: '');
 define('SMTP_PASS', getenv('SMTP_PASS') ?: '');
 define('SMTP_ENCRYPTION', getenv('SMTP_ENCRYPTION') ?: 'tls');
 define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL') ?: 'denuncias@epco.cl');
-define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?: 'Canal de Denuncias - EPCO');
+define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?: 'Canal de Denuncias - Empresa Portuaria Coquimbo');
 define('SMTP_ADMIN_EMAIL', getenv('SMTP_ADMIN_EMAIL') ?: '');
 
 /**
@@ -129,7 +129,7 @@ class SmtpMailer {
         $headers .= "To: <{$to}>\r\n";
         $headers .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
         $headers .= "Content-Type: multipart/alternative; boundary=\"{$boundary}\"\r\n";
-        $headers .= "X-Mailer: Canal-Denuncias-EPCO/1.0\r\n";
+        $headers .= "X-Mailer: Canal-Denuncias-Empresa Portuaria Coquimbo/1.0\r\n";
         $headers .= "\r\n";
 
         // Versión texto plano

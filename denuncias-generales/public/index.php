@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas EPCO - Inicio
+ * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Inicio
  */
 $pageTitle = 'Canal de Denuncias';
 require_once __DIR__ . '/../includes/bootstrap.php';
@@ -21,7 +21,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                 </span>
                 <h1 class="fw-bold text-white display-5 mb-3" style="line-height:1.2;">
                     Canal de Denuncias<br>
-                    <span style="color:#93c5fd;">Generales EPCO</span>
+                    <span style="color:#93c5fd;">Generales Empresa Portuaria Coquimbo</span>
                 </h1>
                 <p class="text-white opacity-75 fs-5 mb-4">
                     Presenta tu denuncia de forma confidencial sobre irregularidades en las operaciones del puerto,
@@ -119,7 +119,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
             <?php
             $rights = [
                 ['icon' => 'bi-water', 'title' => 'Medio Ambiente Portuario', 'desc' => 'Ley N° 19.300', 'detail' => 'Contaminación del borde costero, derrames de sustancias, emisiones de polvo y agentes contaminantes generados por la actividad portuaria.'],
-                ['icon' => 'bi-file-earmark-text', 'title' => 'Transparencia en Contratos', 'desc' => 'Ley N° 19.886', 'detail' => 'Irregularidades en licitaciones, adjudicaciones de contratos, concesiones y uso indebido de recursos públicos de EPCO.'],
+                ['icon' => 'bi-file-earmark-text', 'title' => 'Transparencia en Contratos', 'desc' => 'Ley N° 19.886', 'detail' => 'Irregularidades en licitaciones, adjudicaciones de contratos, concesiones y uso indebido de recursos públicos de Empresa Portuaria Coquimbo.'],
                 ['icon' => 'bi-people-fill', 'title' => 'Impacto en la Comunidad', 'desc' => 'Ley N° 20.936', 'detail' => 'Afectaciones a vecinos, usuarios y comunidades del entorno portuario: ruido excesivo, corte de vías, obras sin señalética o daños a terceros.'],
                 ['icon' => 'bi-shield-exclamation', 'title' => 'Seguridad Operacional', 'desc' => 'DS N° 90 / Normativa ISPS', 'detail' => 'Incumplimiento de normas de seguridad en recintos portuarios, accidentes no reportados o riesgos para trabajadores y visitantes.'],
             ];

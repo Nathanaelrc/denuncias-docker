@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Dashboard Admin
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Dashboard Admin
  */
 $pageTitle = 'Panel de Administración';
 require_once __DIR__ . '/../includes/bootstrap.php';

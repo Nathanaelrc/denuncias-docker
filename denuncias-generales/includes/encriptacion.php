@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas EPCO - Servicio de Encriptación
+ * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Servicio de Encriptación
  *
  * Usa libsodium (AES-256-GCM equivalente) para encriptar datos sensibles.
  * La clave se obtiene de la variable de entorno ENCRYPTION_KEY.

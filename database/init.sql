@@ -1,5 +1,5 @@
 -- =============================================
--- Portal de Denuncias EPCO - Base de Datos v1.0
+-- Portal de Denuncias Empresa Portuaria Coquimbo - Base de Datos v1.0
 -- Sistema independiente de denuncias Ley Karin
 --
 -- ENCRIPTACIÓN: Los campos sensibles (description,

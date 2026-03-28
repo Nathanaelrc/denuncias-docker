@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================
-# Plataforma de Denuncias EPCO - Script de Inicio
+# Plataforma de Denuncias Empresa Portuaria Coquimbo - Script de Inicio
 # Portales: Landing / Ley Karin / Portal Ciudadano
 # Detecta puertos disponibles automáticamente
 # Uso: bash start.sh
@@ -20,7 +20,7 @@ ENV_FILE="${SCRIPT_DIR}/.env"
 
 echo ""
 echo -e "${BOLD}=========================================="
-echo -e "  Plataforma de Denuncias EPCO - v2.0"
+echo -e "  Plataforma de Denuncias Empresa Portuaria Coquimbo - v2.0"
 echo -e "==========================================${NC}"
 echo ""
 
@@ -133,7 +133,7 @@ SMTP_USER=
 SMTP_PASS=
 SMTP_ENCRYPTION=tls
 SMTP_FROM_EMAIL=denuncias@epco.cl
-SMTP_FROM_NAME=Canal de Denuncias - EPCO
+SMTP_FROM_NAME=Canal de Denuncias - Empresa Portuaria Coquimbo
 SMTP_ADMIN_EMAIL=
 EOF
 
@@ -161,7 +161,7 @@ docker compose --profile dev up -d
 
 echo ""
 echo -e "${BOLD}=========================================="
-echo -e "${GREEN}  ✓ Plataforma de Denuncias EPCO Lista"
+echo -e "${GREEN}  ✓ Plataforma de Denuncias Empresa Portuaria Coquimbo Lista"
 echo -e "${NC}${BOLD}=========================================="
 echo ""
 echo -e "  🌐 Selector:       ${CYAN}http://localhost:${LANDING_PORT}${NC}"

@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas EPCO - Configuración Base de Datos
+ * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Configuración Base de Datos
  */
 
 if (!defined('GENERALES_APP')) {

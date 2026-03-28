@@ -81,7 +81,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
             <div class="col-md-5 col-lg-4">
 
                 <div class="text-center mb-4 fade-in">
-                    <img src="/img/Logo01.png" alt="EPCO" style="height:70px;object-fit:contain;" class="mb-3" onerror="this.style.display='none'">
+                    <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo" style="height:70px;object-fit:contain;" class="mb-3" onerror="this.style.display='none'">
                     <h4 class="fw-bold text-white">Portal Ciudadano</h4>
                     <p class="text-white opacity-75 small">Acceso exclusivo para delegados y administradores</p>
                 </div>

@@ -1,5 +1,5 @@
 # ====================================================
-# Portal de Denuncias Ciudadanas EPCO - Dockerfile
+# Portal de Denuncias Ciudadanas Empresa Portuaria Coquimbo - Dockerfile
 # PHP 8.2 con Apache y extensiones necesarias
 # ====================================================
 FROM php:8.2-apache

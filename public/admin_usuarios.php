@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Gestión de Usuarios
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Gestión de Usuarios
  */
 $pageTitle = 'Gestión de Usuarios';
 require_once __DIR__ . '/../includes/bootstrap.php';

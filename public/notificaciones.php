@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Gestión de Notificaciones
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Gestión de Notificaciones
  * Admin: gestionar grupos y suscripciones de usuarios
  * Todos: ver sus notificaciones
  */
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
         try {
             $testContent = '
                 <p style="color: #374151; font-size: 14px; line-height: 1.7;">Hola <strong>' . htmlspecialchars($targetUser['name']) . '</strong>,</p>
-                <p style="color: #374151; font-size: 14px; line-height: 1.7;">Este es un correo de prueba del Canal de Denuncias EPCO para verificar que las notificaciones por email están funcionando correctamente.</p>
+                <p style="color: #374151; font-size: 14px; line-height: 1.7;">Este es un correo de prueba del Canal de Denuncias Empresa Portuaria Coquimbo para verificar que las notificaciones por email están funcionando correctamente.</p>
                 <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: center;">
                     <p style="color: #166534; font-weight: 700; font-size: 16px; margin: 0;">Correo configurado correctamente</p>
                 </div>

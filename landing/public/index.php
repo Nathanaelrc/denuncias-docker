@@ -7,7 +7,7 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EPCO – Portales de Denuncia</title>
+    <title>Empresa Portuaria Coquimbo – Portales de Denuncia</title>
     <link rel="icon" type="image/png" href="/img/Logo01.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -285,7 +285,7 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
     </div>
 
     <div class="footer">
-        &copy; <?php echo date('Y'); ?> EPCO &nbsp;&middot;&nbsp; Cifrado AES-256
+        &copy; <?php echo date('Y'); ?> Empresa Portuaria Coquimbo &nbsp;&middot;&nbsp; Cifrado AES-256
         &nbsp;&middot;&nbsp;
         <a href="<?php echo htmlspecialchars($urlKarin); ?>/acceso">Acceso interno Ley Karin</a>
         &nbsp;&middot;&nbsp;

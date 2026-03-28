@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Configuración de Base de Datos
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Configuración de Base de Datos
  */
 
 if (!defined('DENUNCIAS_APP')) {

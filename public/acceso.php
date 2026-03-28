@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Acceso al Dashboard
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Acceso al Dashboard
  */
 require_once __DIR__ . '/../includes/bootstrap.php';
 
@@ -44,7 +44,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso al Dashboard - Canal de Denuncias EPCO</title>
+    <title>Acceso al Dashboard - Canal de Denuncias Empresa Portuaria Coquimbo</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/img/Logo01.png">
@@ -223,7 +223,7 @@ try {
 <!-- Navbar -->
 <nav class="access-nav">
     <a href="/" class="access-nav-brand">
-        <img src="/img/Logo01.png" alt="EPCO">
+        <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo">
         <span>Canal de Denuncias</span>
     </a>
     <ul class="access-nav-links desktop">
@@ -291,7 +291,7 @@ try {
         <div class="login-box">
             <div class="login-head">
                 <div class="login-logo">
-                    <img src="/img/Logo01.png" alt="EPCO">
+                    <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo">
                 </div>
                 <h4>Iniciar Sesión</h4>
                 <p>Ingresa tus credenciales para acceder</p>

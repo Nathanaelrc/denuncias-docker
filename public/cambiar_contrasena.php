@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Cambiar Contraseña Obligatorio
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Cambiar Contraseña Obligatorio
  * Se muestra cuando must_change_password = 1 para el usuario.
  */
 $pageTitle = 'Cambiar Contraseña';

@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Listado de Denuncias (Admin)
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Listado de Denuncias (Admin)
  */
 $pageTitle = 'Gestión de Denuncias';
 require_once __DIR__ . '/../includes/bootstrap.php';

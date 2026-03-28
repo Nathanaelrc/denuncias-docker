@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas EPCO - Nueva Denuncia
+ * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Nueva Denuncia
  */
 $pageTitle = 'Realizar Denuncia';
 require_once __DIR__ . '/../includes/bootstrap.php';
@@ -94,7 +94,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
             </div>
             <div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#1a6591;">Estás en el canal</div>
-                <div id="modalCanalTitulo" style="font-size:1.1rem;font-weight:800;color:#1e293b;">Canal de Denuncias EPCO</div>
+                <div id="modalCanalTitulo" style="font-size:1.1rem;font-weight:800;color:#1e293b;">Canal de Denuncias Empresa Portuaria Coquimbo</div>
             </div>
         </div>
 

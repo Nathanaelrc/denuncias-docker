@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Mis Investigaciones
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Mis Investigaciones
  */
 $pageTitle = 'Mis Investigaciones';
 require_once __DIR__ . '/../includes/bootstrap.php';

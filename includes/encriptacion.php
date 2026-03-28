@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Servicio de Encriptación
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Servicio de Encriptación
  * 
  * Usa libsodium (AES-256-GCM equivalente) para encriptar datos sensibles.
  * Solo los usuarios admin e investigador pueden desencriptar a través de la app.

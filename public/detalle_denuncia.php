@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Detalle de Denuncia (Desencriptado)
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Detalle de Denuncia (Desencriptado)
  * Solo accesible por admin e investigador
  */
 $pageTitle = 'Detalle de Denuncia';

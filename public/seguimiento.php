@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Seguimiento de Denuncia
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Seguimiento de Denuncia
  */
 $pageTitle = 'Seguimiento de Denuncia';
 require_once __DIR__ . '/../includes/bootstrap.php';

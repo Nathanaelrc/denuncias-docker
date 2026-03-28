@@ -1,5 +1,5 @@
 # =============================================
-# Portal de Denuncias EPCO - Docker Compose
+# Portal de Denuncias Empresa Portuaria Coquimbo - Docker Compose
 # Servicios: Apache/PHP + MySQL + phpMyAdmin
 # =============================================
 
@@ -39,7 +39,7 @@ services:
       - SMTP_PASS=${SMTP_PASS:-}
       - SMTP_ENCRYPTION=${SMTP_ENCRYPTION:-tls}
       - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL:-denuncias@epco.cl}
-      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Canal de Denuncias - EPCO}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Canal de Denuncias - Empresa Portuaria Coquimbo}
       - SMTP_ADMIN_EMAIL=${SMTP_ADMIN_EMAIL:-}
       # Verificación SSL del servidor SMTP (true en producción, false solo con certs autofirmados)
       - SMTP_VERIFY_SSL=${SMTP_VERIFY_SSL:-true}
@@ -115,7 +115,7 @@ services:
       - SMTP_PASS=${SMTP_PASS:-}
       - SMTP_ENCRYPTION=${SMTP_ENCRYPTION:-tls}
       - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL:-denuncias@epco.cl}
-      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Portal Ciudadano - EPCO}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Portal Ciudadano - Empresa Portuaria Coquimbo}
       - SMTP_ADMIN_EMAIL=${SMTP_ADMIN_EMAIL:-}
       - SMTP_VERIFY_SSL=${SMTP_VERIFY_SSL:-true}
       - HEALTH_CHECK_TOKEN=${HEALTH_CHECK_TOKEN:-}

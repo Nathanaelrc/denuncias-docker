@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Cerrar Sesión
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Cerrar Sesión
  */
 require_once __DIR__ . '/../includes/bootstrap.php';
 

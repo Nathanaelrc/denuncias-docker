@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Barra Lateral Admin/Investigador
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Barra Lateral Admin/Investigador
  */
 
 if (!isset($user)) {
@@ -232,7 +232,7 @@ $unreadNotifs = $stmtUnread->fetchColumn();
     <button class="epco-logo-btn" id="sidebarToggle" onclick="toggleSidebar()">
         <i class="bi bi-list menu-icon"></i>
         <span class="logo-text">
-            <i class="bi bi-shield-lock me-1"></i>Denuncias EPCO
+            <i class="bi bi-shield-lock me-1"></i>Denuncias Empresa Portuaria Coquimbo
         </span>
     </button>
 

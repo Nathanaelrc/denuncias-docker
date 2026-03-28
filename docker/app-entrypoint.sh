@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================
-# Portal de Denuncias EPCO - App Entrypoint
+# Portal de Denuncias Empresa Portuaria Coquimbo - App Entrypoint
 # 1. Espera a que MySQL esté listo
 # 2. Ajusta permisos de volúmenes montados
 # =============================================

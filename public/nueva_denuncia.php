@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Formulario de Nueva Denuncia
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Formulario de Nueva Denuncia
  */
 $pageTitle = 'Realizar Denuncia';
 require_once __DIR__ . '/../includes/bootstrap.php';

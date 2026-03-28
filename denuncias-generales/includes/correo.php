@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas EPCO - Servicio de Correo (Gmail SMTP)
+ * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Servicio de Correo (Gmail SMTP)
  */
 
 if (!defined('GENERALES_APP')) {
@@ -14,7 +14,7 @@ define('SMTP_USER',       getenv('SMTP_USER') ?: '');
 define('SMTP_PASS',       getenv('SMTP_PASS') ?: '');
 define('SMTP_ENCRYPTION', getenv('SMTP_ENCRYPTION') ?: 'tls');
 define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL') ?: 'denuncias@epco.cl');
-define('SMTP_FROM_NAME',  getenv('SMTP_FROM_NAME')  ?: 'Portal Ciudadano - EPCO');
+define('SMTP_FROM_NAME',  getenv('SMTP_FROM_NAME')  ?: 'Portal Ciudadano - Empresa Portuaria Coquimbo');
 define('SMTP_ADMIN_EMAIL',getenv('SMTP_ADMIN_EMAIL') ?: '');
 
 function sendEmail(string $to, string $subject, string $htmlBody): bool {

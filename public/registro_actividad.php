@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Registro de Actividad
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Registro de Actividad
  */
 $pageTitle = 'Registro de Actividad';
 require_once __DIR__ . '/../includes/bootstrap.php';

@@ -9,7 +9,7 @@ if (!defined('GENERALES_APP')) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?? 'Canal de Denuncias' ?> - EPCO</title>
+    <title><?= $pageTitle ?? 'Canal de Denuncias' ?> - Empresa Portuaria Coquimbo</title>
 
     <link rel="icon" type="image/png" href="/img/Logo01.png">
     <link rel="shortcut icon" type="image/png" href="/img/Logo01.png">

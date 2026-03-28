@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal de Denuncias EPCO - Navbar Única
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Navbar Única
  */
 $_navUri     = strtok($_SERVER['REQUEST_URI'], '?');
 $_landingUrl = getenv('LANDING_URL') ?: 'http://localhost:8090';
@@ -39,7 +39,7 @@ $_generalUrl = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
 </style>
 <nav class="epco-nav">
     <a class="brand" href="/">
-        <img src="/img/Logo01.png" alt="EPCO" onerror="this.style.display='none'">
+        <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo" onerror="this.style.display='none'">
         <div class="brand-text">
             <div class="brand-title">Empresa Portuaria Coquimbo</div>
             <div class="brand-sub">Canal de Denuncias Ley Karin</div>

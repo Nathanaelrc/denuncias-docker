@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas EPCO - Configuración Principal
+ * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Configuración Principal
  */
 
 if (!defined('GENERALES_APP')) {
@@ -42,32 +42,12 @@ if (ENVIRONMENT === 'development') {
 }
 
 define('ROOT_PATH',    dirname(__DIR__));
-define('CONFIG_PATH',  ROOT_PATH . '/config');
-define('INCLUDES_PATH',ROOT_PATH . '/includes');
-define('PUBLIC_PATH',  ROOT_PATH . '/public');
-define('UPLOADS_PATH', ROOT_PATH . '/public/uploads');
 define('LOGS_PATH',    ROOT_PATH . '/logs');
-
-define('BASE_URL',    '/');
-define('UPLOADS_URL', '/uploads/');
 
 // =============================================
 // IDENTIDAD DEL PORTAL
 // =============================================
-define('APP_NAME',      'Canal de Denuncias');
-define('APP_FULL_NAME', 'Canal de Denuncias - EPCO');
-define('APP_VERSION',   '1.0.0');
-define('APP_COMPANY',   'Empresa Portuaria Coquimbo');
-
-// =============================================
-// COLORES (verde institucional)
-// =============================================
-define('PRIMARY_COLOR',   '#1a6591');
-define('SECONDARY_COLOR', '#ffffff');
-define('ACCENT_COLOR',    '#2380b0');
-define('DANGER_COLOR',    '#dc2626');
-define('SUCCESS_COLOR',   '#2380b0');
-define('WARNING_COLOR',   '#f59e0b');
+define('APP_NAME', 'Canal de Denuncias');
 
 // =============================================
 // ROLES
@@ -88,7 +68,7 @@ define('COMPLAINT_STATUSES', [
 ]);
 
 // =============================================
-// TIPOS DE DENUNCIA (ámbito portuario EPCO)
+// TIPOS DE DENUNCIA (ámbito portuario Empresa Portuaria Coquimbo)
 // =============================================
 define('COMPLAINT_TYPES', [
     'operaciones'       => ['label' => 'Operaciones Portuarias',        'icon' => 'bi-box-seam',            'ley' => 'Ley N° 18.696 / DFL N° 340'],

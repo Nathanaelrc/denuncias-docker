@@ -37,7 +37,7 @@ try {
 <html lang="es">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso - Portal Ciudadano de Denuncias EPCO</title>
+    <title>Acceso - Portal Ciudadano de Denuncias Empresa Portuaria Coquimbo</title>
     <link rel="icon" type="image/png" href="/img/Logo01.png">
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -152,7 +152,7 @@ try {
 
 <nav class="access-nav">
     <a href="/" class="access-nav-brand">
-        <img src="/img/Logo01.png" alt="EPCO" onerror="this.style.display='none'">
+        <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo" onerror="this.style.display='none'">
         <span>Portal Ciudadano</span>
     </a>
     <ul class="nav-links">
@@ -202,7 +202,7 @@ try {
             <div class="login-box">
                 <div class="login-head">
                     <div class="login-logo">
-                        <img src="/img/Logo01.png" alt="EPCO" onerror="this.style.display='none'">
+                        <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo" onerror="this.style.display='none'">
                     </div>
                     <h4>Iniciar Sesión</h4>
                     <p>Acceso para delegados y administradores</p>

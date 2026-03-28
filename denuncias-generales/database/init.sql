@@ -1,5 +1,5 @@
 -- =============================================
--- Portal Denuncias Ciudadanas EPCO - BD v1.0
+-- Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - BD v1.0
 -- Basado en legislación chilena general
 -- Separado del portal Ley Karin
 -- =============================================

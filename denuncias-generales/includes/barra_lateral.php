@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas EPCO - Barra Lateral Admin/Investigador
+ * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Barra Lateral Admin/Investigador
  */
 
 if (!isset($user)) {

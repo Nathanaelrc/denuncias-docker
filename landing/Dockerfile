@@ -1,5 +1,5 @@
 # ====================================================
-# Landing Page EPCO - Dockerfile
+# Landing Page Empresa Portuaria Coquimbo - Dockerfile
 # Sirve solo la página de selección de portales
 # ====================================================
 FROM php:8.2-apache
