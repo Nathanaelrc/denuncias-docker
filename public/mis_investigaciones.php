@@ -22,7 +22,7 @@ $conflictFilter = $selfHmac
     : '';
 $conflictParam = $selfHmac ? [$selfHmac] : [];
 
-$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints WHERE investigator_id = ? $conflictFilter");
+$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints c WHERE c.investigator_id = ? $conflictFilter");
 $stmtTotal->execute(array_merge([$user['id']], $conflictParam));
 $totalComplaints = (int)$stmtTotal->fetchColumn();
 $totalPages      = max(1, (int)ceil($totalComplaints / $perPage));
