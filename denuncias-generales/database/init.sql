@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS complaints (
     -- Entidad/empresa denunciada
     accused_name_encrypted BLOB DEFAULT NULL,
     accused_name_nonce VARBINARY(24) DEFAULT NULL,
+    accused_name_hmac VARCHAR(64) DEFAULT NULL,   -- HMAC del nombre normalizado para filtrado de conflictos
     accused_department_encrypted BLOB DEFAULT NULL,
     accused_department_nonce VARBINARY(24) DEFAULT NULL,
     accused_position_encrypted BLOB DEFAULT NULL,
@@ -95,6 +96,7 @@ CREATE TABLE IF NOT EXISTS complaints (
     INDEX idx_complaint_number (complaint_number),
     INDEX idx_status (status),
     INDEX idx_type (complaint_type),
+    INDEX idx_accused_name_hmac (accused_name_hmac),
     INDEX idx_created (created_at)
 ) ENGINE=InnoDB;
 
@@ -112,21 +114,18 @@ CREATE TABLE IF NOT EXISTS complaint_attachments (
     INDEX idx_complaint (complaint_id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS complaint_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+-- =============================================
+-- TABLA: TOKENS DE CONFLICTO DE INTERÉS
+-- =============================================
+CREATE TABLE IF NOT EXISTS complaint_conflict_tokens (
     complaint_id INT NOT NULL,
-    action VARCHAR(100) NOT NULL,
-    description_encrypted BLOB DEFAULT NULL,
-    description_nonce VARBINARY(24) DEFAULT NULL,
-    user_id INT DEFAULT NULL,
-    is_confidential TINYINT(1) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (complaint_id) REFERENCES complaints(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    INDEX idx_complaint (complaint_id)
+    token_hmac   VARCHAR(64) NOT NULL,
+    INDEX idx_token      (token_hmac),
+    INDEX idx_complaint  (complaint_id),
+    FOREIGN KEY (complaint_id) REFERENCES complaints(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS investigation_notes (
+CREATE TABLE IF NOT EXISTS complaint_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     complaint_id INT NOT NULL,
     user_id INT DEFAULT NULL,

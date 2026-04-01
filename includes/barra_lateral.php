@@ -17,21 +17,15 @@ $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 
 // Estadísticas para badges
 global $pdo;
-$_sidebarConflictWhere = '';
-$_sidebarConflictParams = [];
-if ($user['role'] === ROLE_INVESTIGADOR) {
-    $_sidebarHmac = getEncryptionService()->computeSearchHash($user['name']);
-    $_sidebarConflictWhere = 'WHERE (accused_name_hmac IS NULL OR accused_name_hmac != ?)';
-    $_sidebarConflictParams = [$_sidebarHmac];
-}
+$_cf = getConflictFilter($user, '');
 $_sidebarStmt = $pdo->prepare("
     SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN status = 'recibida' THEN 1 ELSE 0 END) as nuevas,
         SUM(CASE WHEN status = 'en_investigacion' THEN 1 ELSE 0 END) as en_investigacion
-    FROM complaints $_sidebarConflictWhere
+    FROM complaints " . ($_cf['where_sql'] ?: '') . "
 ");
-$_sidebarStmt->execute($_sidebarConflictParams);
+$_sidebarStmt->execute($_cf['params']);
 $stats = $_sidebarStmt->fetch();
 
 // Notificaciones no leídas

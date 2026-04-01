@@ -116,19 +116,19 @@ require_once __DIR__ . '/../includes/encabezado.php';
         <!-- Acciones -->
         <div style="display:flex;flex-direction:column;gap:.7rem;">
             <button onclick="document.getElementById('modalCanalKarin').style.display='none'" style="
-                background:#1a6591;color:#fff;border:none;border-radius:10px;
+                background:#2563eb;color:#fff;border:none;border-radius:10px;
                 padding:.75rem 1.2rem;font-size:.93rem;font-weight:700;cursor:pointer;
                 display:flex;align-items:center;justify-content:center;gap:8px;
                 transition:background .15s;
-            " onmouseover="this.style.background='#145275'" onmouseout="this.style.background='#1a6591'">
+            " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
                 <i class="bi bi-pencil-square"></i> Continuar aquí — Realizar denuncia Ley Karin
             </button>
             <a href="<?= htmlspecialchars(getenv('APP_URL_GENERAL') ?: 'http://localhost:9093') ?>/nueva_denuncia" style="
-                background:#f1f5f9;color:#1a6591;border:2px solid #cbd5e1;border-radius:10px;
+                background:#dc2626;color:#fff;border:2px solid #dc2626;border-radius:10px;
                 padding:.7rem 1.2rem;font-size:.88rem;font-weight:600;cursor:pointer;
                 display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;
                 transition:background .15s;
-            " onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
+            " onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
                 <i class="bi bi-arrow-right-circle"></i> Ir al Canal de Denuncias
             </a>
         </div>

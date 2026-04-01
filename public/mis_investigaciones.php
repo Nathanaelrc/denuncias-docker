@@ -14,13 +14,9 @@ $page    = max(1, (int)($_GET['page'] ?? 1));
 $offset  = ($page - 1) * $perPage;
 
 // Filtro de conflicto de interés: ocultar denuncias donde el investigador es el acusado
-$selfHmac = ($user['role'] === ROLE_INVESTIGADOR)
-    ? getEncryptionService()->computeSearchHash($user['name'])
-    : null;
-$conflictFilter = $selfHmac
-    ? "AND (c.accused_name_hmac IS NULL OR c.accused_name_hmac != ?)"
-    : '';
-$conflictParam = $selfHmac ? [$selfHmac] : [];
+$cf = getConflictFilter($user, 'c');
+$conflictFilter = $cf['and_sql'];
+$conflictParam  = $cf['params'];
 
 $stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints c WHERE c.investigator_id = ? $conflictFilter");
 $stmtTotal->execute(array_merge([$user['id']], $conflictParam));

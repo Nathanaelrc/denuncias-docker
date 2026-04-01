@@ -134,6 +134,19 @@ CREATE TABLE IF NOT EXISTS complaint_attachments (
 ) ENGINE=InnoDB;
 
 -- =============================================
+-- TABLA: TOKENS DE CONFLICTO DE INTERÉS
+-- Permite filtrar denuncias donde el nombre, cargo o dpto. del acusado
+-- coincide con cualquier token de identidad del investigador.
+-- =============================================
+CREATE TABLE IF NOT EXISTS complaint_conflict_tokens (
+    complaint_id INT NOT NULL,
+    token_hmac   VARCHAR(64) NOT NULL,
+    INDEX idx_token      (token_hmac),
+    INDEX idx_complaint  (complaint_id),
+    FOREIGN KEY (complaint_id) REFERENCES complaints(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- =============================================
 -- TABLA: HISTORIAL / LOGS DE DENUNCIAS
 -- =============================================
 CREATE TABLE IF NOT EXISTS complaint_logs (

@@ -11,15 +11,10 @@ $isAdmin = hasRole([ROLE_ADMIN]);
 $isInvestigador = hasRole([ROLE_INVESTIGADOR]);
 
 // Filtro de conflicto de interés para investigadores
-$conflictWhere = '';
-$conflictWhereAnd = '';
-$conflictParams = [];
-if ($user['role'] === ROLE_INVESTIGADOR) {
-    $selfHmac = getEncryptionService()->computeSearchHash($user['name']);
-    $conflictWhere = 'WHERE (accused_name_hmac IS NULL OR accused_name_hmac != ?)';
-    $conflictWhereAnd = 'AND (accused_name_hmac IS NULL OR accused_name_hmac != ?)';
-    $conflictParams = [$selfHmac];
-}
+$cf = getConflictFilter($user, '');
+$conflictWhere    = $cf['where_sql'];
+$conflictWhereAnd = $cf['and_sql'];
+$conflictParams   = $cf['params'];
 
 // Estadísticas generales
 $stmtStats = $pdo->prepare("

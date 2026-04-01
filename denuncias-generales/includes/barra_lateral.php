@@ -12,13 +12,17 @@ $isAdmin        = $user['role'] === ROLE_ADMIN;
 $isInvestigador = $user['role'] === ROLE_INVESTIGADOR;
 $currentPage    = basename($_SERVER['PHP_SELF'], '.php');
 
+// Estadísticas para badges
 global $pdo;
-$stats = $pdo->query("
+$_cf = getConflictFilter($user, '');
+$_sidebarStmt = $pdo->prepare("
     SELECT COUNT(*) as total,
         SUM(CASE WHEN status = 'recibida' THEN 1 ELSE 0 END) as nuevas,
         SUM(CASE WHEN status = 'en_investigacion' THEN 1 ELSE 0 END) as en_investigacion
-    FROM complaints
-")->fetch();
+    FROM complaints " . ($_cf['where_sql'] ?: '') . "
+");
+$_sidebarStmt->execute($_cf['params']);
+$stats = $_sidebarStmt->fetch();
 
 $stmtUnread = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
 $stmtUnread->execute([$user['id']]);

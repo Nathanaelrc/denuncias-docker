@@ -3,6 +3,75 @@
  * Portal Denuncias Ciudadanas - Utilidades
  */
 
+/**
+ * Genera el fragmento SQL (AND/WHERE) y parámetros para excluir denuncias en conflicto de interés.
+ * Para consultas sin alias de tabla pasa $alias = ''.
+ *
+ * @param  array  $user   Usuario actual (con 'role', 'name', 'position', 'department')
+ * @param  string $alias  Alias de la tabla complaints (default 'c', usar '' para queries sin alias)
+ * @return array  ['and_sql' => string, 'where_sql' => string, 'params' => array]
+ */
+function getConflictFilter(array $user, string $alias = 'c'): array
+{
+    $empty = ['and_sql' => '', 'where_sql' => '', 'params' => []];
+    if (($user['role'] ?? '') !== ROLE_INVESTIGADOR) return $empty;
+
+    $enc    = getEncryptionService();
+    $tokens = $enc->computeInvestigatorTokens(
+        $user['name'],
+        $user['position']   ?? null,
+        $user['department'] ?? null
+    );
+    if (empty($tokens)) return $empty;
+
+    $col  = $alias !== '' ? "{$alias}." : '';
+    $ph   = implode(',', array_fill(0, count($tokens), '?'));
+    $parts  = [];
+    $params = [];
+
+    $parts[]  = "({$col}accused_name_hmac IS NULL OR {$col}accused_name_hmac NOT IN ($ph))";
+    $params   = array_merge($params, $tokens);
+
+    // Check expandido: tabla complaint_conflict_tokens — requiere al menos 2 tokens coincidentes
+    $parts[]  = "{$col}id NOT IN (SELECT cct.complaint_id FROM complaint_conflict_tokens cct WHERE cct.token_hmac IN ($ph) GROUP BY cct.complaint_id HAVING COUNT(DISTINCT cct.token_hmac) >= 2)";
+    $params   = array_merge($params, $tokens);
+
+    $combined = implode(' AND ', $parts);
+    return [
+        'and_sql'   => "AND ($combined)",
+        'where_sql' => "WHERE ($combined)",
+        'params'    => $params,
+    ];
+}
+
+/**
+ * Verifica si una denuncia específica está en conflicto de interés para el investigador.
+ */
+function isComplaintConflict(int $complaintId, array $user): bool
+{
+    global $pdo;
+    if (($user['role'] ?? '') !== ROLE_INVESTIGADOR) return false;
+
+    $enc    = getEncryptionService();
+    $tokens = $enc->computeInvestigatorTokens(
+        $user['name'],
+        $user['position']   ?? null,
+        $user['department'] ?? null
+    );
+    if (empty($tokens)) return false;
+
+    $stmt = $pdo->prepare("SELECT accused_name_hmac FROM complaints WHERE id = ?");
+    $stmt->execute([$complaintId]);
+    $storedHmac = $stmt->fetchColumn();
+    if ($storedHmac && in_array($storedHmac, $tokens, true)) return true;
+
+    // Check tabla de tokens expandidos — requiere al menos 2 coincidencias
+    $ph    = implode(',', array_fill(0, count($tokens), '?'));
+    $stmt2 = $pdo->prepare("SELECT COUNT(DISTINCT token_hmac) FROM complaint_conflict_tokens WHERE complaint_id = ? AND token_hmac IN ($ph)");
+    $stmt2->execute(array_merge([$complaintId], $tokens));
+    return (int)$stmt2->fetchColumn() >= 2;
+}
+
 function sendNotification(string $groupSlug, string $title, string $message = '', string $entityType = null, int $entityId = null): void {
     global $pdo;
     try {
@@ -89,6 +158,7 @@ function createComplaint(array $data): array {
         $reporterPhone   = $enc->encryptForDb($data['reporter_phone'] ?? null);
         $reporterDept    = $enc->encryptForDb($data['reporter_department'] ?? null);
         $accusedName     = $enc->encryptForDb($data['accused_name'] ?? null);
+        $accusedNameHmac = $enc->computeSearchHash($data['accused_name'] ?? null);
         $accusedDept     = $enc->encryptForDb($data['accused_department'] ?? null);
         $accusedPos      = $enc->encryptForDb($data['accused_position'] ?? null);
         $witnesses       = $enc->encryptForDb($data['witnesses'] ?? null);
@@ -104,14 +174,14 @@ function createComplaint(array $data): array {
             reporter_email_encrypted, reporter_email_nonce,
             reporter_phone_encrypted, reporter_phone_nonce,
             reporter_department_encrypted, reporter_department_nonce,
-            accused_name_encrypted, accused_name_nonce,
+            accused_name_encrypted, accused_name_nonce, accused_name_hmac,
             accused_department_encrypted, accused_department_nonce,
             accused_position_encrypted, accused_position_nonce,
             witnesses_encrypted, witnesses_nonce,
             incident_date,
             incident_location_encrypted, incident_location_nonce,
             status
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'recibida')";
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'recibida')";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -124,15 +194,29 @@ function createComplaint(array $data): array {
             $reporterEmail['encrypted'],   $reporterEmail['nonce'],
             $reporterPhone['encrypted'],   $reporterPhone['nonce'],
             $reporterDept['encrypted'],    $reporterDept['nonce'],
-            $accusedName['encrypted'],     $accusedName['nonce'],
+            $accusedName['encrypted'],     $accusedName['nonce'],     $accusedNameHmac,
             $accusedDept['encrypted'],     $accusedDept['nonce'],
             $accusedPos['encrypted'],      $accusedPos['nonce'],
             $witnesses['encrypted'],       $witnesses['nonce'],
-            $data['incident_date'] ?? null,
+            $data['incident_date']       ?? null,
             $incidentLoc['encrypted'],     $incidentLoc['nonce'],
         ]);
 
         $complaintId = $pdo->lastInsertId();
+
+        // Generar e insertar tokens de conflicto de interés
+        $conflictTokens = $enc->computeAccusedConflictTokens(array_filter([
+            $data['accused_name']       ?? null,
+            $data['accused_position']   ?? null,
+            $data['accused_department'] ?? null,
+        ]));
+        if (!empty($conflictTokens)) {
+            $tokenStmt = $pdo->prepare("INSERT INTO complaint_conflict_tokens (complaint_id, token_hmac) VALUES (?, ?)");
+            foreach ($conflictTokens as $tokenHmac) {
+                $tokenStmt->execute([$complaintId, $tokenHmac]);
+            }
+        }
+
         addComplaintLog($complaintId, 'creada', 'Denuncia recibida en el sistema', null, false);
 
         try {

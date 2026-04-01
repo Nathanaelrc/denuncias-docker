@@ -19,7 +19,14 @@ if ($filterStatus && array_key_exists($filterStatus, COMPLAINT_STATUSES)) { $whe
 if ($filterType   && array_key_exists($filterType, COMPLAINT_TYPES))      { $where[] = "c.complaint_type = ?"; $params[] = $filterType; }
 if ($search)                                                               { $where[] = "c.complaint_number LIKE ?"; $params[] = "%$search%"; }
 
+// Filtro de conflicto de interés: investigadores no ven denuncias donde son el acusado
+$cf = getConflictFilter($user, 'c');
+
 $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+if ($cf['and_sql']) {
+    $whereClause = ($whereClause ?: 'WHERE 1=1') . ' ' . $cf['and_sql'];
+    $params      = array_merge($params, $cf['params']);
+}
 
 $countStmt = $pdo->prepare("SELECT COUNT(*) FROM complaints c $whereClause");
 $countStmt->execute($params);

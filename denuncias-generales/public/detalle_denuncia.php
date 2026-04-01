@@ -20,6 +20,11 @@ if (!$complaint) {
     redirect('/denuncias_admin', 'Denuncia no encontrada.', 'danger');
 }
 
+// Protección de conflicto de interés: investigadores no pueden ver denuncias donde son el acusado
+if ($user['role'] === ROLE_INVESTIGADOR && isComplaintConflict($id, $user)) {
+    redirect('/denuncias_admin', 'No tienes acceso a esta denuncia (conflicto de interés).', 'danger');
+}
+
 logActivity($_SESSION['user_id'], 'ver_denuncia', 'complaint', $id, 'Acceso a denuncia desencriptada');
 
 // Procesar acciones POST

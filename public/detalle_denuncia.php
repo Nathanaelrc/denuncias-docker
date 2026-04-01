@@ -21,14 +21,8 @@ if (!$complaint) {
 }
 
 // Protección de conflicto de interés: investigadores no pueden ver denuncias donde son el acusado
-if ($user['role'] === ROLE_INVESTIGADOR) {
-    $selfHmac = getEncryptionService()->computeSearchHash($user['name']);
-    $stmt = $pdo->prepare("SELECT accused_name_hmac FROM complaints WHERE id = ?");
-    $stmt->execute([$id]);
-    $hmacRow = $stmt->fetchColumn();
-    if ($hmacRow && $hmacRow === $selfHmac) {
-        redirect('/denuncias_admin', 'No tienes acceso a esta denuncia.', 'danger');
-    }
+if ($user['role'] === ROLE_INVESTIGADOR && isComplaintConflict($id, $user)) {
+    redirect('/denuncias_admin', 'No tienes acceso a esta denuncia (conflicto de interés).', 'danger');
 }
 
 logActivity($_SESSION['user_id'], 'ver_denuncia', 'complaint', $id, 'Acceso a denuncia desencriptada');

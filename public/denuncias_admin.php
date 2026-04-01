@@ -34,13 +34,13 @@ if ($search) {
 }
 
 // Filtro de conflicto de interés: los investigadores no pueden ver denuncias donde son el acusado
-if ($user['role'] === ROLE_INVESTIGADOR) {
-    $selfHmac = getEncryptionService()->computeSearchHash($user['name']);
-    $where[] = "(c.accused_name_hmac IS NULL OR c.accused_name_hmac != ?)";
-    $params[] = $selfHmac;
-}
+$cf = getConflictFilter($user, 'c');
 
 $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+if ($cf['and_sql']) {
+    $whereClause = ($whereClause ?: 'WHERE 1=1') . ' ' . $cf['and_sql'];
+    $params      = array_merge($params, $cf['params']);
+}
 
 // Contar total
 $countStmt = $pdo->prepare("SELECT COUNT(*) FROM complaints c $whereClause");

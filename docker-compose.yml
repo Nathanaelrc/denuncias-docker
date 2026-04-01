@@ -16,8 +16,8 @@ services:
     ports:
       - "${APP_PORT:-9091}:80"
     volumes:
-      - ./logs:/var/www/html/logs:z
-      - ./public/uploads:/var/www/html/public/uploads:z
+      - ./logs:/var/www/html/logs
+      - ./public/uploads:/var/www/html/public/uploads
     environment:
       - DB_HOST=db
       - DB_NAME=${DB_NAME:-denuncias}
@@ -68,7 +68,7 @@ services:
       TZ: America/Santiago
     volumes:
       - denuncias-db-data:/var/lib/mysql
-      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:z
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
@@ -94,8 +94,8 @@ services:
     ports:
       - "${APP_GENERALES_PORT:-9093}:80"
     volumes:
-      - ./denuncias-generales/logs:/var/www/html/logs:z
-      - ./denuncias-generales/public/uploads:/var/www/html/public/uploads:z
+      - ./denuncias-generales/logs:/var/www/html/logs
+      - ./denuncias-generales/public/uploads:/var/www/html/public/uploads
     environment:
       - DB_HOST=db-generales
       - DB_NAME=${DB_GENERALES_NAME:-denuncias_generales}
@@ -142,7 +142,7 @@ services:
       TZ: America/Santiago
     volumes:
       - denuncias-generales-db-data:/var/lib/mysql
-      - ./denuncias-generales/database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:z
+      - ./denuncias-generales/database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci

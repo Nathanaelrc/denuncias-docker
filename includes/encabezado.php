@@ -22,10 +22,6 @@ if (!defined('DENUNCIAS_APP')) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Tailwind CSS (sin preflight para no conflictar con Bootstrap) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { corePlugins: { preflight: false } }</script>
-
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
