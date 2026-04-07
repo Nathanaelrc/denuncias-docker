@@ -19,14 +19,14 @@ if (!defined('DENUNCIAS_APP')) {
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="<?= CDN_BS_CSS ?>" rel="stylesheet">
+    <link href="<?= CDN_BS_ICONS ?>" rel="stylesheet">
 
     <!-- GSAP -->
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="<?= CDN_GSAP ?>"></script>
 
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script src="<?= CDN_CHARTJS ?>"></script>
 
     <style>
         :root {
@@ -65,13 +65,13 @@ if (!defined('DENUNCIAS_APP')) {
 
         .card-epco {
             background: white;
-            border-radius: 16px;
+            border-radius: 10px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
         }
         .card-epco:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 45px rgba(0,0,0,0.22);
         }
 
         .navbar-epco {
@@ -105,14 +105,14 @@ if (!defined('DENUNCIAS_APP')) {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
         }
 
-        .fade-in { opacity: 0; transform: translateY(30px); }
-        .slide-in-left { opacity: 0; transform: translateX(-50px); }
-        .slide-in-right { opacity: 0; transform: translateX(50px); }
-        .scale-in { opacity: 0; transform: scale(0.9); }
+        .fade-in { opacity: 0; transform: translateY(12px); }
+        .slide-in-left { opacity: 0; transform: translateX(-20px); }
+        .slide-in-right { opacity: 0; transform: translateX(20px); }
+        .scale-in { opacity: 0; transform: scale(0.97); }
 
         /* Animación de entrada de página */
         @keyframes pageEntrance {
-            0% { opacity: 0; transform: translateY(15px); }
+            0% { opacity: 0; transform: translateY(8px); }
             100% { opacity: 1; transform: translateY(0); }
         }
 
@@ -121,21 +121,16 @@ if (!defined('DENUNCIAS_APP')) {
             100% { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes subtlePulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2); }
-            50% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
-        }
-
         .page-entrance {
-            animation: pageEntrance 0.6s ease-out forwards;
+            animation: pageEntrance 0.8s ease-out forwards;
         }
 
         .nav-animate {
-            animation: navSlideDown 0.5s ease-out forwards;
+            animation: navSlideDown 0.6s ease-out forwards;
         }
 
         .pulse-soft {
-            animation: subtlePulse 3s ease-in-out infinite;
+            /* desactivado: animación de pulso no apta para contexto institucional */
         }
 
         .legal-badge {

@@ -2,7 +2,8 @@
 # Portal de Denuncias para Empresa Portuaria Coquimbo - Dockerfile
 # PHP 8.5 con Apache y algunas extensiones necesarias
 # ====================================================
-FROM php:8.5-apache
+ARG PHP_VERSION=8.5
+FROM php:${PHP_VERSION}-apache
 
 # Instalar extensiones de PHP necesarias
 RUN apt-get update && apt-get install -y \

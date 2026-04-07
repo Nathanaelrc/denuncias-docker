@@ -15,6 +15,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.5}
     container_name: denuncias-app
     restart: unless-stopped
     # Puerto directo deshabilitado; acceder vía Nginx en :${NGINX_PORT:-9090}/karin/
@@ -60,7 +62,7 @@ services:
   # Base de Datos MySQL
   # =============================================
   db:
-    image: mysql:8.4
+    image: mysql:${MYSQL_VERSION:-8.4}
     container_name: denuncias-db
     restart: unless-stopped
     ports:
@@ -94,6 +96,8 @@ services:
     build:
       context: ./denuncias-generales
       dockerfile: Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.5}
     container_name: denuncias-generales-app
     restart: unless-stopped
     # Puerto directo deshabilitado; acceder vía Nginx en :${NGINX_PORT:-9090}/generales/
@@ -135,7 +139,7 @@ services:
   # Base de Datos MySQL - Portal Ciudadano
   # =============================================
   db-generales:
-    image: mysql:8.4
+    image: mysql:${MYSQL_VERSION:-8.4}
     container_name: denuncias-generales-db
     restart: unless-stopped
     ports:

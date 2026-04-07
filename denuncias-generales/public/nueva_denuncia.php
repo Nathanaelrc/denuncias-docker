@@ -110,8 +110,8 @@ require_once __DIR__ . '/../includes/encabezado.php';
 
         <!-- Cabecera -->
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.1rem;">
-            <div style="width:48px;height:48px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <i class="bi bi-anchor" style="color:#1a6591;font-size:1.5rem;"></i>
+            <div style="width:48px;height:48px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
+                <img src="/img/Logo01.png" alt="EPC" style="width:34px;height:34px;object-fit:contain;">
             </div>
             <div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#1a6591;">Estás en el canal</div>

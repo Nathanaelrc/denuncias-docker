@@ -211,8 +211,8 @@ new Chart(document.getElementById('chartAnon'), {
 });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="<?= CDN_JSPDF ?>"></script>
+<script src="<?= CDN_JSPDF_AUTO ?>"></script>
 <script>
 function generarPDF() {
     const { jsPDF } = window.jspdf;

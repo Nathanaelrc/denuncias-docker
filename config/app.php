@@ -187,3 +187,6 @@ function logActivity($userId, $action, $entityType = null, $entityId = null, $de
     }
     file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
 }
+
+// Versiones de dependencias CDN
+require_once __DIR__ . '/versions.php';

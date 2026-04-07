@@ -161,3 +161,6 @@ function logActivity($userId, $action, $entityType = null, $entityId = null, $de
         error_log("Error log auditoría: " . $e->getMessage());
     }
 }
+
+// Versiones de dependencias CDN
+require_once __DIR__ . '/versions.php';

@@ -2,7 +2,8 @@
 # Portal de Denuncias Ciudadanas Empresa Portuaria Coquimbo - Dockerfile
 # PHP 8.5 con Apache y extensiones necesarias
 # ====================================================
-FROM php:8.5-apache
+ARG PHP_VERSION=8.5
+FROM php:${PHP_VERSION}-apache
 
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev libzip-dev \
