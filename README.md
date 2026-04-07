@@ -98,7 +98,10 @@ Cada portal utiliza su propia `ENCRYPTION_KEY` generada automáticamente por `st
 
 ```
 denuncias-docker/
-├── config/                    # Configuración de aplicación y base de datos
+├── config/
+│   ├── app.php                # Configuración principal y constantes
+│   ├── database.php           # Conexión PDO
+│   └── versions.php           # Versiones de librerías CDN (Bootstrap, GSAP, etc.)
 ├── database/                  # SQL de inicialización — Portal Ley Karin
 ├── docker/                    # Entrypoint y php.ini
 ├── includes/                  # Módulos PHP compartidos — Portal Ley Karin
@@ -121,6 +124,7 @@ denuncias-docker/
 │   └── ...
 ├── denuncias-generales/       # Portal Ciudadano (estructura simétrica)
 │   ├── config/
+│   │   └── versions.php       # Versiones CDN del Portal Ciudadano
 │   ├── database/
 │   ├── docker/
 │   ├── includes/
@@ -129,9 +133,14 @@ denuncias-docker/
 │   └── public/index.php
 ├── nginx/
 │   └── nginx.conf             # Configuración del reverse proxy
+├── scripts/
+│   ├── update.sh              # Actualización automática de versiones CDN e infra
+│   └── backup-db.sh           # Backup de bases de datos (ambos portales)
+├── backups/                   # Dumps de BD generados por backup-db.sh (no versionado)
 ├── logs/
 ├── Dockerfile
 ├── docker-compose.yml
+├── .env                       # Variables de entorno (no versionado)
 └── start.sh
 ```
 
@@ -142,6 +151,8 @@ El archivo `.env` es generado automáticamente por `start.sh`. Las variables dis
 | Variable | Descripción |
 |----------|-------------|
 | `NGINX_PORT` | Puerto externo del reverse proxy (default: `9090`) |
+| `PHP_VERSION` | Versión de PHP para construir las imágenes (default: `8.5`) |
+| `MYSQL_VERSION` | Versión de MySQL (default: `8.4`) |
 | `DB_PORT` | Puerto MySQL — Portal Ley Karin (default: `3307`) |
 | `DB_GENERALES_PORT` | Puerto MySQL — Portal Ciudadano (default: `3308`) |
 | `ENCRYPTION_KEY` | Clave de encriptación — Portal Ley Karin |
@@ -153,7 +164,70 @@ El archivo `.env` es generado automáticamente por `start.sh`. Las variables dis
 | `SMTP_FROM_EMAIL` / `SMTP_FROM_NAME` | Remitente de correos del sistema |
 | `APP_ENV` | Entorno de ejecución (`production` / `development`) |
 
-## Seguridad
+## Actualización de Versiones
+
+El proyecto centraliza todas las versiones de librerías CDN y de infraestructura Docker para facilitar las actualizaciones.
+
+### Librerías CDN (Bootstrap, GSAP, Chart.js, etc.)
+
+Las versiones están declaradas en un único archivo por portal:
+
+```
+config/versions.php                       ← Portal Ley Karin
+denuncias-generales/config/versions.php   ← Portal Ciudadano
+```
+
+Para actualizar una librería, cambia solo el número de versión en esos archivos. El cambio se propaga automáticamente a todo el portal sin modificar ningún otro archivo.
+
+### Script de actualización automática
+
+```bash
+# Ver qué cambiaría sin aplicar nada
+./scripts/update.sh --dry-run
+
+# Actualizar versiones CDN en versions.php
+./scripts/update.sh
+
+# Actualizar versiones CDN y reconstruir contenedores (con el sistema levantado)
+./scripts/update.sh --rebuild
+
+# También verificar disponibilidad de nuevas versiones de PHP y MySQL en Docker Hub
+./scripts/update.sh --rebuild --infra
+```
+
+El script consulta el registro de npm, detecta nuevas versiones y aplica los cambios. Al usar `--rebuild`, reconstruye solo los contenedores de aplicación sin bajar Nginx, por lo que el sistema se mantiene disponible durante la actualización.
+
+> **Nota:** jsPDF y jsPDF-AutoTable se bloquean en su major actual — si sale una versión mayor, el script no la aplica automáticamente hasta que se verifique compatibilidad.
+
+### Versiones de infraestructura Docker
+
+Editar el archivo `.env`:
+
+```env
+PHP_VERSION=8.5      # Actualizar PHP
+MYSQL_VERSION=8.4    # Actualizar MySQL (hacer backup antes)
+```
+
+Luego aplicar:
+
+```bash
+docker compose build --no-cache && docker compose up -d
+```
+
+## Backup de Bases de Datos
+
+```bash
+# Backup de ambas bases de datos
+./scripts/backup-db.sh
+
+# Solo Portal Ley Karin
+./scripts/backup-db.sh --karin
+
+# Solo Portal Ciudadano
+./scripts/backup-db.sh --generales
+```
+
+Los backups se guardan como `.sql.gz` en `backups/` con marca de tiempo y se eliminan automáticamente después de 30 días. **Realizar siempre un backup antes de actualizar MySQL.**
 
 - Las claves de encriptación y contraseñas de base de datos son generadas automáticamente con entropía suficiente.
 - El archivo `.env` no debe ser versionado ni compartido.
