@@ -19,8 +19,6 @@ define('VER_BOOTSTRAP',       '5.3.8');
 define('VER_BOOTSTRAP_ICONS', '1.13.1');
 define('VER_GSAP',            '3.12.5');
 define('VER_CHARTJS',         '4.5.1');
-define('VER_JSPDF',           '2.5.2');
-define('VER_JSPDF_AUTOTABLE', '3.8.4');
 
 // --- URLs de CDN (generadas automáticamente) ---
 define('CDN_BS_CSS',
@@ -35,7 +33,3 @@ define('CDN_GSAP_ST',
     'https://cdn.jsdelivr.net/npm/gsap@' . VER_GSAP . '/dist/ScrollTrigger.min.js');
 define('CDN_CHARTJS',
     'https://cdn.jsdelivr.net/npm/chart.js@' . VER_CHARTJS . '/dist/chart.umd.min.js');
-define('CDN_JSPDF',
-    'https://cdn.jsdelivr.net/npm/jspdf@' . VER_JSPDF . '/dist/jspdf.umd.min.js');
-define('CDN_JSPDF_AUTO',
-    'https://cdn.jsdelivr.net/npm/jspdf-autotable@' . VER_JSPDF_AUTOTABLE . '/dist/jspdf.plugin.autotable.min.js');

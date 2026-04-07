@@ -211,102 +211,73 @@ new Chart(document.getElementById('chartAnon'), {
 });
 </script>
 
-<script src="<?= CDN_JSPDF ?>"></script>
-<script src="<?= CDN_JSPDF_AUTO ?>"></script>
+<style media="print">
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    .main-content { margin: 0 !important; padding: 1cm !important; }
+    .card { break-inside: avoid; box-shadow: none !important; border: 1px solid #dee2e6 !important; }
+    @page { margin: 1.5cm; size: A4; }
+</style>
+
+<div class="print-only" style="display:none; margin-bottom: 1.5rem;">
+    <div style="text-align:center; border-bottom: 2px solid #1a6591; padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <strong style="font-size:1.15rem; color:#1a6591;">Reporte de Métricas — Canal de Denuncias Ley Karin</strong><br>
+        <small style="color:#6b7280;">Empresa Portuaria Coquimbo &mdash; Generado: <?= date('d/m/Y H:i') ?></small>
+    </div>
+    <table style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:1.5rem;">
+        <thead><tr style="background:#1a6591; color:#fff;">
+            <th style="padding:6px 10px; text-align:left;">Indicador</th>
+            <th style="padding:6px 10px; text-align:right;">Valor</th>
+        </tr></thead>
+        <tbody>
+            <tr style="background:#f8fafc;"><td style="padding:5px 10px;">Total Denuncias</td><td style="padding:5px 10px; text-align:right;"><?= (int)$overview['total'] ?></td></tr>
+            <tr><td style="padding:5px 10px;">Resueltas</td><td style="padding:5px 10px; text-align:right;"><?= (int)$overview['resueltas'] ?></td></tr>
+            <tr style="background:#f8fafc;"><td style="padding:5px 10px;">Anónimas</td><td style="padding:5px 10px; text-align:right;"><?= (int)$overview['anonimas'] ?></td></tr>
+            <tr><td style="padding:5px 10px;">Identificadas</td><td style="padding:5px 10px; text-align:right;"><?= (int)$overview['identificadas'] ?></td></tr>
+            <tr style="background:#f8fafc;"><td style="padding:5px 10px;">Días prom. resolución</td><td style="padding:5px 10px; text-align:right;"><?= $overview['avg_resolution_days'] ? round($overview['avg_resolution_days'], 1) : '-' ?></td></tr>
+        </tbody>
+    </table>
+    <?php if (!empty($byType)): ?>
+    <p style="font-weight:700; color:#1e293b; margin-bottom:0.4rem;">Denuncias por Tipo</p>
+    <table style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:1.5rem;">
+        <thead><tr style="background:#1a6591; color:#fff;">
+            <th style="padding:6px 10px; text-align:left;">Tipo</th>
+            <th style="padding:6px 10px; text-align:right;">Cantidad</th>
+        </tr></thead>
+        <tbody>
+        <?php foreach ($byType as $i => $t): ?>
+            <tr<?= $i % 2 === 0 ? ' style="background:#f8fafc;"' : '' ?>>
+                <td style="padding:5px 10px;"><?= htmlspecialchars(COMPLAINT_TYPES[$t['complaint_type']]['label'] ?? $t['complaint_type']) ?></td>
+                <td style="padding:5px 10px; text-align:right;"><?= (int)$t['total'] ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
+    <p style="font-weight:700; color:#1e293b; margin-bottom:0.4rem;">Denuncias por Estado</p>
+    <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+        <thead><tr style="background:#1a6591; color:#fff;">
+            <th style="padding:6px 10px; text-align:left;">Estado</th>
+            <th style="padding:6px 10px; text-align:right;">Cantidad</th>
+        </tr></thead>
+        <tbody>
+        <?php $si = 0; foreach (COMPLAINT_STATUSES as $skey => $st): $val = $overview[$skey] ?? 0; ?>
+            <tr<?= $si % 2 === 0 ? ' style="background:#f8fafc;"' : '' ?>>
+                <td style="padding:5px 10px;"><?= htmlspecialchars($st['label']) ?></td>
+                <td style="padding:5px 10px; text-align:right;"><?= (int)$val ?></td>
+            </tr>
+        <?php $si++; endforeach; ?>
+        </tbody>
+    </table>
+    <p style="font-size:0.72rem; color:#9ca3af; text-align:center; margin-top:2rem; border-top:1px solid #e5e7eb; padding-top:0.5rem;">
+        Canal de Denuncias Ley Karin — Empresa Portuaria Coquimbo
+    </p>
+</div>
+
 <script>
 function generarPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    let y = 20;
-
-    // Título
-    doc.setFontSize(18);
-    doc.setTextColor(26, 101, 145);
-    doc.text('Reporte de Métricas - Ley Karin', pageWidth / 2, y, { align: 'center' });
-    y += 10;
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text('Generado: ' + new Date().toLocaleString('es-CL'), pageWidth / 2, y, { align: 'center' });
-    y += 15;
-
-    // KPIs
-    doc.setFontSize(13);
-    doc.setTextColor(30, 41, 59);
-    doc.text('Resumen General', 14, y);
-    y += 8;
-
-    doc.autoTable({
-        startY: y,
-        head: [['Indicador', 'Valor']],
-        body: [
-            ['Total Denuncias', '<?= (int)$overview['total'] ?>'],
-            ['Resueltas', '<?= (int)$overview['resueltas'] ?>'],
-            ['Anónimas', '<?= (int)$overview['anonimas'] ?>'],
-            ['Identificadas', '<?= (int)$overview['identificadas'] ?>'],
-            ['Días prom. resolución', '<?= $overview['avg_resolution_days'] ? round($overview['avg_resolution_days'], 1) : '-' ?>']
-        ],
-        theme: 'striped',
-        headStyles: { fillColor: [26, 101, 145], textColor: 255 },
-        styles: { fontSize: 10 },
-        margin: { left: 14, right: 14 }
-    });
-    y = doc.lastAutoTable.finalY + 15;
-
-    // Por Tipo
-    doc.setFontSize(13);
-    doc.setTextColor(30, 41, 59);
-    doc.text('Denuncias por Tipo', 14, y);
-    y += 8;
-
-    const typesData = <?= json_encode(array_map(fn($t) => [
-        COMPLAINT_TYPES[$t['complaint_type']]['label'] ?? $t['complaint_type'],
-        (int)$t['total']
-    ], $byType)) ?>;
-
-    doc.autoTable({
-        startY: y,
-        head: [['Tipo de Denuncia', 'Cantidad']],
-        body: typesData.map(t => [t[0], String(t[1])]),
-        theme: 'striped',
-        headStyles: { fillColor: [26, 101, 145], textColor: 255 },
-        styles: { fontSize: 10 },
-        margin: { left: 14, right: 14 }
-    });
-    y = doc.lastAutoTable.finalY + 15;
-
-    // Por Estado
-    doc.setFontSize(13);
-    doc.setTextColor(30, 41, 59);
-    doc.text('Denuncias por Estado', 14, y);
-    y += 8;
-
-    const statusData = <?= json_encode(array_map(fn($key, $st) => [
-        $st['label'],
-        (int)($overview[$key] ?? $overview[str_replace(' ', '_', $key)] ?? 0)
-    ], array_keys(COMPLAINT_STATUSES), array_values(COMPLAINT_STATUSES))) ?>;
-
-    doc.autoTable({
-        startY: y,
-        head: [['Estado', 'Cantidad']],
-        body: statusData.map(s => [s[0], String(s[1])]),
-        theme: 'striped',
-        headStyles: { fillColor: [26, 101, 145], textColor: 255 },
-        styles: { fontSize: 10 },
-        margin: { left: 14, right: 14 }
-    });
-
-    // Pie de página
-    const totalPages = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(150);
-        doc.text('Canal de Denuncias Ley Karin - Página ' + i + ' de ' + totalPages,
-            pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
-    }
-
-    doc.save('reporte_ley_karin_' + new Date().toISOString().slice(0, 10) + '.pdf');
+    window.print();
 }
 </script>
 

@@ -106,36 +106,16 @@ BS_CURRENT=$(current_version VER_BOOTSTRAP)
 BSI_CURRENT=$(current_version VER_BOOTSTRAP_ICONS)
 GSAP_CURRENT=$(current_version VER_GSAP)
 CHART_CURRENT=$(current_version VER_CHARTJS)
-JSPDF_CURRENT=$(current_version VER_JSPDF)
-JPAT_CURRENT=$(current_version VER_JSPDF_AUTOTABLE)
 
 BS_LATEST=$(npm_latest bootstrap)
 BSI_LATEST=$(npm_latest bootstrap-icons)
 GSAP_LATEST=$(npm_latest gsap)
 CHART_LATEST=$(npm_latest chart.js)
-JSPDF_LATEST=$(npm_latest jspdf)
-JPAT_LATEST=$(npm_latest jspdf-autotable)
-
-# jsPDF: mantener en major 2 (v3+ eliminó el bundle UMD)
-JSPDF_SAFE="$JSPDF_LATEST"
-if [ "$(major "$JSPDF_LATEST")" != "2" ]; then
-    JSPDF_SAFE="$JSPDF_CURRENT"
-    JSPDF_LATEST="${JSPDF_LATEST} (bloqueado en v2.x - v3+ sin UMD bundle)"
-fi
-
-# jsPDF-AutoTable: mantener en major 3
-JPAT_SAFE="$JPAT_LATEST"
-if [ "$(major "$JPAT_LATEST")" != "3" ]; then
-    JPAT_SAFE="$JPAT_CURRENT"
-    JPAT_LATEST="${JPAT_LATEST} (bloqueado en v3.x)"
-fi
 
 show_diff "Bootstrap"         "$BS_CURRENT"    "$BS_LATEST"
 show_diff "Bootstrap Icons"   "$BSI_CURRENT"   "$BSI_LATEST"
 show_diff "GSAP"              "$GSAP_CURRENT"  "$GSAP_LATEST"
 show_diff "Chart.js"          "$CHART_CURRENT" "$CHART_LATEST"
-show_diff "jsPDF"             "$JSPDF_CURRENT" "$JSPDF_LATEST"
-show_diff "jsPDF-AutoTable"   "$JPAT_CURRENT"  "$JPAT_LATEST"
 
 echo ""
 
@@ -152,8 +132,6 @@ for pair in \
         CDN_CHANGED=true; break
     fi
 done
-[ "$JSPDF_SAFE" != "$JSPDF_CURRENT" ] && CDN_CHANGED=true
-[ "$JPAT_SAFE" != "$JPAT_CURRENT" ] && CDN_CHANGED=true
 
 # =============================================================================
 # 2. Infraestructura Docker (opcional)
@@ -217,8 +195,6 @@ update_version VER_BOOTSTRAP       "$BS_LATEST"
 update_version VER_BOOTSTRAP_ICONS "$BSI_LATEST"
 update_version VER_GSAP            "$GSAP_LATEST"
 update_version VER_CHARTJS         "$CHART_LATEST"
-update_version VER_JSPDF           "$JSPDF_SAFE"
-update_version VER_JSPDF_AUTOTABLE "$JPAT_SAFE"
 echo -e "${GREEN}✓ config/versions.php actualizado en ambos portales${RESET}"
 echo ""
 
