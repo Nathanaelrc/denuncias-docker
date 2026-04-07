@@ -1,6 +1,6 @@
 # ====================================================
 # Portal de Denuncias Ciudadanas Empresa Portuaria Coquimbo - Dockerfile
-# PHP 8.2 con Apache y extensiones necesarias
+# PHP 8.5 con Apache y extensiones necesarias
 # ====================================================
 FROM php:8.5-apache
 

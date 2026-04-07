@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Canal de Denuncias Empresa Portuaria Coquimbo</title>
     <link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         * { font-family: 'Onest', sans-serif; }
         body { background: linear-gradient(135deg, #1a6591 0%, #2380b0 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: white; }
