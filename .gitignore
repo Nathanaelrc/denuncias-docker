@@ -2,6 +2,9 @@
 .env
 .env.*
 
+# Backups de BD
+backups/
+
 # Logs
 logs/*.log
 
