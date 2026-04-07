@@ -59,11 +59,8 @@ if (ENVIRONMENT === 'development') {
 define('ROOT_PATH', dirname(__DIR__));
 define('LOGS_PATH', ROOT_PATH . '/logs');
 
-// Ruta base del portal según APP_URL (ej. http://host:9090/karin → /karin)
-$_appUrl = rtrim((string)(getenv('APP_URL') ?: '/karin'), '/');
-$_appBase = parse_url($_appUrl, PHP_URL_PATH) ?: '/karin';
-define('APP_BASE_PATH', rtrim($_appBase, '/'));
-unset($_appUrl, $_appBase);
+// Ruta base fija del portal Ley Karin
+define('APP_BASE_PATH', '/karin');
 
 // =============================================
 // INFORMACIÓN DE LA APLICACIÓN
