@@ -17,9 +17,14 @@ echo "[Denuncias] Verificando conexión a MySQL ($DB_HOST)..."
 attempt=0
 while [ $attempt -lt $MAX_RETRIES ]; do
     attempt=$((attempt + 1))
+    # Credenciales leídas desde env dentro de PHP para no exponerlas en la lista de procesos
     if php -r "
         try {
-            \$pdo = new PDO('mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4', '$DB_USER', '$DB_PASS', [PDO::ATTR_TIMEOUT => 3]);
+            \$host = getenv('DB_HOST') ?: 'db';
+            \$name = getenv('DB_NAME') ?: 'denuncias';
+            \$user = getenv('DB_USER') ?: 'denuncias_user';
+            \$pass = getenv('DB_PASS') ?: '';
+            \$pdo = new PDO('mysql:host='.\$host.';dbname='.\$name.';charset=utf8mb4', \$user, \$pass, [PDO::ATTR_TIMEOUT => 3]);
             echo 'OK';
             exit(0);
         } catch (Exception \$e) {

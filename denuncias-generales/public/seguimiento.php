@@ -8,13 +8,35 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 $codigoInput = sanitize($_GET['codigo'] ?? '');
 $result      = null;
 $notFound    = false;
+$rateLimitError = false;
 
 if (!empty($codigoInput)) {
-    $complaint = findComplaintByNumber($codigoInput);
-    if ($complaint) {
-        $result = $complaint;
+    // Rate limiting: máx. 15 consultas por IP en 5 minutos
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $rateLimitReached = false;
+    try {
+        if (isset($pdo)) {
+            $stmtRate = $pdo->prepare(
+                "SELECT COUNT(*) FROM activity_logs WHERE action = 'seguimiento_consultado' AND ip_address = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)"
+            );
+            $stmtRate->execute([$ip]);
+            if ((int)$stmtRate->fetchColumn() >= 15) {
+                $rateLimitReached = true;
+            }
+        }
+    } catch (Exception $e) { /* continuar si falla la comprobación */ }
+
+    if ($rateLimitReached) {
+        $rateLimitError = true;
     } else {
-        $notFound = true;
+        $complaint = findComplaintByNumber($codigoInput);
+        if ($complaint) {
+            $result = $complaint;
+            logActivity(null, 'seguimiento_consultado', 'complaint', $complaint['id'], "Código: $codigoInput | IP: $ip");
+        } else {
+            $notFound = true;
+            logActivity(null, 'seguimiento_consultado', null, null, "Código no encontrado: $codigoInput | IP: $ip");
+        }
     }
 }
 
@@ -45,7 +67,13 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     </form>
                 </div>
 
-                <?php if ($notFound): ?>
+                <?php if ($rateLimitError): ?>
+                <div class="p-4 text-center fade-in" style="background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.12);">
+                    <i class="bi bi-shield-exclamation fs-1 mb-3" style="color:#f59e0b;"></i>
+                    <h5 class="text-dark fw-bold">Demasiadas consultas</h5>
+                    <p class="text-muted">Has realizado demasiadas búsquedas en poco tiempo. Por favor espera unos minutos antes de intentarlo nuevamente.</p>
+                </div>
+                <?php elseif ($notFound): ?>
                 <div class="card-epco p-4 text-center fade-in">
                     <i class="bi bi-exclamation-circle fs-1 mb-3" style="color:#dc2626;"></i>
                     <h5 class="text-dark fw-bold">Código no encontrado</h5>

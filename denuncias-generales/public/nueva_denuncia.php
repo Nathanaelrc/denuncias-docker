@@ -29,6 +29,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'La descripción debe tener al menos 50 caracteres.';
     }
 
+    // Validaciones para denuncias identificadas (no anónimas)
+    $reporterName  = '';
+    $reporterEmail = '';
+    $reporterPhone = '';
+    $reporterDept  = '';
+    if (!$isAnonymous) {
+        $reporterName  = trim($_POST['reporter_name'] ?? '');
+        $reporterEmail = trim($_POST['reporter_email'] ?? '');
+        $reporterPhone = trim($_POST['reporter_phone'] ?? '');
+        $reporterDept  = trim($_POST['reporter_department'] ?? '');
+
+        if (empty($reporterName)) {
+            $errors[] = 'El nombre es obligatorio cuando la denuncia no es anónima.';
+        } elseif (strlen($reporterName) > 150) {
+            $errors[] = 'El nombre no puede superar los 150 caracteres.';
+        }
+        if (!empty($reporterEmail) && !filter_var($reporterEmail, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'El correo electrónico ingresado no es válido.';
+        }
+    }
+
     if (empty($errors)) {
         $data = [
             'complaint_type'       => $complaintType,
@@ -36,10 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'is_anonymous'         => $isAnonymous,
             'involved_persons'     => trim($_POST['involved_persons'] ?? '') ?: null,   // N° referencia / boleta
             'evidence_description' => trim($_POST['evidence_description'] ?? '') ?: null,
-            'reporter_name'        => $isAnonymous ? null : (trim($_POST['reporter_name'] ?? '') ?: null),
-            'reporter_email'       => $isAnonymous ? null : (trim($_POST['reporter_email'] ?? '') ?: null),
-            'reporter_phone'       => $isAnonymous ? null : (trim($_POST['reporter_phone'] ?? '') ?: null),
-            'reporter_department'  => $isAnonymous ? null : (trim($_POST['reporter_department'] ?? '') ?: null),
+            'reporter_name'        => $isAnonymous ? null : ($reporterName ?: null),
+            'reporter_email'       => $isAnonymous ? null : ($reporterEmail ?: null),
+            'reporter_phone'       => $isAnonymous ? null : ($reporterPhone ?: null),
+            'reporter_department'  => $isAnonymous ? null : ($reporterDept ?: null),
             'accused_name'         => trim($_POST['accused_name'] ?? '') ?: null,       // Empresa/institución
             'accused_department'   => trim($_POST['accused_department'] ?? '') ?: null, // Área/Departamento
             'accused_position'     => trim($_POST['accused_position'] ?? '') ?: null,   // RUT / Dirección

@@ -27,13 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
             $errors[] = 'Todos los campos obligatorios deben completarse.';
         } elseif (strlen($password) < PASSWORD_MIN_LENGTH) {
             $errors[] = 'La contraseña debe tener al menos ' . PASSWORD_MIN_LENGTH . ' caracteres.';
+        } elseif (!preg_match('/[A-Z]/', $password)) {
+            $errors[] = 'La contraseña debe incluir al menos una letra mayúscula.';
+        } elseif (!preg_match('/[a-z]/', $password)) {
+            $errors[] = 'La contraseña debe incluir al menos una letra minúscula.';
+        } elseif (!preg_match('/[0-9]/', $password)) {
+            $errors[] = 'La contraseña debe incluir al menos un número.';
+        } elseif (!preg_match('/[^A-Za-z0-9]/', $password)) {
+            $errors[] = 'La contraseña debe incluir al menos un carácter especial (!@#$%^&* etc).';
         } else {
             $check = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
             $check->execute([$username, $email]);
             if ($check->fetch()) {
                 $errors[] = 'El usuario o email ya existe.';
             } else {
-                $pdo->prepare("INSERT INTO users (name, username, email, password, role, department, position) VALUES (?, ?, ?, ?, ?, ?, ?)")
+                $pdo->prepare("INSERT INTO users (name, username, email, password, role, department, position, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?, 1)")
                     ->execute([$name, $username, $email, password_hash($password, PASSWORD_DEFAULT), $role, $department, $position]);
                 logActivity($_SESSION['user_id'], 'crear_usuario', 'user', $pdo->lastInsertId(), "Usuario: $username, Rol: $role");
                 $success = "Usuario '$username' creado exitosamente.";
@@ -53,10 +61,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
     if ($action === 'reset_password') {
         $userId = (int)($_POST['user_id'] ?? 0);
         $newPass = $_POST['new_password'] ?? '';
-        if ($userId && strlen($newPass) >= PASSWORD_MIN_LENGTH) {
-            $pdo->prepare("UPDATE users SET password = ? WHERE id = ?")->execute([password_hash($newPass, PASSWORD_DEFAULT), $userId]);
+        $passErrors = [];
+        if (strlen($newPass) < PASSWORD_MIN_LENGTH)       $passErrors[] = 'mín. ' . PASSWORD_MIN_LENGTH . ' caracteres';
+        if (!preg_match('/[A-Z]/', $newPass))             $passErrors[] = 'una mayúscula';
+        if (!preg_match('/[a-z]/', $newPass))             $passErrors[] = 'una minúscula';
+        if (!preg_match('/[0-9]/', $newPass))             $passErrors[] = 'un número';
+        if (!preg_match('/[^A-Za-z0-9]/', $newPass))     $passErrors[] = 'un carácter especial';
+        if ($userId && empty($passErrors)) {
+            $pdo->prepare("UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?")->execute([password_hash($newPass, PASSWORD_DEFAULT), $userId]);
             logActivity($_SESSION['user_id'], 'reset_password', 'user', $userId, '');
-            $success = 'Contraseña actualizada.';
+            $success = 'Contraseña actualizada. El usuario deberá cambiarla al iniciar sesión.';
+        } elseif (!empty($passErrors)) {
+            $errors[] = 'Contraseña inválida: requiere ' . implode(', ', $passErrors) . '.';
         }
     }
 

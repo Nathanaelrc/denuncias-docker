@@ -16,8 +16,8 @@ class EncryptionService
     public function __construct()
     {
         $envKey = getenv('ENCRYPTION_KEY');
-        if (!$envKey || strlen($envKey) < 16) {
-            throw new RuntimeException('ENCRYPTION_KEY no configurada o muy corta (mín. 16 chars)');
+        if (!$envKey || strlen($envKey) < 32) {
+            throw new RuntimeException('ENCRYPTION_KEY no configurada o muy corta (mín. 32 chars)');
         }
         // Derivar clave de 32 bytes con hash
         $this->key = sodium_crypto_generichash($envKey, '', SODIUM_CRYPTO_SECRETBOX_KEYBYTES);

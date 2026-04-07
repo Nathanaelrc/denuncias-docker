@@ -1,6 +1,10 @@
 # =============================================
 # Portal de Denuncias Empresa Portuaria Coquimbo - Docker Compose
-# Servicios: Apache/PHP + MySQL + phpMyAdmin
+# Servicios: Nginx (proxy) + Apache/PHP + MySQL + phpMyAdmin
+# Acceso externo ÚNICO: puerto ${NGINX_PORT:-9090}
+#   http://HOST:9090/         → Landing
+#   http://HOST:9090/karin/   → Portal Ley Karin
+#   http://HOST:9090/generales/ → Portal Ciudadano
 # =============================================
 
 services:
@@ -13,8 +17,9 @@ services:
       dockerfile: Dockerfile
     container_name: denuncias-app
     restart: unless-stopped
-    ports:
-      - "${APP_PORT:-9091}:80"
+    # Puerto directo deshabilitado; acceder vía Nginx en :${NGINX_PORT:-9090}/karin/
+    # ports:
+    #   - "${APP_PORT:-9091}:80"
     volumes:
       - ./logs:/var/www/html/logs
       - ./public/uploads:/var/www/html/public/uploads
@@ -25,9 +30,9 @@ services:
       - DB_PASS=${DB_PASS:-cambiar-db-pass}
       - DB_CHARSET=utf8mb4
       - APP_ENV=${APP_ENV:-production}
-      - APP_URL=${APP_URL:-http://localhost:9091}
+      - APP_URL=${APP_URL:-http://localhost:9090/karin}
       - LANDING_URL=${LANDING_URL:-http://localhost:9090}
-      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:9093}
+      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:9090/generales}
       - TZ=America/Santiago
       # Clave de encriptación (CAMBIAR EN PRODUCCIÓN)
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:-cambiar-esta-clave-en-produccion-32chars!}
@@ -91,8 +96,9 @@ services:
       dockerfile: Dockerfile
     container_name: denuncias-generales-app
     restart: unless-stopped
-    ports:
-      - "${APP_GENERALES_PORT:-9093}:80"
+    # Puerto directo deshabilitado; acceder vía Nginx en :${NGINX_PORT:-9090}/generales/
+    # ports:
+    #   - "${APP_GENERALES_PORT:-9093}:80"
     volumes:
       - ./denuncias-generales/logs:/var/www/html/logs
       - ./denuncias-generales/public/uploads:/var/www/html/public/uploads
@@ -103,9 +109,9 @@ services:
       - DB_PASS=${DB_GENERALES_PASS:-cambiar-db-pass}
       - DB_CHARSET=utf8mb4
       - APP_ENV=${APP_ENV:-production}
-      - APP_URL=${APP_URL_GENERAL:-http://localhost:9093}
+      - APP_URL=${APP_URL_GENERAL:-http://localhost:9090/generales}
       - LANDING_URL=${LANDING_URL:-http://localhost:9090}
-      - APP_URL_KARIN=${APP_URL:-http://localhost:9091}
+      - APP_URL_KARIN=${APP_URL:-http://localhost:9090/karin}
       - TZ=America/Santiago
       - ENCRYPTION_KEY=${GENERALES_ENCRYPTION_KEY:-cambiar-clave-generales-32chars!}
       - SMTP_ENABLED=${SMTP_ENABLED:-true}
@@ -165,14 +171,41 @@ services:
       dockerfile: Dockerfile
     container_name: denuncias-landing
     restart: unless-stopped
-    ports:
-      - "${LANDING_PORT:-9090}:80"
+    # Puerto directo deshabilitado; acceder vía Nginx en :${NGINX_PORT:-9090}/
+    # ports:
+    #   - "${LANDING_PORT:-9090}:80"
     environment:
-      - APP_URL_KARIN=${APP_URL:-http://localhost:9091}
-      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:9093}
+      - APP_URL_KARIN=${APP_URL:-http://localhost:9090/karin}
+      - APP_URL_GENERAL=${APP_URL_GENERAL:-http://localhost:9090/generales}
       - TZ=America/Santiago
     networks:
       - denuncias-network
+
+  # =============================================
+  # Nginx Reverse Proxy - Punto de entrada único
+  # =============================================
+  nginx:
+    image: nginx:alpine
+    container_name: denuncias-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-9090}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+      app-generales:
+        condition: service_healthy
+      landing:
+        condition: service_started
+    networks:
+      - denuncias-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   # =============================================
   # phpMyAdmin (solo desarrollo)

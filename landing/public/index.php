@@ -1,6 +1,6 @@
 <?php
-$urlKarin   = getenv('APP_URL_KARIN')   ?: 'http://localhost:8091';
-$urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
+$urlKarin   = getenv('APP_URL_KARIN')   ?: 'http://localhost:9090/karin';
+$urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:9090/generales';
 ?>
 <!DOCTYPE html>
 <html lang="es">

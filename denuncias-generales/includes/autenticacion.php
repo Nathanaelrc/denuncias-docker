@@ -37,6 +37,9 @@ function login($identifier, $password) {
         $pdo->prepare('UPDATE users SET login_attempts = 0, locked_until = NULL, last_login = NOW() WHERE id = ?')
             ->execute([$user['id']]);
 
+        // Prevenir Session Fixation: regenerar ID antes de escribir datos de sesión
+        session_regenerate_id(true);
+
         $_SESSION['user_id']             = $user['id'];
         $_SESSION['user_name']           = $user['name'];
         $_SESSION['user_username']       = $user['username'];
@@ -59,8 +62,19 @@ function login($identifier, $password) {
 }
 
 function logout() {
+    // Limpiar datos de sesión
+    $_SESSION = [];
+    // Eliminar la cookie de sesión del navegador
+    if (ini_get('session.use_cookies')) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(), '',
+            time() - 42000,
+            $params['path'], $params['domain'],
+            $params['secure'], $params['httponly']
+        );
+    }
     session_destroy();
-    session_start();
 }
 
 function isLoggedIn() {

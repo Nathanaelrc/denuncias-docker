@@ -1,8 +1,8 @@
 # ====================================================
 # Portal de Denuncias para Empresa Portuaria Coquimbo - Dockerfile
-# PHP 8.2 con Apache y algunas extensiones necesarias
+# PHP 8.5 con Apache y algunas extensiones necesarias
 # ====================================================
-FROM php:8.2-apache
+FROM php:8.5-apache
 
 # Instalar extensiones de PHP necesarias
 RUN apt-get update && apt-get install -y \
@@ -11,23 +11,20 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libzip-dev \
     libxml2-dev \
-    libcurl4-openssl-dev \
     libonig-dev \
     libsodium-dev \
     unzip \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
+    && docker-php-ext-install \
         pdo \
         pdo_mysql \
         mysqli \
         mbstring \
         xml \
-        curl \
         zip \
         gd \
         bcmath \
-        opcache \
         sodium \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -40,9 +37,9 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Configurar AllowOverride para .htaccess
+# Configurar AllowOverride para .htaccess (sin listado de directorios)
 RUN echo '<Directory /var/www/html/public>\n\
-    Options Indexes FollowSymLinks\n\
+    Options -Indexes +FollowSymLinks\n\
     AllowOverride All\n\
     Require all granted\n\
 </Directory>' > /etc/apache2/conf-available/denuncias.conf \
@@ -78,9 +75,5 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
     CMD curl -fsS http://localhost/salud || exit 1
 
-ENTRYPOINT ["app-entrypoint.sh"]
-CMD ["apache2-foreground"]
-
-# Entrypoint que ajusta permisos de volúmenes montados en runtime
 ENTRYPOINT ["app-entrypoint.sh"]
 CMD ["apache2-foreground"]
