@@ -4,7 +4,7 @@
  */
 require_once __DIR__ . '/../includes/bootstrap.php';
 
-if (isLoggedIn()) { header('Location: /panel'); exit; }
+if (isLoggedIn()) { header('Location: ' . APP_BASE_PATH . '/panel'); exit; }
 
 $error = '';
 
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Completa todos los campos.';
         } elseif (login($identifier, $password)) {
             logActivity($_SESSION['user_id'], 'login', 'user', $_SESSION['user_id'], 'Login portal ciudadano');
-            header('Location: /panel'); exit;
+            header('Location: ' . APP_BASE_PATH . '/panel'); exit;
         } else {
             $error = 'Credenciales incorrectas o cuenta bloqueada.';
             logActivity(null, 'login_fallido', null, null, "Intento: $identifier");

@@ -7,7 +7,7 @@ if (!isset($user)) {
     $user = isLoggedIn() ? getCurrentUser() : null;
 }
 if (!$user) {
-    header('Location: /acceso');
+    header('Location: ' . APP_BASE_PATH . '/acceso');
     exit;
 }
 

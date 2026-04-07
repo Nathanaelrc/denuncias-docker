@@ -5,7 +5,7 @@
 require_once __DIR__ . '/../includes/bootstrap.php';
 
 if (isLoggedIn()) {
-    header('Location: /panel');
+    header('Location: ' . APP_BASE_PATH . '/panel');
     exit;
 }
 
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Completa todos los campos.';
         } elseif (login($identifier, $password)) {
             logActivity($_SESSION['user_id'], 'login', 'user', $_SESSION['user_id'], 'Login desde acceso');
-            header('Location: /panel');
+            header('Location: ' . APP_BASE_PATH . '/panel');
             exit;
         } else {
             $error = 'Credenciales incorrectas o cuenta bloqueada.';

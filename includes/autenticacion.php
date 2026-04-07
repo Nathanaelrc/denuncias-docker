@@ -97,21 +97,21 @@ function hasRole($roles) {
 
 function requireAuth($redirect = '/acceso') {
     if (!isLoggedIn()) {
-        header("Location: $redirect");
+        header('Location: ' . APP_BASE_PATH . $redirect);
         exit;
     }
     // Forzar cambio de contraseña si es requerido (excepto en la propia página y cerrar sesión)
     $currentPage = basename($_SERVER['PHP_SELF'], '.php');
     if (!empty($_SESSION['must_change_password']) && !in_array($currentPage, ['cambiar_contrasena', 'cerrar_sesion'], true)) {
-        header('Location: /cambiar_contrasena');
+        header('Location: ' . APP_BASE_PATH . '/cambiar_contrasena');
         exit;
     }
 }
 
-function requireRole($roles, $redirect = '/') {
+function requireRole($roles, $redirect = '/panel') {
     requireAuth();
     if (!hasRole($roles)) {
-        header("Location: $redirect");
+        header('Location: ' . APP_BASE_PATH . $redirect);
         exit;
     }
 }

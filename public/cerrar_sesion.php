@@ -9,5 +9,5 @@ if (isLoggedIn()) {
 }
 
 logout();
-header('Location: /acceso');
+header('Location: ' . APP_BASE_PATH . '/acceso');
 exit;

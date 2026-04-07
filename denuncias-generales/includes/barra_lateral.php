@@ -6,7 +6,7 @@
 if (!isset($user)) {
     $user = isLoggedIn() ? getCurrentUser() : null;
 }
-if (!$user) { header('Location: /iniciar_sesion'); exit; }
+if (!$user) { header('Location: ' . APP_BASE_PATH . '/iniciar_sesion'); exit; }
 
 $isAdmin        = $user['role'] === ROLE_ADMIN;
 $isInvestigador = $user['role'] === ROLE_INVESTIGADOR;
