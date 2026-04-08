@@ -125,6 +125,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 .activity-item { animation: fadeInUp 0.3s ease forwards; }
 @media print {
     @page { size: A4 landscape; margin: 1.5cm; }
+    html, body { height: auto !important; min-height: 0 !important; }
     .print-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
@@ -413,17 +414,24 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 <script>
 function generarInforme() {
     const informe = document.getElementById('informe-print');
-    // Guardar y ocultar todos los hijos directos del body excepto el informe
     const saved = [];
     for (const el of document.body.children) {
         if (el === informe || el.tagName === 'SCRIPT') continue;
         saved.push({ el, display: el.style.display });
         el.style.display = 'none';
     }
+    const origBodyHeight = document.body.style.height;
+    const origBodyMinHeight = document.body.style.minHeight;
+    const origHtmlHeight = document.documentElement.style.height;
+    document.body.style.height = 'auto';
+    document.body.style.minHeight = '0';
+    document.documentElement.style.height = 'auto';
     informe.style.display = 'block';
     window.print();
-    // Restaurar
     informe.style.display = 'none';
+    document.body.style.height = origBodyHeight;
+    document.body.style.minHeight = origBodyMinHeight;
+    document.documentElement.style.height = origHtmlHeight;
     saved.forEach(s => { s.el.style.display = s.display; });
 }
 </script>
