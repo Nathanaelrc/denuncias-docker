@@ -318,9 +318,9 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                 " ondragover="event.preventDefault();this.style.cssText='border:2px dashed #2380b0;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;background:#eff6ff;transition:all 0.2s;'" ondragleave="this.style.cssText='border:2px dashed #cbd5e1;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;background:#f8fafc;transition:all 0.2s;'" ondrop="handleDrop(event)">
                                     <i class="bi bi-cloud-arrow-up" style="font-size:2.2rem; color:#94a3b8;"></i>
                                     <p class="mb-1 mt-2" style="color:#475569; font-size:0.92rem;">Arrastra archivos aquí o <strong style="color:#1a6591;">haz clic para seleccionar</strong></p>
-                                    <p class="mb-0" style="color:#94a3b8; font-size:0.78rem;">Imágenes, PDF, Word, Excel, video &middot; Máx. 20 MB &middot; Hasta 10 archivos</p>
+                                    <p class="mb-0" style="color:#94a3b8; font-size:0.78rem;">Imágenes, audio, PDF, Word, Excel, video &middot; Máx. 10 MB &middot; Hasta 10 archivos</p>
                                 </div>
-                                <input type="file" id="fileInput" name="attachments[]" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.mp4,.mov" style="display:none" onchange="updateFileList(this.files)">
+                                <input type="file" id="fileInput" name="attachments[]" multiple accept="image/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.mp3,.wav,.ogg,.m4a,.aac,.webm,.mp4,.mov" style="display:none" onchange="updateFileList(this.files)">
                                 <ul id="fileList" class="list-unstyled mt-2 mb-0"></ul>
                             </div>
 
@@ -407,6 +407,7 @@ function formatSize(bytes) {
 
 function getFileIcon(type) {
     if (type.startsWith('image/')) return 'bi-file-image text-success';
+    if (type.startsWith('audio/')) return 'bi-file-music text-info';
     if (type === 'application/pdf') return 'bi-file-pdf text-danger';
     if (type.includes('word')) return 'bi-file-word text-primary';
     if (type.includes('excel') || type.includes('spreadsheet')) return 'bi-file-excel text-success';

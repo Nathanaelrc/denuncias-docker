@@ -245,6 +245,8 @@ function saveComplaintAttachments(int $complaintId, array $files): int {
 
     $allowedMime = [
         'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4',
+        'audio/aac', 'audio/webm', 'audio/x-m4a',
         'application/pdf',
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -253,7 +255,7 @@ function saveComplaintAttachments(int $complaintId, array $files): int {
         'text/plain',
         'video/mp4', 'video/quicktime',
     ];
-    $maxSize   = 20 * 1024 * 1024; // 20 MB
+    $maxSize   = 10 * 1024 * 1024; // 10 MB
     $uploadDir = __DIR__ . '/../public/uploads/evidencia/';
     $enc       = getEncryptionService();
 
