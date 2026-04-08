@@ -23,7 +23,16 @@ $stats = $pdo->query("
 
 $byType = $pdo->query("SELECT complaint_type, COUNT(*) as total FROM complaints GROUP BY complaint_type ORDER BY total DESC")->fetchAll();
 
-$recent = $pdo->query("SELECT id, complaint_number, complaint_type, status, is_anonymous, created_at FROM complaints ORDER BY created_at DESC LIMIT 10")->fetchAll();
+$perPage = 10;
+$page    = max(1, (int)($_GET['page'] ?? 1));
+$totalComplaints = (int)$pdo->query("SELECT COUNT(*) FROM complaints")->fetchColumn();
+$totalPages = max(1, (int)ceil($totalComplaints / $perPage));
+$page   = min($page, $totalPages);
+$offset = ($page - 1) * $perPage;
+
+$stmtRecent = $pdo->prepare("SELECT id, complaint_number, complaint_type, status, is_anonymous, created_at FROM complaints ORDER BY created_at DESC LIMIT $perPage OFFSET $offset");
+$stmtRecent->execute();
+$recent = $stmtRecent->fetchAll();
 
 $monthly = $pdo->query("
     SELECT DATE_FORMAT(created_at,'%Y-%m') as month, COUNT(*) as total
@@ -72,35 +81,13 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
         <?php endforeach; ?>
     </div>
 
-    <div class="row g-4">
-        <!-- Gráfico por tipo -->
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-dark-blue border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2"></i>Por Tipo de Denuncia</h6>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <canvas id="chartType" style="max-height:280px;"></canvas>
-                </div>
-            </div>
-        </div>
-        <!-- Gráfico mensual -->
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-dark-blue border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart me-2"></i>Últimos 6 Meses</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="chartMonthly" style="max-height:280px;"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Últimas denuncias -->
-    <div class="card border-0 shadow-sm mt-4">
+    <!-- Denuncias con paginación -->
+    <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-dark-blue border-0 py-3 d-flex justify-content-between align-items-center">
-            <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Últimas Denuncias</h6>
+            <h6 class="fw-bold mb-0">
+                <i class="bi bi-list-ul me-2"></i>Denuncias
+                <span class="text-muted fw-normal small ms-2"><?= $totalComplaints ?> en total</span>
+            </h6>
             <a href="/denuncias_admin" class="btn btn-sm btn-outline-secondary">Ver Todas</a>
         </div>
         <div class="card-body p-0">
@@ -130,6 +117,58 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <?php if ($totalPages > 1): ?>
+        <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center py-2 px-3">
+            <small class="text-muted">
+                Mostrando <?= (($page - 1) * $perPage) + 1 ?>–<?= min($page * $perPage, $totalComplaints) ?> de <?= $totalComplaints ?>
+            </small>
+            <nav aria-label="Paginación">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page - 1 ?>">&lsaquo;</a>
+                    </li>
+                    <?php
+                    $pStart = max(1, $page - 2);
+                    $pEnd   = min($totalPages, $page + 2);
+                    if ($pStart > 1): ?><li class="page-item disabled"><span class="page-link">&hellip;</span></li><?php endif;
+                    for ($i = $pStart; $i <= $pEnd; $i++): ?>
+                    <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+                        <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                    </li>
+                    <?php endfor;
+                    if ($pEnd < $totalPages): ?><li class="page-item disabled"><span class="page-link">&hellip;</span></li><?php endif; ?>
+                    <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?page=<?= $page + 1 ?>">&rsaquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <?php endif; ?>
+    </div>
+
+    <div class="row g-4">
+        <!-- Gráfico por tipo -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-dark-blue border-0 py-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2"></i>Por Tipo de Denuncia</h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <canvas id="chartType" style="max-height:280px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Gráfico mensual -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-dark-blue border-0 py-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart me-2"></i>Últimos 6 Meses</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartMonthly" style="max-height:280px;"></canvas>
+                </div>
             </div>
         </div>
     </div>
