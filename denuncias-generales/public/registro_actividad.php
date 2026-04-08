@@ -124,9 +124,6 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .activity-item { animation: fadeInUp 0.3s ease forwards; }
 @media print {
-    body * { visibility: hidden; }
-    #informe-print, #informe-print * { visibility: visible; }
-    #informe-print { position: fixed; top: 0; left: 0; width: 100%; }
     @page { size: A4 landscape; margin: 1.5cm; }
     .print-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
@@ -415,9 +412,19 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 
 <script>
 function generarInforme() {
-    document.getElementById('informe-print').style.display = 'block';
+    const informe = document.getElementById('informe-print');
+    // Guardar y ocultar todos los hijos directos del body excepto el informe
+    const saved = [];
+    for (const el of document.body.children) {
+        if (el === informe || el.tagName === 'SCRIPT') continue;
+        saved.push({ el, display: el.style.display });
+        el.style.display = 'none';
+    }
+    informe.style.display = 'block';
     window.print();
-    document.getElementById('informe-print').style.display = 'none';
+    // Restaurar
+    informe.style.display = 'none';
+    saved.forEach(s => { s.el.style.display = s.display; });
 }
 </script>
 
