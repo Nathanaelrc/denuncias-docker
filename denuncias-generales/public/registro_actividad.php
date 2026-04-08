@@ -55,6 +55,18 @@ $weekCount = $pdo->query("SELECT COUNT(*) FROM activity_logs WHERE created_at >=
 $loginCount = $pdo->query("SELECT COUNT(*) FROM activity_logs WHERE action = 'login' AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetchColumn();
 $uniqueUsers = $pdo->query("SELECT COUNT(DISTINCT user_id) FROM activity_logs WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetchColumn();
 
+// Todos los registros para el informe (sin paginación, máx. 2000)
+$stmtReport = $pdo->prepare("
+    SELECT al.*, u.name as user_name, u.role as user_role
+    FROM activity_logs al
+    LEFT JOIN users u ON al.user_id = u.id
+    $whereSQL
+    ORDER BY al.created_at DESC
+    LIMIT 2000
+");
+$stmtReport->execute($params);
+$reportLogs = $stmtReport->fetchAll();
+
 function getActionStyle($action) {
     $map = [
         'login' => ['icon' => 'bi-box-arrow-in-right', 'color' => '#2d9ad0', 'bg' => 'rgba(26,101,145,0.1)', 'label' => 'Inicio de sesión'],
@@ -111,6 +123,13 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 .empty-state i { font-size: 3rem; color: #cbd5e1; }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .activity-item { animation: fadeInUp 0.3s ease forwards; }
+@media print {
+    body * { visibility: hidden; }
+    #informe-print, #informe-print * { visibility: visible; }
+    #informe-print { position: fixed; top: 0; left: 0; width: 100%; }
+    @page { size: A4 landscape; margin: 1.5cm; }
+    .print-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
 </style>
 
 <div class="main-content">
@@ -122,6 +141,9 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
         <div class="d-flex gap-2 mt-2 mt-md-0">
             <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('filterPanel').classList.toggle('d-none')" style="border-radius:10px;">
                 <i class="bi bi-funnel me-1"></i>Filtros
+            </button>
+            <button class="btn btn-sm btn-outline-primary" onclick="generarInforme()" style="border-radius:10px;">
+                <i class="bi bi-printer me-1"></i>Generar Informe
             </button>
         </div>
     </div>
@@ -307,5 +329,96 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
         <?php endif; ?>
     </div>
 </div>
+
+<!-- INFORME DE AUDITORÍA (solo impresión) -->
+<div id="informe-print" style="display:none;">
+    <div style="font-family: Arial, sans-serif; color: #1e293b;">
+        <div style="border-bottom: 3px solid #1a6591; padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <div style="font-size: 1.1rem; font-weight: 700; color: #1a6591;">Empresa Portuaria Coquimbo</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #1e293b; margin-top: 4px;">Informe de Auditoría</div>
+                <div style="font-size: 0.9rem; color: #64748b; margin-top: 2px;">Registro de Actividad &mdash; Portal Ciudadano</div>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem; color: #64748b;">
+                <div>Generado: <?= date('d/m/Y H:i') ?></div>
+                <div>Por: <?= htmlspecialchars($user['name']) ?></div>
+                <div>Total eventos: <?= number_format($totalRows) ?></div>
+            </div>
+        </div>
+        <?php if ($filterAction || $filterUser || $filterDateFrom || $filterDateTo || $search): ?>
+        <div style="background: #f1f5f9; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.82rem;">
+            <strong>Filtros aplicados:</strong>
+            <?php if ($filterAction): ?> Acci&oacute;n: <em><?= htmlspecialchars(getActionStyle($filterAction)['label']) ?></em><?php endif; ?>
+            <?php if ($filterUser): $uName = array_column($users, 'name', 'id')[$filterUser] ?? $filterUser; ?> &middot; Usuario: <em><?= htmlspecialchars($uName) ?></em><?php endif; ?>
+            <?php if ($filterDateFrom): ?> &middot; Desde: <em><?= htmlspecialchars($filterDateFrom) ?></em><?php endif; ?>
+            <?php if ($filterDateTo): ?> &middot; Hasta: <em><?= htmlspecialchars($filterDateTo) ?></em><?php endif; ?>
+            <?php if ($search): ?> &middot; B&uacute;squeda: <em>"<?= htmlspecialchars($search) ?>"</em><?php endif; ?>
+        </div>
+        <?php endif; ?>
+        <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+            <div style="flex: 1; background: #dbeafe; padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.4rem; font-weight: 700; color: #1a6591;"><?= $todayCount ?></div>
+                <div style="font-size: 0.75rem; color: #475569;">Hoy</div>
+            </div>
+            <div style="flex: 1; background: #ede9fe; padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.4rem; font-weight: 700; color: #8b5cf6;"><?= $weekCount ?></div>
+                <div style="font-size: 0.75rem; color: #475569;">Última semana</div>
+            </div>
+            <div style="flex: 1; background: #dcfce7; padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.4rem; font-weight: 700; color: #16a34a;"><?= $loginCount ?></div>
+                <div style="font-size: 0.75rem; color: #475569;">Logins (24h)</div>
+            </div>
+            <div style="flex: 1; background: #fff7ed; padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.4rem; font-weight: 700; color: #ea580c;"><?= $uniqueUsers ?></div>
+                <div style="font-size: 0.75rem; color: #475569;">Usuarios activos (24h)</div>
+            </div>
+        </div>
+        <table class="print-table" style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+            <thead>
+                <tr style="background: #1a6591; color: white;">
+                    <th style="padding: 8px 10px; text-align: left;">#</th>
+                    <th style="padding: 8px 10px; text-align: left;">Fecha y Hora</th>
+                    <th style="padding: 8px 10px; text-align: left;">Acci&oacute;n</th>
+                    <th style="padding: 8px 10px; text-align: left;">Usuario</th>
+                    <th style="padding: 8px 10px; text-align: left;">Rol</th>
+                    <th style="padding: 8px 10px; text-align: left;">IP</th>
+                    <th style="padding: 8px 10px; text-align: left;">Entidad</th>
+                    <th style="padding: 8px 10px; text-align: left;">Detalles</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($reportLogs as $i => $r): $rs = getActionStyle($r['action']); ?>
+                <tr style="background: <?= $i % 2 === 0 ? '#ffffff' : '#f8fafc' ?>; border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 7px 10px; color: #94a3b8;"><?= $i + 1 ?></td>
+                    <td style="padding: 7px 10px; white-space: nowrap;"><?= date('d/m/Y H:i:s', strtotime($r['created_at'])) ?></td>
+                    <td style="padding: 7px 10px; font-weight: 600; color: <?= $rs['color'] ?>;"><?= htmlspecialchars($rs['label']) ?></td>
+                    <td style="padding: 7px 10px;"><?= htmlspecialchars($r['user_name'] ?? 'Sistema') ?></td>
+                    <td style="padding: 7px 10px; color: #64748b;"><?= htmlspecialchars(ucfirst($r['user_role'] ?? '-')) ?></td>
+                    <td style="padding: 7px 10px; font-family: monospace; font-size: 0.73rem;"><?= htmlspecialchars($r['ip_address'] ?? '-') ?></td>
+                    <td style="padding: 7px 10px; color: #64748b;"><?= $r['entity_type'] ? htmlspecialchars($r['entity_type'] . ' #' . $r['entity_id']) : '-' ?></td>
+                    <td style="padding: 7px 10px; color: #475569; max-width: 200px;"><?= htmlspecialchars($r['details'] ?? '') ?></td>
+                </tr>
+                <?php endforeach; ?>
+                <?php if (empty($reportLogs)): ?>
+                <tr><td colspan="8" style="text-align:center; padding: 20px; color: #94a3b8;">No hay eventos registrados</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        <?php if (count($reportLogs) === 2000): ?>
+        <p style="margin-top: 10px; font-size: 0.78rem; color: #94a3b8; text-align: center;">* Informe limitado a los 2.000 eventos m&aacute;s recientes. Use los filtros para acotar el per&iacute;odo.</p>
+        <?php endif; ?>
+        <div style="margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 0.72rem; color: #94a3b8; text-align: center;">
+            Canal de Denuncias &mdash; Empresa Portuaria Coquimbo &middot; Documento confidencial &middot; Generado el <?= date('d/m/Y \a\l\a\s H:i') ?>
+        </div>
+    </div>
+</div>
+
+<script>
+function generarInforme() {
+    document.getElementById('informe-print').style.display = 'block';
+    window.print();
+    document.getElementById('informe-print').style.display = 'none';
+}
+</script>
 
 <?php require_once __DIR__ . '/../includes/pie_pagina.php'; ?>
