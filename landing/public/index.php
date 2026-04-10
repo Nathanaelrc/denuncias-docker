@@ -243,7 +243,7 @@ $urlGeneral = '/generales';
             <div class="card-label">Ley N° 21.643 · Normativa Laboral</div>
             <div class="card-title">Canal de Denuncias Ley Karin</div>
             <p class="card-desc">
-                Para trabajadores que necesitan denunciar acoso laboral, sexual
+                Para las trabajadoras y los trabajadores que necesitan denunciar acoso laboral, sexual
                 o violencia en el trabajo dentro de su organización.
             </p>
             <div class="tags">

@@ -138,7 +138,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <div class="col-md-6">
                                 <h5 class="text-dark fw-bold mb-3"><i class="bi bi-info-circle text-primary me-2"></i>Sobre la Ley</h5>
                                 <p class="text-muted">La <strong>Ley Karin</strong> modifica el Código del Trabajo en materia de prevención, investigación y sanción del <strong>acoso laboral, acoso sexual y violencia en el trabajo</strong>.</p>
-                                <p class="text-muted">Obliga a los empleadores a implementar un <strong>protocolo de prevención</strong> y disponer de un <strong>canal de denuncias</strong> accesible para todos los trabajadores.</p>
+                                <p class="text-muted">Obliga a los empleadores a implementar un <strong>protocolo de prevención</strong> y disponer de un <strong>canal de denuncias</strong> accesible para todas las trabajadoras y todos los trabajadores.</p>
                             </div>
                             <div class="col-md-6">
                                 <h5 class="text-dark fw-bold mb-3"><i class="bi bi-check-circle text-success me-2"></i>Tus Derechos</h5>
