@@ -1,6 +1,6 @@
 <?php
-$urlKarin   = getenv('APP_URL_KARIN')   ?: 'http://localhost:9090/karin';
-$urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:9090/generales';
+$urlKarin   = '/karin';
+$urlGeneral = '/generales';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -251,7 +251,7 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:9090/generales';
                 <span class="tag"><i class="bi bi-exclamation-triangle-fill"></i> Acoso sexual</span>
                 <span class="tag"><i class="bi bi-person-fill-x"></i> Violencia laboral</span>
             </div>
-            <a href="<?php echo htmlspecialchars($urlKarin); ?>" class="btn">
+            <a href="<?php echo htmlspecialchars($urlKarin); ?>/" class="btn">
                 <i class="bi bi-box-arrow-in-right"></i> Ingresar al canal
             </a>
             <a href="<?php echo htmlspecialchars($urlKarin); ?>/seguimiento" class="link-sec">
@@ -274,7 +274,7 @@ $urlGeneral = getenv('APP_URL_GENERAL') ?: 'http://localhost:9090/generales';
                 <span class="tag"><i class="bi bi-building-fill"></i> Sector Público</span>
                 <span class="tag"><i class="bi bi-tree-fill"></i> Medioambiente</span>
             </div>
-            <a href="<?php echo htmlspecialchars($urlGeneral); ?>" class="btn">
+            <a href="<?php echo htmlspecialchars($urlGeneral); ?>/" class="btn">
                 <i class="bi bi-box-arrow-in-right"></i> Ingresar al portal
             </a>
             <a href="<?php echo htmlspecialchars($urlGeneral); ?>/seguimiento" class="link-sec">

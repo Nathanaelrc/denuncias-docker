@@ -144,7 +144,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
             " onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
                 <i class="bi bi-pencil-square"></i> Continuar aquí — Realizar denuncia Ley Karin
             </button>
-            <a href="<?= htmlspecialchars(getenv('APP_URL_GENERAL') ?: 'http://localhost:9093') ?>/nueva_denuncia" style="
+            <a href="../generales/nueva_denuncia" style="
                 background:#dc2626;color:#fff;border:2px solid #dc2626;border-radius:10px;
                 padding:.7rem 1.2rem;font-size:.88rem;font-weight:600;cursor:pointer;
                 display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;

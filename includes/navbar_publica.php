@@ -3,8 +3,8 @@
  * Portal de Denuncias Empresa Portuaria Coquimbo - Navbar Única
  */
 $_navUri     = strtok($_SERVER['REQUEST_URI'], '?');
-$_landingUrl = getenv('LANDING_URL') ?: 'http://localhost:8090';
-$_generalUrl = getenv('APP_URL_GENERAL') ?: 'http://localhost:8093';
+$_landingUrl = '../';
+$_generalUrl = '../generales/';
 ?>
 <style>
 .epco-nav{position:fixed;top:0;left:0;right:0;z-index:1040;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:linear-gradient(135deg,#0a1628 0%,#112a42 100%);border-bottom:1px solid rgba(255,255,255,.08);gap:1rem}

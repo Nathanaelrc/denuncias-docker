@@ -6,8 +6,8 @@ if (!defined('GENERALES_APP')) die('Acceso no permitido');
 
 $_navUri  = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $_navPage = rtrim($_navUri, '/') ?: '/';
-$_landingUrl = getenv('LANDING_URL') ?: 'http://localhost:8090';
-$_karinUrl   = getenv('APP_URL_KARIN') ?: 'http://localhost:8091';
+$_landingUrl = '../';
+$_karinUrl   = '../karin/';
 ?>
 <style>
 .epco-nav{position:fixed;top:0;left:0;right:0;z-index:1040;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:linear-gradient(135deg,#0a1628 0%,#112a42 100%);border-bottom:1px solid rgba(255,255,255,.08);gap:1rem}

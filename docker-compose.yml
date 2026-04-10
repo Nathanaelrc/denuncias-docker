@@ -206,10 +206,11 @@ services:
     networks:
       - denuncias-network
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      test: ["CMD", "wget", "-qO-", "http://localhost/nginx-health"]
       interval: 30s
       timeout: 5s
       retries: 3
+      start_period: 10s
 
   # =============================================
   # phpMyAdmin (solo desarrollo)
