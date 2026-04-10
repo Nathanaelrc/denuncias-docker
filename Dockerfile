@@ -73,7 +73,7 @@ RUN chown -R www-data:www-data /var/www/html \
 EXPOSE 80
 
 # Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD curl -fsS http://localhost/salud || exit 1
 
 ENTRYPOINT ["app-entrypoint.sh"]

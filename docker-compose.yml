@@ -198,9 +198,9 @@ services:
       - "${NGINX_PORT:-9090}:80"
     depends_on:
       app:
-        condition: service_healthy
+        condition: service_started
       app-generales:
-        condition: service_healthy
+        condition: service_started
       landing:
         condition: service_started
     networks:

@@ -44,7 +44,7 @@ RUN chmod +x /usr/local/bin/app-entrypoint.sh
 
 EXPOSE 80
 
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD curl -fsS http://localhost/salud || exit 1
 
 ENTRYPOINT ["app-entrypoint.sh"]
