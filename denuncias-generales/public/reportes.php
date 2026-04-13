@@ -213,7 +213,7 @@ new Chart(document.getElementById('chartAnon'), {
 
 <div class="print-only" style="display:none; margin-bottom: 1.5rem;">
     <div style="text-align:center; border-bottom: 2px solid #1a6591; padding-bottom: 0.75rem; margin-bottom: 1rem;">
-        <strong style="font-size:1.15rem; color:#1a6591;">Reporte de Métricas — Canal de Denuncias Ciudadanas</strong><br>
+        <strong style="font-size:1.15rem; color:#1a6591;">Reporte de Métricas — Canal de Denuncias</strong><br>
         <small style="color:#6b7280;">Empresa Portuaria Coquimbo &mdash; Generado: <?= date('d/m/Y H:i') ?></small>
     </div>
     <table style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:1.5rem;">
@@ -262,7 +262,7 @@ new Chart(document.getElementById('chartAnon'), {
         </tbody>
     </table>
     <p style="font-size:0.72rem; color:#9ca3af; text-align:center; margin-top:2rem; border-top:1px solid #e5e7eb; padding-top:0.5rem;">
-        Canal de Denuncias Ciudadanas — Empresa Portuaria Coquimbo
+        Canal de Denuncias — Empresa Portuaria Coquimbo
     </p>
 </div>
 

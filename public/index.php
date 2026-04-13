@@ -220,7 +220,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
     <!-- Footer -->
     <footer class="py-4" style="background: #061827;">
         <div class="container text-center text-white-50">
-            <p class="mb-1"><i class="bi bi-shield-check me-1"></i> Canal de Denuncias - Empresa Portuaria Coquimbo</p>
+            <p class="mb-1"><i class="bi bi-shield-check me-1"></i> Canal de Denuncias Ley Karin - Empresa Portuaria Coquimbo</p>
             <p class="mb-0 small">En cumplimiento de la Ley N° 21.643 (Ley Karin) · Todos los datos tratados de forma confidencial</p>
         </div>
     </footer>

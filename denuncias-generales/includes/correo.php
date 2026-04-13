@@ -131,7 +131,7 @@ function emailTemplate(string $title, string $content): string {
 <tr><td align="center">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 <tr><td style="background:linear-gradient(135deg,#1a6591,#2380b0);padding:30px;border-radius:12px 12px 0 0;text-align:center;">
-    <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;">Portal Ciudadano de Denuncias</h1>
+    <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;">Canal de Denuncias</h1>
     <p style="color:rgba(255,255,255,0.7);margin:5px 0 0;font-size:13px;">Empresa Portuaria Coquimbo · Legislación Chilena</p>
 </td></tr>
 <tr><td style="background:#ffffff;padding:25px 30px 10px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
@@ -139,7 +139,7 @@ function emailTemplate(string $title, string $content): string {
 </td></tr>
 <tr><td style="background:#ffffff;padding:15px 30px 30px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">' . $content . '</td></tr>
 <tr><td style="background:#1a6591;padding:20px 30px;border-radius:0 0 12px 12px;text-align:center;">
-    <p style="color:rgba(255,255,255,0.6);margin:0;font-size:12px;">Este es un correo automático del Portal Ciudadano de Denuncias.<br>Empresa Portuaria Coquimbo · Información confidencial.</p>
+    <p style="color:rgba(255,255,255,0.6);margin:0;font-size:12px;">Este es un correo automático del Canal de Denuncias.<br>Empresa Portuaria Coquimbo · Información confidencial.</p>
 </td></tr>
 </table></td></tr></table>
 </body></html>';
@@ -188,7 +188,7 @@ function notifyComplainant(string $email, string $complaintNumber, string $compl
     $appUrl    = getenv('APP_URL') ?: 'http://localhost:8093';
 
     $content = '
-        <p style="color:#374151;font-size:14px;line-height:1.7;">Su denuncia ha sido <strong>registrada exitosamente</strong> en el Portal Ciudadano de Denuncias de la Empresa Portuaria Coquimbo.</p>
+        <p style="color:#374151;font-size:14px;line-height:1.7;">Su denuncia ha sido <strong>registrada exitosamente</strong> en el Canal de Denuncias de la Empresa Portuaria Coquimbo.</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e8f0f6;border:1px solid #b3d4e8;border-radius:8px;padding:20px;margin:15px 0;">
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;width:45%;">Código de seguimiento:</td>
                 <td style="padding:8px 15px;color:#1a6591;font-weight:700;font-size:16px;">' . htmlspecialchars($complaintNumber) . '</td></tr>

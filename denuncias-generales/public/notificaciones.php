@@ -60,12 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
         try {
             $testContent = '
                 <p style="color: #374151; font-size: 14px; line-height: 1.7;">Hola <strong>' . htmlspecialchars($targetUser['name']) . '</strong>,</p>
-                <p style="color: #374151; font-size: 14px; line-height: 1.7;">Este es un correo de prueba del Portal Ciudadano de Denuncias para verificar que las notificaciones por email están funcionando correctamente.</p>
+                <p style="color: #374151; font-size: 14px; line-height: 1.7;">Este es un correo de prueba del Canal de Denuncias para verificar que las notificaciones por email están funcionando correctamente.</p>
                 <div style="background: #e8f0f6; border: 1px solid #b3d4e8; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: center;">
                     <p style="color: #1a6591; font-weight: 700; font-size: 16px; margin: 0;">Correo configurado correctamente</p>
                 </div>
                 <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">Enviado desde el panel de notificaciones el ' . date('d/m/Y H:i') . '</p>';
-            $result = sendEmail($targetUser['email'], 'Prueba de Notificación - Portal Ciudadano', emailTemplate('Prueba de Correo', $testContent));
+            $result = sendEmail($targetUser['email'], 'Prueba de Notificación - Canal de Denuncias', emailTemplate('Prueba de Correo', $testContent));
             echo json_encode(['ok' => $result, 'error' => $result ? null : 'Error al enviar el correo']);
         } catch (Exception $e) {
             echo json_encode(['ok' => false, 'error' => $e->getMessage()]);

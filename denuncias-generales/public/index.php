@@ -16,15 +16,19 @@ require_once __DIR__ . '/../includes/encabezado.php';
     <div class="container py-4">
         <div class="row align-items-center gy-5">
             <div class="col-lg-7 slide-in-left">
-                <span class="legal-badge mb-3">
-                    <i class="bi bi-anchor"></i>Empresa Portuaria Coquimbo · Puerto y Entorno
-                </span>
-                <h1 class="fw-bold text-white display-5 mb-3" style="line-height:1.2;">
-                    Canal de Denuncias<br>
-                    <span style="color:#93c5fd;">Generales Empresa Portuaria Coquimbo</span>
-                </h1>
-                <p class="text-white opacity-75 fs-5 mb-4">
-                    Presenta tu denuncia de forma confidencial sobre irregularidades en las operaciones del puerto,
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div style="width:60px;height:60px;background:rgba(255,255,255,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:8px;">
+                        <img src="/img/Logo01.png" alt="EPC" style="width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);">
+                    </div>
+                    <div>
+                        <h1 class="display-5 fw-bold text-white mb-0" style="line-height:1.15;">
+                            Canal de Denuncias <span style="color:#93c5fd;">Generales</span>
+                        </h1>
+                        <p class="mb-0 opacity-75 text-white">Empresa Portuaria Coquimbo · Puerto y Entorno</p>
+                    </div>
+                </div>
+                <p class="text-white opacity-75 fs-5 mb-4" style="line-height:1.8;">
+                    Presenta tu denuncia de forma <strong class="text-white">confidencial</strong> sobre irregularidades en las operaciones del puerto,
                     contratos, impacto ambiental, seguridad o cualquier situación que afecte al Puerto de Coquimbo
                     y su entorno costero.
                 </p>
@@ -32,7 +36,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     <a href="/nueva_denuncia" class="btn btn-light btn-lg fw-semibold px-4 py-3">
                         <i class="bi bi-pencil-square me-2"></i>Realizar Denuncia
                     </a>
-                    <a href="/seguimiento" class="btn btn-lg px-4 py-3 fw-semibold" style="background:#fff;color:#1a6591;border:2px solid #fff;">
+                    <a href="/seguimiento" class="btn btn-outline-light btn-lg px-4 py-3 fw-semibold">
                         <i class="bi bi-search me-2"></i>Seguimiento
                     </a>
                 </div>
@@ -144,7 +148,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6 text-white-50 small">
-                &copy; <?= date('Y') ?> Empresa Portuaria Coquimbo · Portal Ciudadano de Denuncias
+                &copy; <?= date('Y') ?> Empresa Portuaria Coquimbo · Canal de Denuncias
             </div>
             <div class="col-md-6 text-end">
                 <span class="text-white-50 small">
