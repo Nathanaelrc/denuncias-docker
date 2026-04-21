@@ -22,7 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $complaintType = sanitize($_POST['complaint_type'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $isAnonymous = isset($_POST['is_anonymous']) ? 1 : 0;
+    
+    // Validar tipo de identidad
+    $identidadOption = $_POST['tipo_identidad'] ?? 'anonima';
+    $isAnonymous = ($identidadOption === 'anonima') ? 1 : 0;
 
     if (empty($complaintType) || !array_key_exists($complaintType, COMPLAINT_TYPES)) {
         $errors[] = 'Selecciona un tipo de denuncia válido.';
@@ -36,17 +39,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $reporterEmail = '';
     $reporterPhone = '';
     $reporterDept  = '';
+    
     if (!$isAnonymous) {
-        $reporterName  = trim($_POST['reporter_name'] ?? '');
+        $reporterName = trim($_POST['reporter_name'] ?? '');
+        $reporterLastname = trim($_POST['reporter_lastname'] ?? '');
+        
         $reporterEmail = trim($_POST['reporter_email'] ?? '');
         $reporterPhone = trim($_POST['reporter_phone'] ?? '');
         $reporterDept  = trim($_POST['reporter_department'] ?? '');
 
-        if (empty($reporterName)) {
-            $errors[] = 'El nombre es obligatorio cuando la denuncia no es anónima.';
-        } elseif (strlen($reporterName) > 150) {
-            $errors[] = 'El nombre no puede superar los 150 caracteres.';
+        if (empty($reporterName) || empty($reporterLastname)) {
+            $errors[] = 'El nombre y apellido son obligatorios cuando la denuncia no es anónima.';
+        } elseif (strlen($reporterName . ' ' . $reporterLastname) > 150) {
+            $errors[] = 'El nombre completo no puede superar los 150 caracteres.';
         }
+        
         if (!empty($reporterEmail) && !filter_var($reporterEmail, FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'El correo electrónico ingresado no es válido.';
         }
@@ -60,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'involved_persons' => trim($_POST['involved_persons'] ?? '') ?: null,
             'evidence_description' => trim($_POST['evidence_description'] ?? '') ?: null,
             'reporter_name'       => $isAnonymous ? null : ($reporterName ?: null),
+            'reporter_lastname'   => $isAnonymous ? null : ($reporterLastname ?: null),
             'reporter_email'      => $isAnonymous ? null : ($reporterEmail ?: null),
             'reporter_phone'      => $isAnonymous ? null : ($reporterPhone ?: null),
             'reporter_department' => $isAnonymous ? null : ($reporterDept ?: null),
@@ -91,6 +99,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once __DIR__ . '/../includes/encabezado.php';
 ?>
 
+<style>
+/* Card blanco para formulario de denuncia */
+.card-form {
+    background: #fff !important;
+    border: none !important;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+.form-label { color: #475569; font-weight: 500; }
+.form-control, .form-select {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #0f172a;
+}
+.form-control:focus, .form-select:focus {
+    background-color: #fff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.1);
+}
+/* Modal Animation */
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<?php
+?>
+
 <?php require_once __DIR__ . '/../includes/navbar_publica.php'; ?>
 
 <!-- ============================================================
@@ -107,9 +143,6 @@ require_once __DIR__ . '/../includes/encabezado.php';
         padding:2.2rem 2rem; box-shadow:0 20px 60px rgba(0,0,0,0.3);
         animation:slideUp .3s ease both;
     ">
-        <style>
-            @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-        </style>
 
         <!-- Cabecera -->
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.1rem;">
@@ -327,48 +360,47 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <hr class="my-4">
 
                             <!-- Anonimato -->
-                            <div class="mb-4">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" name="is_anonymous" id="is_anonymous" <?= !isset($_POST['is_anonymous']) || isset($_POST['is_anonymous']) ? 'checked' : '' ?> onchange="toggleReporterFields()">
-                                    <label class="form-check-label fw-semibold text-dark" for="is_anonymous">
-                                        <i class="bi bi-incognito me-1"></i>Denunciar de forma anónima
-                                    </label>
-                                </div>
-                                <div class="form-text">Si desactivas el anonimato, podrás proporcionar tus datos de contacto.</div>
+                        <div class="mb-4">
+                            <div class="form-check form-switch fs-5">
+                                <input type="hidden" name="tipo_identidad" value="identificada">
+                                <input class="form-check-input" type="checkbox" role="switch" name="tipo_identidad" value="anonima" id="optIdentidad_anonima" <?= (($_POST['tipo_identidad'] ?? 'anonima') === 'anonima') ? 'checked' : '' ?> onchange="toggleReporterFields()">
+                                <label class="form-check-label fw-bold text-dark ms-2" for="optIdentidad_anonima" style="font-size:1.1rem;">
+                                    <i class="bi bi-incognito text-primary me-2"></i>Denunciar de forma anónima
+                                </label>
                             </div>
+                            <div class="form-text mt-2 text-muted">
+                                Si desactivas el anonimato, podrás proporcionar tus datos. Quedarán encriptados y estrictamente protegidos para quienes investiguen el caso.
+                            </div>
+                        </div>
 
-                            <!-- Datos del denunciante (ocultos si es anónima) -->
-                            <div id="reporterFields" style="display: none;">
-                                <h5 class="text-dark fw-bold mb-3"><i class="bi bi-person me-2"></i>Tus Datos (Confidenciales)</h5>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold text-dark">
-                                            Nombre
-                                        </label>
-                                        <input type="text" name="reporter_name" class="form-control" value="<?= htmlspecialchars($_POST['reporter_name'] ?? '') ?>" placeholder="Tu nombre">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold text-dark">
-                                            Email
-                                        </label>
-                                        <input type="email" name="reporter_email" class="form-control" value="<?= htmlspecialchars($_POST['reporter_email'] ?? '') ?>" placeholder="tu@email.com">
-                                    </div>
+                        <div id="reporterFields" style="display: none; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1.5rem; margin-top: 0.5rem;">
+                            <h6 class="text-dark fw-bold mb-3"><i class="bi bi-person me-2"></i>Tus Datos (Confidenciales)</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-dark">Nombre *</label>
+                                    <input type="text" name="reporter_name" class="form-control reporter-input" value="<?= htmlspecialchars($_POST['reporter_name'] ?? '') ?>" placeholder="Tu nombre">
                                 </div>
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold text-dark">
-                                            Teléfono
-                                        </label>
-                                        <input type="tel" name="reporter_phone" class="form-control" value="<?= htmlspecialchars($_POST['reporter_phone'] ?? '') ?>" placeholder="+56 9 XXXX XXXX">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold text-dark">
-                                            Departamento
-                                        </label>
-                                        <input type="text" name="reporter_department" class="form-control" value="<?= htmlspecialchars($_POST['reporter_department'] ?? '') ?>" placeholder="Tu departamento">
-                                    </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-dark">Apellido *</label>
+                                    <input type="text" name="reporter_lastname" class="form-control reporter-input" value="<?= htmlspecialchars($_POST['reporter_lastname'] ?? '') ?>" placeholder="Tus apellidos">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-dark">Email</label>
+                                    <input type="email" name="reporter_email" class="form-control reporter-input" value="<?= htmlspecialchars($_POST['reporter_email'] ?? '') ?>" placeholder="tu@email.com">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold text-dark">Teléfono</label>
+                                    <input type="tel" name="reporter_phone" class="form-control" value="<?= htmlspecialchars($_POST['reporter_phone'] ?? '') ?>" placeholder="+56 9 XXXX XXXX">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold text-dark">Departamento</label>
+                                    <input type="text" name="reporter_department" class="form-control" value="<?= htmlspecialchars($_POST['reporter_department'] ?? '') ?>" placeholder="Tu departamento">
                                 </div>
                             </div>
+                            <div class="mt-3 form-text text-primary" style="font-size:0.85rem;">
+                                <i class="bi bi-info-circle me-1"></i> Estos datos quedarán estrictamente protegidos bajo AES-256 para quienes investiguen el caso.
+                            </div>
+                        </div>
 
                             <!-- CAPTCHA -->
                             <?= SimpleCaptcha::render() ?>
@@ -391,11 +423,19 @@ require_once __DIR__ . '/../includes/encabezado.php';
 
 <script>
 function toggleReporterFields() {
-    const chk = document.getElementById('is_anonymous');
     const fields = document.getElementById('reporterFields');
-    fields.style.display = chk.checked ? 'none' : 'block';
+    if (!fields) return;
+    
+    const isAnon = document.getElementById('optIdentidad_anonima').checked;
+    fields.style.display = isAnon ? 'none' : 'block';
+    
+    // Select input fields and update their 'required' property
+    const inputs = document.querySelectorAll('.reporter-input');
+    inputs.forEach(i => {
+        i.required = !isAnon;
+    });
 }
-toggleReporterFields();
+document.addEventListener("DOMContentLoaded", toggleReporterFields);
 
 let selectedFiles = new DataTransfer();
 

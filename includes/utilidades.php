@@ -210,6 +210,7 @@ function createComplaint(array $data): array {
         $involvedPersons = $enc->encryptForDb($data['involved_persons'] ?? null);
         $evidenceDesc = $enc->encryptForDb($data['evidence_description'] ?? null);
         $reporterName = $enc->encryptForDb($data['reporter_name'] ?? null);
+        $reporterLastname = $enc->encryptForDb($data['reporter_lastname'] ?? null);
         $reporterEmail = $enc->encryptForDb($data['reporter_email'] ?? null);
         $reporterPhone = $enc->encryptForDb($data['reporter_phone'] ?? null);
         $reporterDept = $enc->encryptForDb($data['reporter_department'] ?? null);
@@ -227,6 +228,8 @@ function createComplaint(array $data): array {
             evidence_description_encrypted, evidence_description_nonce,
             is_anonymous,
             reporter_name_encrypted, reporter_name_nonce,
+            reporter_lastname_encrypted, reporter_lastname_nonce,
+            reporter_lastname_encrypted, reporter_lastname_nonce,
             reporter_email_encrypted, reporter_email_nonce,
             reporter_phone_encrypted, reporter_phone_nonce,
             reporter_department_encrypted, reporter_department_nonce,
@@ -242,7 +245,9 @@ function createComplaint(array $data): array {
             ?, ?,
             ?, ?,
             ?, ?,
+            ?, ?,
             ?,
+            ?, ?,
             ?, ?,
             ?, ?,
             ?, ?,
@@ -264,8 +269,11 @@ function createComplaint(array $data): array {
             $involvedPersons['encrypted'], $involvedPersons['nonce'],
             $evidenceDesc['encrypted'], $evidenceDesc['nonce'],
             $data['is_anonymous'] ?? 1,
+            $reporterLastname['encrypted'], $reporterLastname['nonce'],
+            $reporterLastname['encrypted'], $reporterLastname['nonce'],
             $reporterName['encrypted'], $reporterName['nonce'],
             $reporterEmail['encrypted'], $reporterEmail['nonce'],
+            $reporterLastname['encrypted'], $reporterLastname['nonce'],
             $reporterPhone['encrypted'], $reporterPhone['nonce'],
             $reporterDept['encrypted'], $reporterDept['nonce'],
             $accusedName['encrypted'], $accusedName['nonce'], $accusedNameHmac,
@@ -392,10 +400,14 @@ function getComplaintDecrypted(int $id): ?array {
     if (!$complaint) return null;
 
     $enc = getEncryptionService();
+    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
+    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
 
+    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
     // Desencriptar todos los campos
     $complaint['description'] = $enc->decrypt($complaint['description_encrypted'], $complaint['description_nonce']);
     $complaint['involved_persons'] = $enc->decrypt($complaint['involved_persons_encrypted'], $complaint['involved_persons_nonce']);
+    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
     $complaint['evidence_description'] = $enc->decrypt($complaint['evidence_description_encrypted'], $complaint['evidence_description_nonce']);
     $complaint['reporter_name'] = $enc->decrypt($complaint['reporter_name_encrypted'], $complaint['reporter_name_nonce']);
     $complaint['reporter_email'] = $enc->decrypt($complaint['reporter_email_encrypted'], $complaint['reporter_email_nonce']);

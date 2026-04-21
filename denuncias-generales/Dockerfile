@@ -7,11 +7,9 @@ FROM php:${PHP_VERSION}-apache
 
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev libzip-dev \
-    libxml2-dev libonig-dev libsodium-dev \
-    unzip curl \
+    libxml2-dev libonig-dev libsodium-dev unzip curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        pdo pdo_mysql mysqli mbstring xml zip gd bcmath sodium \
+    && docker-php-ext-install pdo pdo_mysql mysqli mbstring xml zip gd bcmath sodium \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN a2enmod rewrite
@@ -31,15 +29,16 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php.ini /usr/local/etc/php/conf.d/generales.ini
 
 RUN mkdir -p /var/www/html/logs \
-    && mkdir -p /var/www/html/public/uploads/evidencia
+    && mkdir -p /var/www/html/public/uploads/evidencia \
+    && chown -R www-data:www-data /var/www/html
 
-COPY . /var/www/html/
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
+COPY --chown=www-data:www-data . /var/www/html/
+
+RUN chmod -R 755 /var/www/html \
     && chmod -R 775 /var/www/html/logs \
     && chmod -R 775 /var/www/html/public/uploads
 
-COPY docker/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
+COPY --chown=root:root docker/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
 RUN chmod +x /usr/local/bin/app-entrypoint.sh
 
 EXPOSE 80

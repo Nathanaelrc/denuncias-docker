@@ -288,5 +288,31 @@ if (!defined('GENERALES_APP')) {
             color: #fff;
         }
     </style>
+
+    <style>
+        .btn-identidad {
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            color: #475569;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+        .btn-identidad:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+        .btn-check:checked + .btn-identidad {
+            border-color: #0d6efd;
+            background: #eef1f6;
+            color: #084298;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.15);
+        }
+        .btn-check:checked + .btn-identidad strong {
+            color: #084298;
+        }
+        .btn-check:checked + .btn-identidad i {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body>

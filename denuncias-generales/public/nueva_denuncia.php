@@ -20,7 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $complaintType = sanitize($_POST['complaint_type'] ?? '');
     $description   = trim($_POST['description'] ?? '');
-    $isAnonymous   = isset($_POST['is_anonymous']) ? 1 : 0;
+    
+    // Validar tipo de identidad
+    $identidadOption = $_POST['tipo_identidad'] ?? 'anonima';
+    $isAnonymous = ($identidadOption === 'anonima') ? 1 : 0;
 
     if (empty($complaintType) || !array_key_exists($complaintType, COMPLAINT_TYPES)) {
         $errors[] = 'Selecciona un tipo de denuncia válido.';
@@ -34,17 +37,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $reporterEmail = '';
     $reporterPhone = '';
     $reporterDept  = '';
+    
     if (!$isAnonymous) {
-        $reporterName  = trim($_POST['reporter_name'] ?? '');
+        $reporterName = trim($_POST['reporter_name'] ?? '');
+        $reporterLastname = trim($_POST['reporter_lastname'] ?? '');
+        
         $reporterEmail = trim($_POST['reporter_email'] ?? '');
         $reporterPhone = trim($_POST['reporter_phone'] ?? '');
         $reporterDept  = trim($_POST['reporter_department'] ?? '');
 
-        if (empty($reporterName)) {
-            $errors[] = 'El nombre es obligatorio cuando la denuncia no es anónima.';
-        } elseif (strlen($reporterName) > 150) {
-            $errors[] = 'El nombre no puede superar los 150 caracteres.';
+        if (empty($reporterName) || empty($reporterLastname)) {
+            $errors[] = 'El nombre y apellido son obligatorios cuando la denuncia no es anónima.';
+        } elseif (strlen($reporterName . ' ' . $reporterLastname) > 150) {
+            $errors[] = 'El nombre completo no puede superar los 150 caracteres.';
         }
+        
         if (!empty($reporterEmail) && !filter_var($reporterEmail, FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'El correo electrónico ingresado no es válido.';
         }
@@ -58,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'involved_persons'     => trim($_POST['involved_persons'] ?? '') ?: null,   // N° referencia / boleta
             'evidence_description' => trim($_POST['evidence_description'] ?? '') ?: null,
             'reporter_name'        => $isAnonymous ? null : ($reporterName ?: null),
+            'reporter_lastname'    => $isAnonymous ? null : ($reporterLastname ?: null),
             'reporter_email'       => $isAnonymous ? null : ($reporterEmail ?: null),
             'reporter_phone'       => $isAnonymous ? null : ($reporterPhone ?: null),
             'reporter_department'  => $isAnonymous ? null : ($reporterDept ?: null),
@@ -88,6 +96,107 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require_once __DIR__ . '/../includes/encabezado.php';
 ?>
 
+<style>
+/* Card blanco para formulario de denuncia - Igual que Karin */
+.card-form {
+    background: #fff !important;
+    border: none !important;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+/* Hacer que textos y labels se vean oscuros sobre fondo blanco */
+.card-form .text-dark,
+.card-form h2, .card-form h5, .card-form h6 {
+    color: #1e293b !important;
+}
+.card-form .text-muted {
+    color: #64748b !important;
+}
+.card-form p.opacity-75 {
+    color: #475569 !important;
+    opacity: 1 !important;
+}
+.card-form .form-label, .form-label { color: #475569 !important; font-weight: 500; }
+
+/* Controles de formulario (inputs, selects, textarea) */
+.card-form .form-control, .card-form .form-select {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 1rem !important;
+    color: #0f172a !important;
+}
+.card-form .form-control::placeholder, .card-form .form-select::placeholder {
+    color: #94a3b8 !important;
+}
+.card-form .alert-info {
+    color: #084298 !important;
+    background-color: #cfe2ff !important;
+    border-color: #b6d4fe !important;
+}
+.card-form .text-muted {
+    color: #475569 !important;
+}
+.card-form .form-text {
+    color: #475569 !important;
+}
+#captcha_container .form-label, 
+#captcha_container .form-text,
+.card-form .captcha-container .form-label,
+.card-form .captcha-container .form-text {
+    color: #1e293b !important;
+}
+
+.card-form .alert-info {
+    color: #084298 !important;
+    background-color: #cfe2ff !important;
+    border-color: #b6d4fe !important;
+}
+.card-form .text-muted {
+    color: #475569 !important;
+}
+.card-form .form-text {
+    color: #475569 !important;
+}
+#captcha_container .form-label, 
+#captcha_container .form-text,
+.card-form .captcha-container .form-label,
+.card-form .captcha-container .form-text {
+    color: #1e293b !important;
+}
+
+.card-form .form-control:focus, .card-form .form-select:focus {
+    background-color: #fff !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.1) !important;
+}
+
+/* Captcha y tarjetas anidadas */
+.card-form .input-group-text, .card-form .card {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #1e293b !important;
+}
+
+/* Tipos de denuncia que son labels visuales */
+.card-form .btn-outline-dark {
+    color: #475569 !important;
+    border-color: #cbd5e1 !important;
+}
+.card-form .btn-outline-dark:hover, 
+.card-form .btn-check:checked + .btn-outline-dark {
+    color: #1e293b !important;
+    border-color: #3b82f6 !important;
+    background-color: #f0f7ff !important;
+}
+
+/* Modal Animation */
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<?php
+?>
+
 <?php require_once __DIR__ . '/../includes/navbar_publica.php'; ?>
 
 <!-- ============================================================
@@ -104,9 +213,6 @@ require_once __DIR__ . '/../includes/encabezado.php';
         padding:2.2rem 2rem; box-shadow:0 20px 60px rgba(0,0,0,0.3);
         animation:slideUp .3s ease both;
     ">
-        <style>
-            @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-        </style>
 
         <!-- Cabecera -->
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.1rem;">
@@ -156,85 +262,6 @@ require_once __DIR__ . '/../includes/encabezado.php';
 
 <div style="padding-top: 70px;">
 
-<style>
-/* Card blanco para formulario de denuncia */
-.card-form {
-    background: #fff !important;
-    border: none !important;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-    color: #1e293b !important;
-}
-.card-form .form-label,
-.card-form .text-dark,
-.card-form h5,
-.card-form h2,
-.card-form h3,
-.card-form strong,
-.card-form .fw-bold,
-.card-form .fw-semibold { color: #1e293b !important; }
-.card-form .text-muted { color: #64748b !important; }
-.card-form .form-text { color: #94a3b8 !important; }
-.card-form .form-control,
-.card-form .form-select {
-    background: #fff !important;
-    border: 1px solid #d1d5db !important;
-    color: #1e293b !important;
-}
-.card-form .form-control::placeholder { color: #9ca3af !important; }
-.card-form .form-control:focus,
-.card-form .form-select:focus {
-    border-color: #1a6591 !important;
-    box-shadow: 0 0 0 0.2rem rgba(26,101,145,0.2) !important;
-    background: #fff !important;
-}
-.card-form .btn-outline-dark {
-    color: #374151 !important;
-    border-color: #d1d5db !important;
-    background: #fff !important;
-}
-.card-form .btn-outline-dark:hover,
-.card-form .btn-check:checked + .btn-outline-dark {
-    background: #1a6591 !important;
-    border-color: #1a6591 !important;
-    color: #fff !important;
-}
-.card-form .alert-info {
-    background: #eff6ff !important;
-    border-color: #bfdbfe !important;
-    color: #1e40af !important;
-}
-.card-form .alert-warning {
-    background: #fefce8 !important;
-    border-color: #fde68a !important;
-    color: #92400e !important;
-}
-.card-form .alert-danger {
-    background: #fef2f2 !important;
-    border-color: #fecaca !important;
-    color: #991b1b !important;
-}
-.card-form .form-check-input {
-    background-color: #fff !important;
-    border-color: #d1d5db !important;
-}
-.card-form .form-check-input:checked {
-    background-color: #1a6591 !important;
-    border-color: #1a6591 !important;
-}
-.card-form .form-check-label { color: #1a6591 !important; }
-.card-form .anon-box {
-    background: #f0f7ff !important;
-    border: 1px solid #bfdbfe !important;
-    border-radius: 12px;
-}
-.card-form .anon-box .card-body { color: #1e293b; }
-.card-form .bg-light {
-    background: #f1f5f9 !important;
-}
-.card-form .bg-light .text-muted { color: #64748b !important; }
-.card-form .bg-light h3 { color: #1a6591 !important; }
-</style>
 
 <?php if ($success): ?>
 <section class="gradient-bg py-5 min-vh-100 d-flex align-items-center">
@@ -379,34 +406,42 @@ require_once __DIR__ . '/../includes/encabezado.php';
                         </div>
 
                         <!-- Anonimato -->
-                        <div class="card border-0 mb-4 anon-box">
-                            <div class="card-body">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" name="is_anonymous" id="isAnonymous"
-                                        <?= ($_POST['is_anonymous'] ?? null) !== null ? (isset($_POST['is_anonymous']) ? 'checked' : '') : 'checked' ?>>
-                                    <label class="form-check-label fw-semibold" for="isAnonymous">
-                                        <i class="bi bi-incognito me-1"></i>Deseo mantener mi identidad en anonimato
-                                    </label>
+                        <div class="mb-4">
+                            <div class="form-check form-switch fs-5">
+                                <input type="hidden" name="tipo_identidad" value="identificada">
+                                <input type="hidden" name="tipo_identidad" value="identificada">
+                                <input class="form-check-input" type="checkbox" role="switch" name="tipo_identidad" value="anonima" id="optIdentidad_anonima" <?= (($_POST['tipo_identidad'] ?? 'anonima') === 'anonima') ? 'checked' : '' ?> onchange="toggleReporter()">
+                                <label class="form-check-label fw-bold text-dark ms-2" for="optIdentidad_anonima" style="font-size:1.1rem;">
+                                    <i class="bi bi-incognito text-primary me-2"></i>Denunciar de forma anónima
+                                </label>
+                            </div>
+                            <div class="form-text mt-2 text-muted">
+                                Si desactivas el anonimato, podrás proporcionar tus datos. Quedarán encriptados y estrictamente protegidos para quienes investiguen el caso.
+                            </div>
+                        </div>
+
+                        <div id="reporterFields" style="display: none; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1.5rem; margin-top: 0.5rem;">
+                            <h6 class="text-dark fw-bold mb-3"><i class="bi bi-person me-2"></i>Tus Datos (Confidenciales)</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-dark">Nombre *</label>
+                                    <input type="text" name="reporter_name" id="reporter_name" class="form-control reporter-input" value="<?= htmlspecialchars($_POST['reporter_name'] ?? '') ?>" placeholder="Tu nombre">
                                 </div>
-                                <div id="reporterFields" style="display: none;">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-semibold text-dark">Nombre completo</label>
-                                            <input type="text" name="reporter_name" class="form-control" value="<?= htmlspecialchars($_POST['reporter_name'] ?? '') ?>">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-semibold text-dark">Correo electrónico</label>
-                                            <input type="email" name="reporter_email" class="form-control" value="<?= htmlspecialchars($_POST['reporter_email'] ?? '') ?>" placeholder="Para recibir notificaciones">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-semibold text-dark">Teléfono (opcional)</label>
-                                            <input type="tel" name="reporter_phone" class="form-control" value="<?= htmlspecialchars($_POST['reporter_phone'] ?? '') ?>">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-semibold text-dark">Comuna / Ciudad</label>
-                                            <input type="text" name="reporter_department" class="form-control" value="<?= htmlspecialchars($_POST['reporter_department'] ?? '') ?>" placeholder="Ej: Coquimbo, La Serena...">
-                                        </div>
-                                    </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-dark">Apellido *</label>
+                                    <input type="text" name="reporter_lastname" id="reporter_lastname" class="form-control reporter-input" value="<?= htmlspecialchars($_POST['reporter_lastname'] ?? '') ?>" placeholder="Tus apellidos">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-dark">Correo electrónico</label>
+                                    <input type="email" name="reporter_email" class="form-control reporter-input" value="<?= htmlspecialchars($_POST['reporter_email'] ?? '') ?>" placeholder="Para recibir notificaciones">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold text-dark">Teléfono</label>
+                                    <input type="tel" name="reporter_phone" class="form-control" value="<?= htmlspecialchars($_POST['reporter_phone'] ?? '') ?>">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold text-dark">Comuna / Ciudad</label>
+                                    <input type="text" name="reporter_department" class="form-control" value="<?= htmlspecialchars($_POST['reporter_department'] ?? '') ?>">
                                 </div>
                             </div>
                         </div>
@@ -434,13 +469,21 @@ require_once __DIR__ . '/../includes/encabezado.php';
 </div>
 
 <script>
-const anonCheck = document.getElementById('isAnonymous');
-const reporterFields = document.getElementById('reporterFields');
 function toggleReporter() {
-    reporterFields.style.display = anonCheck.checked ? 'none' : 'block';
-    document.querySelectorAll('#reporterFields input').forEach(i => { i.required = !anonCheck.checked; });
+    const reporterFields = document.getElementById('reporterFields');
+    if (!reporterFields) return;
+    
+    const isAnon = document.getElementById('optIdentidad_anonima').checked;
+    reporterFields.style.display = isAnon ? 'none' : 'block';
+    
+    // Select input fields and update their 'required' property
+    const inputs = document.querySelectorAll('.reporter-input');
+    inputs.forEach(i => {
+        i.required = !isAnon;
+    });
 }
-if (anonCheck) { anonCheck.addEventListener('change', toggleReporter); toggleReporter(); }
+// Initialize
+document.addEventListener("DOMContentLoaded", toggleReporter);
 
 let selectedFiles = new DataTransfer();
 
@@ -460,12 +503,6 @@ function getFileIcon(type) {
     return 'bi-file-text';
 }
 
-function renderFileList() {
-    const list = document.getElementById('fileList');
-    list.innerHTML = '';
-    if (selectedFiles.files.length === 0) return;
-    Array.from(selectedFiles.files).forEach((f, i) => {
-        const li = document.createElement('li');
 function renderFileList() {
     const list = document.getElementById('fileList');
     list.innerHTML = '';

@@ -63,6 +63,8 @@ CREATE TABLE IF NOT EXISTS complaints (
     -- Datos del denunciante (encriptados)
     reporter_name_encrypted BLOB DEFAULT NULL,
     reporter_name_nonce VARBINARY(24) DEFAULT NULL,
+    reporter_lastname_encrypted BLOB DEFAULT NULL,
+    reporter_lastname_nonce VARBINARY(24) DEFAULT NULL,
 
     reporter_email_encrypted BLOB DEFAULT NULL,
     reporter_email_nonce VARBINARY(24) DEFAULT NULL,

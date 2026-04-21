@@ -5,7 +5,7 @@
 ARG PHP_VERSION=8.5
 FROM php:${PHP_VERSION}-apache
 
-# Instalar extensiones de PHP necesarias
+# Instalar extensiones de PHP necesarias y limpiar caché
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -17,16 +17,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        mysqli \
-        mbstring \
-        xml \
-        zip \
-        gd \
-        bcmath \
-        sodium \
+    && docker-php-ext-install pdo pdo_mysql mysqli mbstring xml zip gd bcmath sodium \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -54,18 +45,18 @@ COPY docker/php.ini /usr/local/etc/php/conf.d/denuncias.ini
 
 # Crear directorios necesarios
 RUN mkdir -p /var/www/html/logs \
-    && mkdir -p /var/www/html/public/uploads/evidencia
+    && mkdir -p /var/www/html/public/uploads/evidencia \
+    && chown -R www-data:www-data /var/www/html
 
-# Copiar todo el proyecto
-COPY . /var/www/html/
+# Copiar todo el proyecto con permisos optimizados
+COPY --chown=www-data:www-data . /var/www/html/
 
 # Copiar entrypoint
-COPY docker/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
+COPY --chown=root:root docker/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
 RUN chmod +x /usr/local/bin/app-entrypoint.sh
 
-# Establecer permisos correctos
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
+# Establecer permisos específicos para ejecución
+RUN chmod -R 755 /var/www/html \
     && chmod -R 775 /var/www/html/logs \
     && chmod -R 775 /var/www/html/public/uploads
 

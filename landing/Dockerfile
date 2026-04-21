@@ -19,7 +19,9 @@ RUN echo '<Directory /var/www/html/public>\n\
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-COPY . /var/www/html/
-RUN chown -R www-data:www-data /var/www/html
+RUN mkdir -p /var/www/html && chown -R www-data:www-data /var/www/html
+
+COPY --chown=www-data:www-data . /var/www/html/
+RUN chmod -R 755 /var/www/html
 
 CMD ["apache2-foreground"]
