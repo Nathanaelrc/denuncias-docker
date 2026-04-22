@@ -18,18 +18,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Verificación de seguridad incorrecta.';
     }
 
-    $complaintType = sanitize($_POST['complaint_type'] ?? '');
+    // complaint_type es solo informativo; se guarda como valor genérico
+    $complaintType = 'general';
     $description   = trim($_POST['description'] ?? '');
     
     // Validar tipo de identidad
     $identidadOption = $_POST['tipo_identidad'] ?? 'anonima';
     $isAnonymous = ($identidadOption === 'anonima') ? 1 : 0;
 
-    if (empty($complaintType) || !array_key_exists($complaintType, COMPLAINT_TYPES)) {
-        $errors[] = 'Selecciona un tipo de denuncia válido.';
-    }
     if (strlen($description) < 50) {
         $errors[] = 'La descripción debe tener al menos 50 caracteres.';
+    }
+    if (empty(trim($_POST['incident_date'] ?? ''))) {
+        $errors[] = 'La fecha del incidente es obligatoria.';
+    }
+    if (empty(trim($_POST['incident_location'] ?? ''))) {
+        $errors[] = 'El lugar de los hechos es obligatorio.';
     }
 
     // Validaciones para denuncias identificadas (no anónimas)
@@ -86,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 saveComplaintAttachments($result['id'], $_FILES['attachments']);
             }
             logActivity(null, 'denuncia_creada', 'complaint', $result['id'], "Tipo: $complaintType | Anónima: " . ($isAnonymous ? 'Sí' : 'No'));
-            sendNotification('denuncia_creada', 'Nueva denuncia: ' . $complaintNumber, 'Tipo: ' . (COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType), 'complaint', $result['id']);
+            sendNotification('denuncia_creada', 'Nueva denuncia: ' . $complaintNumber, 'Tipo: ' . $complaintType, 'complaint', $result['id']);
         } else {
             $errors[] = $result['message'] ?? 'Error al registrar la denuncia.';
         }
@@ -190,6 +194,33 @@ require_once __DIR__ . '/../includes/encabezado.php';
     background-color: #f0f7ff !important;
 }
 
+/* Tarjetas informacionales de tipo de denuncia */
+.ley-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    transition: border-color .15s, background .15s;
+    cursor: pointer;
+    outline: none;
+    line-height: 1.3;
+}
+.ley-card:hover {
+    border-color: #93c5fd;
+    background: #f0f7ff;
+}
+.ley-card:focus-visible {
+    box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+}
+/* Fondo azul degradado para secciones de página */
+.gradient-bg {
+    background: linear-gradient(150deg, #1a6591 0%, #2380b0 60%, #1a6591 100%);
+}
+/* Corregir colores de alertas dentro de la tarjeta blanca */
+.card-form .alert-warning {
+    color: #7c5e00 !important;
+    background-color: #fff3cd !important;
+    border-color: #ffc107 !important;
+}
 /* Modal Animation */
 @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 </style>
@@ -316,20 +347,49 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     <form method="POST" action="/nueva_denuncia" id="formDenuncia" enctype="multipart/form-data">
                         <?= csrfInput() ?>
 
-                        <!-- Tipo de denuncia -->
+                        <!-- Categorías informativas (no forman parte de la denuncia) -->
                         <div class="mb-4">
-                            <label class="form-label fw-semibold text-dark">Tipo de Denuncia *</label>
-                            <div class="row g-2">
+                            <p class="fw-semibold text-dark mb-2" style="font-size:.93rem;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>
+                                Categorías de referencia
+                                <span class="fw-normal text-muted" style="font-size:.82rem;"> — Haz clic en cualquiera para ver la ley aplicable</span>
+                            </p>
+                            <!-- Tarjetas informacionales expandibles (no seleccionables) -->
+                            <div class="row g-2 mb-1" id="leyCardsGrid">
                                 <?php foreach (COMPLAINT_TYPES as $key => $type): ?>
                                 <div class="col-md-4 col-6">
-                                    <input type="radio" name="complaint_type" id="type_<?= $key ?>" value="<?= $key ?>" class="btn-check" <?= ($_POST['complaint_type'] ?? '') === $key ? 'checked' : '' ?>>
-                                    <label for="type_<?= $key ?>" class="btn btn-outline-dark w-100 text-start py-3 h-100">
-                                        <i class="bi <?= $type['icon'] ?> me-2"></i>
-                                        <strong><?= $type['label'] ?></strong><br>
-                                        <small class="text-muted" style="font-size:0.7rem;"><?= $type['ley'] ?></small>
-                                    </label>
+                                    <button type="button"
+                                        class="ley-card w-100 text-start py-2 px-2 h-100"
+                                        data-ley-key="<?= htmlspecialchars($key) ?>"
+                                        onclick="toggleInfoLey('<?= htmlspecialchars($key) ?>', this)">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <i class="bi <?= $type['icon'] ?> me-1" style="color:#1a6591;font-size:.85rem;"></i>
+                                                <strong style="color:#1e293b;font-size:.78rem;"><?= $type['label'] ?></strong><br>
+                                                <small style="color:#64748b;font-size:.66rem;padding-left:1.3rem;"><?= $type['ley'] ?></small>
+                                            </div>
+                                            <i class="bi bi-chevron-down ley-chevron ms-1" style="color:#94a3b8;font-size:.65rem;flex-shrink:0;transition:transform .2s;"></i>
+
+                                        </div>
+                                    </button>
                                 </div>
                                 <?php endforeach; ?>
+                            </div>
+                            <!-- Panel de descripción expandible -->
+                            <div id="leyInfoPanel" style="display:none;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;padding:1rem 1.2rem;margin-bottom:.75rem;">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i id="leyPanelIcono" class="bi fs-5 mt-1" style="color:#1a6591;flex-shrink:0;"></i>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <strong id="leyPanelTitulo" style="color:#1e293b;font-size:.93rem;"></strong>
+                                            <span id="leyPanelNorma" style="font-size:.72rem;font-weight:700;color:#2563eb;letter-spacing:.3px;"></span>
+                                        </div>
+                                        <p id="leyPanelDesc" class="mb-0" style="color:#334155;font-size:.87rem;line-height:1.65;"></p>
+                                    </div>
+                                    <button type="button" onclick="cerrarInfoLey()" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:0;flex-shrink:0;" aria-label="Cerrar">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -341,40 +401,40 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <div class="form-text">Mínimo 50 caracteres.</div>
                         </div>
 
-                        <!-- Fecha y Lugar -->
+                        <!-- Fecha y Lugar (obligatorios) -->
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="incident_date" class="form-label fw-semibold text-dark">Fecha del incidente</label>
-                                <input type="date" name="incident_date" id="incident_date" class="form-control" value="<?= htmlspecialchars($_POST['incident_date'] ?? '') ?>" max="<?= date('Y-m-d') ?>">
+                                <label for="incident_date" class="form-label fw-semibold text-dark">Fecha del incidente *</label>
+                                <input type="date" name="incident_date" id="incident_date" class="form-control" required value="<?= htmlspecialchars($_POST['incident_date'] ?? '') ?>" max="<?= date('Y-m-d') ?>">
                             </div>
                             <div class="col-md-6">
-                                <label for="incident_location" class="form-label fw-semibold text-dark">Lugar / Sucursal</label>
-                                <input type="text" name="incident_location" id="incident_location" class="form-control" value="<?= htmlspecialchars($_POST['incident_location'] ?? '') ?>" placeholder="Ej: Tienda Coquimbo, Mall Portal...">
+                                <label for="incident_location" class="form-label fw-semibold text-dark">Lugar de los hechos *</label>
+                                <input type="text" name="incident_location" id="incident_location" class="form-control" required value="<?= htmlspecialchars($_POST['incident_location'] ?? '') ?>" placeholder="Ej: Puerto de Coquimbo, Oficina central...">
                             </div>
                         </div>
 
-                        <!-- Empresa/Institución Denunciada -->
-                        <h5 class="text-dark fw-bold mb-3 mt-4"><i class="bi bi-buildings me-2"></i>Empresa o Institución Denunciada</h5>
+                        <!-- Empresa, Institución o Persona Denunciada -->
+                        <h5 class="text-dark fw-bold mb-3 mt-4"><i class="bi bi-buildings me-2"></i>Empresa, Institución o Persona Denunciada</h5>
                         <div class="row mb-3">
-                            <div class="col-md-5">
-                                <label class="form-label fw-semibold text-dark">Nombre</label>
-                                <input type="text" name="accused_name" class="form-control" value="<?= htmlspecialchars($_POST['accused_name'] ?? '') ?>" placeholder="Ej: Ripley, ESVAL, Municipalidad...">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-dark">Empresa</label>
+                                <input type="text" name="accused_name" class="form-control" value="<?= htmlspecialchars($_POST['accused_name'] ?? '') ?>" placeholder="Nombre de la empresa">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold text-dark">Área / Departamento</label>
-                                <input type="text" name="accused_department" class="form-control" value="<?= htmlspecialchars($_POST['accused_department'] ?? '') ?>" placeholder="Área o departamento">
+                                <label class="form-label fw-semibold text-dark">Institución</label>
+                                <input type="text" name="accused_department" class="form-control" value="<?= htmlspecialchars($_POST['accused_department'] ?? '') ?>" placeholder="Nombre de la institución">
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold text-dark">RUT Empresa</label>
-                                <input type="text" name="accused_position" class="form-control" value="<?= htmlspecialchars($_POST['accused_position'] ?? '') ?>" placeholder="Ej: 76.000.000-0">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-dark">Persona Denunciada</label>
+                                <input type="text" name="accused_position" class="form-control" value="<?= htmlspecialchars($_POST['accused_position'] ?? '') ?>" placeholder="Nombre de la persona">
                             </div>
                         </div>
 
                         <!-- Referencia y Testigos -->
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold text-dark">N° de Referencia / Boleta / Contrato</label>
-                                <input type="text" name="involved_persons" class="form-control" value="<?= htmlspecialchars($_POST['involved_persons'] ?? '') ?>" placeholder="N° boleta, folio, contrato...">
+                                <label class="form-label fw-semibold text-dark">Área de trabajo</label>
+                                <input type="text" name="involved_persons" class="form-control" value="<?= htmlspecialchars($_POST['involved_persons'] ?? '') ?>" placeholder="Cualquier número de referencia relacionado">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold text-dark">Testigos (opcional)</label>
@@ -405,12 +465,13 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <ul id="fileList" class="list-unstyled mt-2 mb-0"></ul>
                         </div>
 
+                        <hr class="my-4">
+
                         <!-- Anonimato -->
                         <div class="mb-4">
                             <div class="form-check form-switch fs-5">
                                 <input type="hidden" name="tipo_identidad" value="identificada">
-                                <input type="hidden" name="tipo_identidad" value="identificada">
-                                <input class="form-check-input" type="checkbox" role="switch" name="tipo_identidad" value="anonima" id="optIdentidad_anonima" <?= (($_POST['tipo_identidad'] ?? 'anonima') === 'anonima') ? 'checked' : '' ?> onchange="toggleReporter()">
+                                <input class="form-check-input" type="checkbox" role="switch" name="tipo_identidad" value="anonima" id="optIdentidad_anonima" <?= (($_POST['tipo_identidad'] ?? 'anonima') === 'anonima') ? 'checked' : '' ?> onchange="toggleReporterFields()">
                                 <label class="form-check-label fw-bold text-dark ms-2" for="optIdentidad_anonima" style="font-size:1.1rem;">
                                     <i class="bi bi-incognito text-primary me-2"></i>Denunciar de forma anónima
                                 </label>
@@ -444,6 +505,9 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                     <input type="text" name="reporter_department" class="form-control" value="<?= htmlspecialchars($_POST['reporter_department'] ?? '') ?>">
                                 </div>
                             </div>
+                            <div class="mt-3 form-text text-primary" style="font-size:0.85rem;">
+                                <i class="bi bi-info-circle me-1"></i> Estos datos quedarán estrictamente protegidos bajo AES-256 para quienes investiguen el caso.
+                            </div>
                         </div>
 
                         <!-- Captcha -->
@@ -469,7 +533,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
 </div>
 
 <script>
-function toggleReporter() {
+function toggleReporterFields() {
     const reporterFields = document.getElementById('reporterFields');
     if (!reporterFields) return;
     
@@ -483,7 +547,57 @@ function toggleReporter() {
     });
 }
 // Initialize
-document.addEventListener("DOMContentLoaded", toggleReporter);
+document.addEventListener("DOMContentLoaded", toggleReporterFields);
+
+const leyInfoData = <?= json_encode(COMPLAINT_TYPES) ?>;
+let leyActivaKey = null;
+
+function toggleInfoLey(key, btn) {
+    // Si ya está abierta la misma, cerrar
+    if (leyActivaKey === key) {
+        cerrarInfoLey();
+        return;
+    }
+    const tipo = leyInfoData[key];
+    if (!tipo) return;
+
+    // Resetear chevron de todas las tarjetas
+    document.querySelectorAll('.ley-card').forEach(c => {
+        c.querySelector('.ley-chevron').style.transform = 'rotate(0deg)';
+    });
+
+    // Rotar chevron de la tarjeta pulsada (solo indicador visual, no selección)
+    btn.querySelector('.ley-chevron').style.transform = 'rotate(180deg)';
+    leyActivaKey = key;
+
+    // Rellenar panel
+    document.getElementById('leyPanelIcono').className = 'bi ' + tipo.icon + ' fs-5 mt-1';
+    document.getElementById('leyPanelTitulo').textContent = tipo.label;
+    document.getElementById('leyPanelNorma').textContent = tipo.ley;
+    document.getElementById('leyPanelDesc').textContent = tipo.descripcion || 'Presenta tu denuncia describiendo con detalle los hechos ocurridos.';
+
+    // Mostrar panel con animación
+    const panel = document.getElementById('leyInfoPanel');
+    panel.style.display = 'block';
+    panel.style.opacity = '0';
+    panel.style.transform = 'translateY(-6px)';
+    requestAnimationFrame(() => {
+        panel.style.transition = 'opacity .2s, transform .2s';
+        panel.style.opacity = '1';
+        panel.style.transform = 'translateY(0)';
+    });
+}
+
+function cerrarInfoLey() {
+    leyActivaKey = null;
+    document.querySelectorAll('.ley-card').forEach(c => {
+        c.querySelector('.ley-chevron').style.transform = 'rotate(0deg)';
+    });
+    const panel = document.getElementById('leyInfoPanel');
+    panel.style.transition = 'opacity .15s';
+    panel.style.opacity = '0';
+    setTimeout(() => { panel.style.display = 'none'; }, 150);
+}
 
 let selectedFiles = new DataTransfer();
 

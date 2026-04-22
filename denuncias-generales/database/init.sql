@@ -34,11 +34,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS complaints (
     id INT AUTO_INCREMENT PRIMARY KEY,
     complaint_number VARCHAR(20) NOT NULL UNIQUE,
-    complaint_type ENUM(
-        'consumidor','servicios_basicos','salud','transporte',
-        'municipal','sector_publico','medioambiente',
-        'financiero','educacion','inmobiliario','otro'
-    ) NOT NULL,
+    complaint_type VARCHAR(100) NOT NULL DEFAULT 'general',
 
     description_encrypted BLOB NOT NULL,
     description_nonce VARBINARY(24) NOT NULL,
@@ -135,6 +131,20 @@ CREATE TABLE IF NOT EXISTS complaint_logs (
     content_nonce VARBINARY(24) NOT NULL,
     is_confidential TINYINT(1) DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (complaint_id) REFERENCES complaints(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_complaint (complaint_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS investigation_notes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    complaint_id INT NOT NULL,
+    user_id INT DEFAULT NULL,
+    content_encrypted BLOB NOT NULL,
+    content_nonce VARBINARY(24) NOT NULL,
+    is_confidential TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (complaint_id) REFERENCES complaints(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_complaint (complaint_id)

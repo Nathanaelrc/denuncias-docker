@@ -74,15 +74,15 @@ define('COMPLAINT_STATUSES', [
 // TIPOS DE DENUNCIA (ámbito portuario Empresa Portuaria Coquimbo)
 // =============================================
 define('COMPLAINT_TYPES', [
-    'operaciones'       => ['label' => 'Operaciones Portuarias',        'icon' => 'bi-box-seam',            'ley' => 'Ley N° 18.696 / DFL N° 340'],
-    'medioambiente'     => ['label' => 'Medio Ambiente y Contaminación','icon' => 'bi-water',               'ley' => 'Ley N° 19.300'],
-    'seguridad'         => ['label' => 'Seguridad en Recintos',         'icon' => 'bi-shield-exclamation',  'ley' => 'DS N° 90 / Normativa ISPS'],
-    'contratos'         => ['label' => 'Contratos y Licitaciones',      'icon' => 'bi-file-earmark-text',   'ley' => 'Ley N° 19.886'],
-    'corrupcion'        => ['label' => 'Corrupción o Fraude',           'icon' => 'bi-cash-coin',           'ley' => 'Ley N° 20.393'],
-    'impacto_comunidad' => ['label' => 'Impacto en la Comunidad',       'icon' => 'bi-people',              'ley' => 'Ley N° 19.300 / Ley N° 20.936'],
-    'servicios'         => ['label' => 'Servicios al Usuario',          'icon' => 'bi-person-check',        'ley' => 'Ley N° 19.880'],
-    'infraestructura'   => ['label' => 'Infraestructura y Obras',       'icon' => 'bi-tools',               'ley' => 'Ley N° 19.886'],
-    'otro'              => ['label' => 'Otro',                          'icon' => 'bi-question-circle',     'ley' => 'General'],
+    'operaciones'       => ['label' => 'Operaciones Portuarias',        'icon' => 'bi-box-seam',            'ley' => 'Ley N° 18.696 / DFL N° 340',    'descripcion' => 'Irregularidades en el funcionamiento del puerto, incumplimiento de normativa portuaria, accidentes operacionales o prácticas indebidas en el movimiento de carga y descarga.'],
+    'medioambiente'     => ['label' => 'Medio Ambiente y Contaminación','icon' => 'bi-water',               'ley' => 'Ley N° 19.300',                 'descripcion' => 'Contaminación del mar, suelo o aire, vertimiento de residuos peligrosos, derrames de combustible u otro impacto ambiental causado por actividades del puerto.'],
+    'seguridad'         => ['label' => 'Seguridad en Recintos',         'icon' => 'bi-shield-exclamation',  'ley' => 'DS N° 90 / Normativa ISPS',     'descripcion' => 'Fallas en la seguridad del recinto portuario, acceso no autorizado, incumplimiento de protocolos ISPS o riesgos para la integridad física de trabajadores y usuarios.'],
+    'contratos'         => ['label' => 'Contratos y Licitaciones',      'icon' => 'bi-file-earmark-text',   'ley' => 'Ley N° 19.886',                 'descripcion' => 'Irregularidades en procesos de licitación pública, adjudicaciones indebidas, incumplimiento de contratos o favorecimiento injustificado a proveedores.'],
+    'corrupcion'        => ['label' => 'Corrupción o Fraude',           'icon' => 'bi-cash-coin',           'ley' => 'Ley N° 20.393',                 'descripcion' => 'Cohecho, malversación de fondos públicos, fraude, tráfico de influencias u otros actos de corrupción vinculados a la empresa portuaria o a sus funcionarios.'],
+    'impacto_comunidad' => ['label' => 'Impacto en la Comunidad',       'icon' => 'bi-people',              'ley' => 'Ley N° 19.300 / Ley N° 20.936', 'descripcion' => 'Afectaciones a vecinos y comunidades cercanas al puerto: ruido excesivo, polvo, restricción de acceso vial, daño al entorno urbano o impacto social negativo.'],
+    'servicios'         => ['label' => 'Servicios al Usuario',          'icon' => 'bi-person-check',        'ley' => 'Ley N° 19.880',                 'descripcion' => 'Deficiencias en la atención al usuario, demoras injustificadas en trámites, trato discriminatorio o denegación de acceso a información pública.'],
+    'infraestructura'   => ['label' => 'Infraestructura y Obras',       'icon' => 'bi-tools',               'ley' => 'Ley N° 19.886',                 'descripcion' => 'Obras o instalaciones portuarias deficientes, incumplimientos constructivos, fallas estructurales o peligros derivados de infraestructura en mal estado.'],
+    'otro'              => ['label' => 'Otro',                          'icon' => 'bi-question-circle',     'ley' => 'General',                       'descripcion' => 'Cualquier otra irregularidad no clasificada en las categorías anteriores. Describe con detalle el tipo de situación que deseas denunciar.'],
 ]);
 
 // =============================================

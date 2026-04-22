@@ -81,6 +81,33 @@ require_once __DIR__ . '/../includes/encabezado.php';
     </div>
 </section>
 
+<!-- CONFIDENCIALIDAD Y SEGUIMIENTO -->
+<section class="py-5" style="background:#ffffff;">
+    <div class="container py-3">
+        <div class="row g-5">
+            <div class="col-md-6 fade-in">
+                <h3 class="fw-bold mb-3" style="color:#1e293b;">Confidencialidad de la Denuncia</h3>
+                <p style="color:#475569;line-height:1.8;font-size:.95rem;">
+                    Todas las denuncias emitidas serán tratadas de manera confidencial y serán remitidas, en
+                    caso necesario, a los organismos y/o unidades correspondientes de la Empresa Portuaria
+                    Coquimbo encargadas de su atención. La investigación se iniciará en un plazo no mayor a 5
+                    días hábiles desde la recepción de denuncia.
+                </p>
+            </div>
+            <div class="col-md-6 fade-in">
+                <h3 class="fw-bold mb-3" style="color:#1e293b;">Seguimiento de Denuncias</h3>
+                <p style="color:#475569;line-height:1.8;font-size:.95rem;">
+                    En caso de requerir seguimiento a su denuncia y para evitar perder el anonimato de esta,
+                    le recomendamos a usted que nos pueda proporcionar alguna dirección de correo
+                    electrónico genérico, considerando que pueda tener acceso a ella. De esta manera, Puerto
+                    Coquimbo podrá brindarle una respuesta a su denuncia, dentro de los plazos establecidos
+                    en los procedimientos internos.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CÓMO FUNCIONA -->
 <section class="py-5 section-dark">
     <div class="container py-3">

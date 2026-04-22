@@ -30,49 +30,22 @@ $urlGeneral = '/generales';
         /* Header */
         .header {
             text-align: center;
-            margin-bottom: 44px;
+            margin-bottom: 36px;
             animation: fadeIn 0.5s ease both;
         }
         .header-logo {
             display: block;
-            height: 64px;
+            height: 72px;
             width: auto;
-            margin: 0 auto 16px;
+            margin: 0 auto 20px;
             filter: brightness(0) invert(1);
             object-fit: contain;
         }
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 5px 14px;
-            border-radius: 100px;
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: #ffffff;
-            margin-bottom: 16px;
-        }
         .header h1 {
-            font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+            font-size: clamp(1.5rem, 3.5vw, 2.2rem);
             font-weight: 800;
             color: #ffffff;
-        }
-        .header-org {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: rgba(255,255,255,0.9);
-            margin-top: -4px;
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-        }
-        .header p {
-            margin-top: 8px;
-            color: rgba(255,255,255,0.8);
-            font-size: 0.95rem;
+            line-height: 1.25;
         }
 
         /* Grid */
@@ -203,6 +176,44 @@ $urlGeneral = '/generales';
         }
         .link-sec:hover { color: #475569; }
 
+        /* Bloque de bienvenida */
+        .welcome-block {
+            width: 100%;
+            max-width: 880px;
+            background: #ffffff;
+            border-radius: 18px;
+            border-top: 4px solid #145275;
+            padding: 32px 36px;
+            margin-bottom: 36px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+            animation: fadeUp 0.5s ease both;
+            animation-delay: 0.05s;
+        }
+        .welcome-block h2 {
+            font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        .welcome-block p {
+            font-size: 0.88rem;
+            line-height: 1.75;
+            color: #64748b;
+            margin-bottom: 0;
+        }
+        .welcome-block ul {
+            margin: 10px 0 0 0;
+            padding-left: 1.2rem;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: #64748b;
+        }
+        .welcome-block ul li { margin-bottom: 2px; }
+        .welcome-block strong { color: #1e293b; }
+        @media (max-width: 640px) {
+            .welcome-block { padding: 24px 20px; }
+        }
+
         /* Footer */
         .footer {
             margin-top: 40px;
@@ -229,10 +240,22 @@ $urlGeneral = '/generales';
 
     <div class="header">
         <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo" class="header-logo">
-        <div class="badge"><i class="bi bi-shield-check"></i> Plataforma segura de denuncias</div>
-        <h1>Portales de denuncia</h1>
-        <p class="header-org">Empresa Portuaria Coquimbo</p>
-        <p>Selecciona el portal que corresponde a tu situación</p>
+        <h1>Bienvenido/a al Canal de Denuncias<br>de Empresa Portuaria Coquimbo</h1>
+    </div>
+
+    <div class="welcome-block">
+        <p>
+            Empresa Portuaria Coquimbo pone a disposición de sus trabajadores/as, ejecutivos/as, contratistas,
+            concesionarios, proveedores/as, transportistas, clientes/as y del público en general este canal de denuncia,
+            con el objetivo de establecer un medio efectivo para reportar situaciones irregulares.
+            El canal puede ser utilizado en los siguientes escenarios:
+        </p>
+        <ul>
+            <li><strong>Ley Karin (N° 21.643):</strong> acoso laboral, acoso sexual y violencia en el trabajo.</li>
+            <li><strong>Canal General:</strong> operaciones portuarias, contratos y licitaciones, medio ambiente,
+                seguridad en recintos, corrupción o fraude, impacto en la comunidad, servicios al usuario,
+                infraestructura y obras.</li>
+        </ul>
     </div>
 
     <div class="grid">
