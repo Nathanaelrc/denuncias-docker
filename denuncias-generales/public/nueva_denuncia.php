@@ -257,11 +257,11 @@ require_once __DIR__ . '/../includes/encabezado.php';
         </div>
 
         <!-- Descripción -->
-        <p style="color:#475569;font-size:.92rem;line-height:1.65;margin-bottom:1.3rem;">
+        <p class="text-justify" style="color:#475569;font-size:.92rem;line-height:1.65;margin-bottom:1.3rem;">
             Este canal está destinado a denuncias sobre <strong>operaciones del puerto, contratos, medio ambiente,
             seguridad, corrupción</strong> y otras materias relacionadas con la <strong>Empresa Portuaria Coquimbo</strong>.
         </p>
-        <p style="color:#475569;font-size:.88rem;line-height:1.6;margin-bottom:1.5rem;
+        <p class="text-justify" style="color:#475569;font-size:.88rem;line-height:1.6;margin-bottom:1.5rem;
             background:#f8fafc;border-radius:10px;padding:.75rem 1rem;border-left:3px solid #93c5fd;">
             <i class="bi bi-info-circle me-1" style="color:#1a6591;"></i>
             Si tu denuncia es sobre <strong>acoso laboral, acoso sexual o violencia en el trabajo</strong>,
@@ -304,12 +304,12 @@ require_once __DIR__ . '/../includes/encabezado.php';
                         <i class="bi bi-check-lg text-white" style="font-size:3rem;"></i>
                     </div>
                     <h2 class="text-dark fw-bold">Denuncia Registrada</h2>
-                    <p class="text-muted mb-4">Tu denuncia ha sido recibida y registrada de forma confidencial.</p>
+                    <p class="text-muted mb-4 text-justify">Tu denuncia ha sido recibida y registrada de forma confidencial.</p>
                     <div class="bg-light rounded-3 p-4 mb-4">
                         <p class="text-muted small mb-1">Tu número de seguimiento es:</p>
                         <h3 class="fw-bold mb-0" style="color:#1a6591;" id="complaintCode"><?= htmlspecialchars($complaintNumber) ?></h3>
                     </div>
-                    <div class="alert alert-warning text-start">
+                    <div class="alert alert-warning text-start text-justify">
                         <i class="bi bi-exclamation-triangle me-2"></i>
                         <strong>¡Importante!</strong> Guarda este código. Es la única forma de consultar el estado de tu denuncia.
                     </div>
@@ -333,11 +333,11 @@ require_once __DIR__ . '/../includes/encabezado.php';
             <div class="col-lg-9">
                 <div class="text-white text-center mb-4 fade-in">
                     <h2 class="fw-bold"><i class="bi bi-pencil-square me-2"></i>Realizar Denuncia Ciudadana</h2>
-                    <p class="opacity-75">Completa el formulario. Tu información será tratada con total confidencialidad y encriptación.</p>
+                    <p class="opacity-75 text-justify">Completa el formulario. Tu información será tratada con total confidencialidad y encriptación.</p>
                 </div>
 
                 <?php if (!empty($errors)): ?>
-                <div class="alert alert-danger fade-in">
+                <div class="alert alert-danger fade-in text-justify">
                     <i class="bi bi-exclamation-circle me-2"></i><strong>Errores:</strong>
                     <ul class="mb-0 mt-2"><?php foreach ($errors as $err): ?><li><?= htmlspecialchars($err) ?></li><?php endforeach; ?></ul>
                 </div>
@@ -349,7 +349,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
 
                         <!-- Categorías informativas (no forman parte de la denuncia) -->
                         <div class="mb-4">
-                            <p class="fw-semibold text-dark mb-2" style="font-size:.93rem;">
+                            <p class="fw-semibold text-dark mb-2 text-justify" style="font-size:.93rem;">
                                 <i class="bi bi-info-circle text-primary me-1"></i>
                                 Categorías de referencia
                                 <span class="fw-normal text-muted" style="font-size:.82rem;"> — Haz clic en cualquiera para ver la ley aplicable</span>
@@ -384,7 +384,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                             <strong id="leyPanelTitulo" style="color:#1e293b;font-size:.93rem;"></strong>
                                             <span id="leyPanelNorma" style="font-size:.72rem;font-weight:700;color:#2563eb;letter-spacing:.3px;"></span>
                                         </div>
-                                        <p id="leyPanelDesc" class="mb-0" style="color:#334155;font-size:.87rem;line-height:1.65;"></p>
+                                        <p id="leyPanelDesc" class="mb-0 text-justify" style="color:#334155;font-size:.87rem;line-height:1.65;"></p>
                                     </div>
                                     <button type="button" onclick="cerrarInfoLey()" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:0;flex-shrink:0;" aria-label="Cerrar">
                                         <i class="bi bi-x-lg"></i>
@@ -398,7 +398,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <label for="description" class="form-label fw-semibold text-dark">Descripción de los hechos *</label>
                             <textarea name="description" id="description" class="form-control" rows="6" required minlength="50"
                                 placeholder="Describe con detalle lo ocurrido: qué pasó, cuándo, dónde, cómo te afectó..."><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
-                            <div class="form-text">Mínimo 50 caracteres.</div>
+                            <div class="form-text text-justify">Mínimo 50 caracteres.</div>
                         </div>
 
                         <!-- Fecha y Lugar (obligatorios) -->
@@ -476,7 +476,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                     <i class="bi bi-incognito text-primary me-2"></i>Denunciar de forma anónima
                                 </label>
                             </div>
-                            <div class="form-text mt-2 text-muted">
+                            <div class="form-text mt-2 text-muted text-justify">
                                 Si desactivas el anonimato, podrás proporcionar tus datos. Quedarán encriptados y estrictamente protegidos para quienes investiguen el caso.
                             </div>
                         </div>
@@ -505,17 +505,17 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                     <input type="text" name="reporter_department" class="form-control" value="<?= htmlspecialchars($_POST['reporter_department'] ?? '') ?>">
                                 </div>
                             </div>
-                            <div class="mt-3 form-text text-primary" style="font-size:0.85rem;">
-                                <i class="bi bi-info-circle me-1"></i> Estos datos quedarán estrictamente protegidos bajo AES-256 para quienes investiguen el caso.
+                            <div class="mt-3 form-text text-primary text-justify" style="font-size:0.85rem;">
+                                <i class="bi bi-info-circle me-1"></i> Estos datos quedarán estrictamente protegidos con encriptación de alta seguridad para quienes investiguen el caso.
                             </div>
                         </div>
 
                         <!-- Captcha -->
                         <?= SimpleCaptcha::render() ?>
 
-                        <div class="alert alert-info small">
+                        <div class="alert alert-info small text-justify">
                             <i class="bi bi-shield-lock me-2"></i>
-                            Todos los datos son encriptados con AES-256 antes de ser almacenados. Solo personal autorizado puede acceder a la información desencriptada.
+                            Todos los datos son encriptados con alta seguridad antes de ser almacenados. Solo personal autorizado puede acceder a la información desencriptada.
                         </div>
 
                         <div class="d-grid">

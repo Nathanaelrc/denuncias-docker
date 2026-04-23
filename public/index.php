@@ -26,7 +26,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <p class="mb-0 opacity-75">Empresa Portuaria Coquimbo</p>
                         </div>
                     </div>
-                    <p class="lead mb-4" style="line-height: 1.8;">
+                    <p class="lead mb-4 text-justify" style="line-height: 1.8;">
                         Este es un canal seguro, confidencial y protegido para reportar situaciones de 
                         <strong>acoso laboral, acoso sexual, violencia en el trabajo</strong> y otras conductas 
                         que vulneren tus derechos, en cumplimiento de la <strong>Ley Karin (Nº 21.643)</strong>.
@@ -77,7 +77,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                     </div>
                                     <div>
                                         <div class="text-white fw-semibold" style="font-size:.85rem;">Datos Encriptados</div>
-                                        <div style="font-size:.72rem;color:rgba(255,255,255,.45);">Cifrado AES-256</div>
+                                        <div style="font-size:.72rem;color:rgba(255,255,255,.45);">Alta Seguridad</div>
                                     </div>
                                 </div>
                             </div>
@@ -101,7 +101,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <i class="bi bi-incognito text-white fs-3"></i>
                         </div>
                         <h5 class="text-dark fw-bold">Anonimato Garantizado</h5>
-                        <p class="text-muted">Puedes realizar tu denuncia de forma completamente anónima. No es obligatorio identificarse para presentar una denuncia.</p>
+                        <p class="text-muted text-justify">Puedes realizar tu denuncia de forma completamente anónima. No es obligatorio identificarse para presentar una denuncia.</p>
                     </div>
                 </div>
                 <div class="col-md-4 fade-in">
@@ -110,7 +110,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <i class="bi bi-shield-check text-white fs-3"></i>
                         </div>
                         <h5 class="text-dark fw-bold">Protección contra Represalias</h5>
-                        <p class="text-muted">La Ley Karin prohíbe cualquier tipo de represalia contra el denunciante. Tu empleo y condiciones laborales están protegidos.</p>
+                        <p class="text-muted text-justify">La Ley Karin prohíbe cualquier tipo de represalia contra el denunciante. Tu empleo y condiciones laborales están protegidos.</p>
                     </div>
                 </div>
                 <div class="col-md-4 fade-in">
@@ -119,7 +119,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <i class="bi bi-people text-white fs-3"></i>
                         </div>
                         <h5 class="text-dark fw-bold">Investigación Imparcial</h5>
-                        <p class="text-muted">Tu denuncia será investigada por personal autorizado de forma confidencial, imparcial y dentro de los plazos legales.</p>
+                        <p class="text-muted text-justify">Tu denuncia será investigada por personal autorizado de forma confidencial, imparcial y dentro de los plazos legales.</p>
                     </div>
                 </div>
             </div>
@@ -137,12 +137,12 @@ require_once __DIR__ . '/../includes/encabezado.php';
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <h5 class="text-dark fw-bold mb-3"><i class="bi bi-info-circle text-primary me-2"></i>Sobre la Ley</h5>
-                                <p class="text-muted">La <strong>Ley Karin</strong> modifica el Código del Trabajo en materia de prevención, investigación y sanción del <strong>acoso laboral, acoso sexual y violencia en el trabajo</strong>.</p>
-                                <p class="text-muted">Obliga a los empleadores a implementar un <strong>protocolo de prevención</strong> y disponer de un <strong>canal de denuncias</strong> accesible para todas las trabajadoras y todos los trabajadores.</p>
+                                <p class="text-muted text-justify">La <strong>Ley Karin</strong> modifica el Código del Trabajo en materia de prevención, investigación y sanción del <strong>acoso laboral, acoso sexual y violencia en el trabajo</strong>.</p>
+                                <p class="text-muted text-justify">Obliga a los empleadores a implementar un <strong>protocolo de prevención</strong> y disponer de un <strong>canal de denuncias</strong> accesible para todas las trabajadoras y todos los trabajadores.</p>
                             </div>
                             <div class="col-md-6">
                                 <h5 class="text-dark fw-bold mb-3"><i class="bi bi-check-circle text-success me-2"></i>Tus Derechos</h5>
-                                <ul class="text-muted" style="line-height: 2;">
+                                <ul class="text-muted text-justify" style="line-height: 2;">
                                     <li>Denunciar de forma <strong>anónima o identificada</strong></li>
                                     <li>Protección contra <strong>represalias</strong> por denunciar</li>
                                     <li>Investigación en un plazo máximo de <strong>30 días</strong></li>
@@ -181,7 +181,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             </div>
                             <h6 class="text-dark fw-bold mb-0"><?= $tipo['title'] ?></h6>
                         </div>
-                        <p class="text-muted small mb-0"><?= $tipo['desc'] ?></p>
+                        <p class="text-muted small mb-0 text-justify"><?= $tipo['desc'] ?></p>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -209,7 +209,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                         </div>
                         <div class="bg-white text-dark rounded-pill px-3 py-1 d-inline-block mb-2 fw-bold small">Paso <?= $paso['num'] ?></div>
                         <h5 class="text-white fw-bold"><?= $paso['title'] ?></h5>
-                        <p class="text-white-50 small"><?= $paso['desc'] ?></p>
+                        <p class="text-white-50 small text-justify"><?= $paso['desc'] ?></p>
                     </div>
                 </div>
                 <?php endforeach; ?>

@@ -27,7 +27,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                         <p class="mb-0 opacity-75 text-white">Empresa Portuaria Coquimbo · Puerto y Entorno</p>
                     </div>
                 </div>
-                <p class="text-white opacity-75 fs-5 mb-4" style="line-height:1.8;">
+                <p class="text-white opacity-75 fs-5 mb-4 text-justify" style="line-height:1.8;">
                     Presenta tu denuncia de forma <strong class="text-white">confidencial</strong> sobre irregularidades en las operaciones del puerto,
                     contratos, impacto ambiental, seguridad o cualquier situación que afecte al Puerto de Coquimbo
                     y su entorno costero.
@@ -43,7 +43,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                 <div class="d-flex flex-wrap gap-3 mt-4">
                     <div class="d-flex align-items-center gap-2 text-white-50 small">
                         <i class="bi bi-shield-lock-fill fs-5" style="color:#93c5fd;"></i>
-                        <span>Datos encriptados AES-256</span>
+                        <span>Datos encriptados de forma segura</span>
                     </div>
                     <div class="d-flex align-items-center gap-2 text-white-50 small">
                         <i class="bi bi-incognito fs-5" style="color:#93c5fd;"></i>
@@ -87,7 +87,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
         <div class="row g-5">
             <div class="col-md-6 fade-in">
                 <h3 class="fw-bold mb-3" style="color:#1e293b;">Confidencialidad de la Denuncia</h3>
-                <p style="color:#475569;line-height:1.8;font-size:.95rem;">
+                <p class="text-justify" style="color:#475569;line-height:1.8;font-size:.95rem;">
                     Todas las denuncias emitidas serán tratadas de manera confidencial y serán remitidas, en
                     caso necesario, a los organismos y/o unidades correspondientes de la Empresa Portuaria
                     Coquimbo encargadas de su atención. La investigación se iniciará en un plazo no mayor a 5
@@ -96,7 +96,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
             </div>
             <div class="col-md-6 fade-in">
                 <h3 class="fw-bold mb-3" style="color:#1e293b;">Seguimiento de Denuncias</h3>
-                <p style="color:#475569;line-height:1.8;font-size:.95rem;">
+                <p class="text-justify" style="color:#475569;line-height:1.8;font-size:.95rem;">
                     En caso de requerir seguimiento a su denuncia y para evitar perder el anonimato de esta,
                     le recomendamos a usted que nos pueda proporcionar alguna dirección de correo
                     electrónico genérico, considerando que pueda tener acceso a ella. De esta manera, Puerto
@@ -131,7 +131,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     </div>
                     <div class="fw-bold mb-1" style="color:#1a6591;font-size:0.8rem;letter-spacing:1px;"><?= $step['num'] ?></div>
                     <h6 class="fw-bold mb-2" style="color:#1e293b;"><?= $step['title'] ?></h6>
-                    <p class="small mb-0" style="color:#64748b;"><?= $step['desc'] ?></p>
+                    <p class="small mb-0 text-justify" style="color:#64748b;"><?= $step['desc'] ?></p>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -162,7 +162,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     </div>
                     <h6 class="fw-bold mb-1" style="color:#1e293b;"><?= $r['title'] ?></h6>
                     <span class="badge mb-2" style="background:#eff6ff;color:#1a6591;font-size:0.7rem;"><?= $r['desc'] ?></span>
-                    <p class="small mb-0" style="color:#64748b;"><?= $r['detail'] ?></p>
+                    <p class="small mb-0 text-justify" style="color:#64748b;"><?= $r['detail'] ?></p>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -179,7 +179,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
             </div>
             <div class="col-md-6 text-end">
                 <span class="text-white-50 small">
-                    <i class="bi bi-shield-lock me-1"></i>Datos protegidos con AES-256 · Confidencialidad garantizada
+                    <i class="bi bi-shield-lock me-1"></i>Datos protegidos con alta seguridad · Confidencialidad garantizada
                 </span>
             </div>
         </div>

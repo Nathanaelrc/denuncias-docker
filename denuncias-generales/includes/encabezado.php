@@ -133,6 +133,12 @@ if (!defined('GENERALES_APP')) {
         .stagger-3 { animation-delay: 0.3s; }
         .stagger-4 { animation-delay: 0.4s; }
 
+        .text-justify {
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
+        }
+
         /* Dark blue theme: forms, text, cards */
         .card-epco .form-label,
         .card-epco h2, .card-epco h3, .card-epco h4, .card-epco h5, .card-epco h6,

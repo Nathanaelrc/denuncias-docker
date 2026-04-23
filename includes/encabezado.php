@@ -149,6 +149,12 @@ if (!defined('DENUNCIAS_APP')) {
         .stagger-2 { animation-delay: 0.2s; }
         .stagger-3 { animation-delay: 0.3s; }
         .stagger-4 { animation-delay: 0.4s; }
+
+        .text-justify {
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
+        }
     </style>
 
     <style>

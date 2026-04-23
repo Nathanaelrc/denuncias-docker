@@ -78,7 +78,15 @@ try {
             font-size: 0.78rem; font-weight: 600; margin-bottom: 22px;
         }
         .access-title { font-size: 2rem; font-weight: 800; color: white; line-height: 1.25; margin-bottom: 12px; }
-        .access-desc { font-size: 0.98rem; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 35px; }
+        .access-desc {
+            font-size: 0.98rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.7;
+            margin-bottom: 35px;
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
+        }
 
         .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 30px; }
         .feat-card {
@@ -88,7 +96,15 @@ try {
         .feat-card:hover { background: rgba(255,255,255,0.09); transform: translateY(-2px); }
         .feat-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: white; margin-bottom: 10px; }
         .feat-card h6 { color: white; font-weight: 700; font-size: 0.85rem; margin-bottom: 3px; }
-        .feat-card p { color: rgba(255,255,255,0.45); font-size: 0.75rem; margin: 0; line-height: 1.5; }
+        .feat-card p {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.75rem;
+            margin: 0;
+            line-height: 1.5;
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
+        }
 
         .stats-row { display: flex; gap: 28px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.1); }
         .stat-num { font-size: 1.3rem; font-weight: 800; color: white; }
@@ -178,7 +194,7 @@ try {
                 </div>
                 <div class="feat-card">
                     <div class="feat-icon" style="background:linear-gradient(135deg,#1a6591,#4db8e0);"><i class="bi bi-shield-check"></i></div>
-                    <h6>Datos Protegidos</h6><p>Información cifrada AES-256 por defecto.</p>
+                    <h6>Datos Protegidos</h6><p>Información encriptada de forma segura por defecto.</p>
                 </div>
                 <div class="feat-card">
                     <div class="feat-icon" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);"><i class="bi bi-search"></i></div>

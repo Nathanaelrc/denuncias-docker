@@ -121,6 +121,9 @@ $urlGeneral = '/generales';
             color: #64748b;
             margin-bottom: 20px;
             flex: 1;
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
         }
 
         /* Tags */
@@ -200,6 +203,9 @@ $urlGeneral = '/generales';
             line-height: 1.75;
             color: #64748b;
             margin-bottom: 0;
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
         }
         .welcome-block ul {
             margin: 10px 0 0 0;
@@ -207,6 +213,9 @@ $urlGeneral = '/generales';
             font-size: 0.85rem;
             line-height: 1.8;
             color: #64748b;
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
         }
         .welcome-block ul li { margin-bottom: 2px; }
         .welcome-block strong { color: #1e293b; }
@@ -308,7 +317,7 @@ $urlGeneral = '/generales';
     </div>
 
     <div class="footer">
-        &copy; <?php echo date('Y'); ?> Empresa Portuaria Coquimbo &nbsp;&middot;&nbsp; Cifrado AES-256
+        &copy; <?php echo date('Y'); ?> Empresa Portuaria Coquimbo &nbsp;&middot;&nbsp; Alta Seguridad
         &nbsp;&middot;&nbsp;
         <a href="<?php echo htmlspecialchars($urlKarin); ?>/acceso">Acceso interno Ley Karin</a>
         &nbsp;&middot;&nbsp;

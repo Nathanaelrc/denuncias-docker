@@ -247,7 +247,7 @@ $unreadNotifs = $stmtUnread->fetchColumn();
                 <i class="bi bi-shield-lock" style="color:#93c5fd;"></i>
                 <small class="fw-semibold" style="color:#93c5fd;">Datos Encriptados</small>
             </div>
-            <small class="text-white-50" style="font-size:0.75rem;">AES-256 · Solo admin e investigadores pueden desencriptar</small>
+            <small class="text-white-50" style="font-size:0.75rem;">Alta Seguridad · Solo admin e investigadores pueden desencriptar</small>
         </div>
     </div>
 </nav>

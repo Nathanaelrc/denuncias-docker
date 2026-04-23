@@ -108,7 +108,15 @@ try {
             font-size: 0.78rem; font-weight: 600; margin-bottom: 22px;
         }
         .access-title { font-size: 2rem; font-weight: 800; color: white; line-height: 1.25; margin-bottom: 12px; }
-        .access-desc { font-size: 0.98rem; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 35px; }
+        .access-desc {
+            font-size: 0.98rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.7;
+            margin-bottom: 35px;
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
+        }
 
         .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 30px; }
         .feat-card {
@@ -121,7 +129,15 @@ try {
             justify-content: center; font-size: 1rem; color: white; margin-bottom: 10px;
         }
         .feat-card h6 { color: white; font-weight: 700; font-size: 0.85rem; margin-bottom: 3px; }
-        .feat-card p { color: rgba(255,255,255,0.45); font-size: 0.75rem; margin: 0; line-height: 1.5; }
+        .feat-card p {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.75rem;
+            margin: 0;
+            line-height: 1.5;
+            text-align: justify;
+            text-justify: inter-word;
+            hyphens: auto;
+        }
 
         .roles-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; }
         .role-chip {

@@ -156,11 +156,11 @@ require_once __DIR__ . '/../includes/encabezado.php';
         </div>
 
         <!-- Descripción -->
-        <p style="color:#475569;font-size:.92rem;line-height:1.65;margin-bottom:1.3rem;">
+        <p class="text-justify" style="color:#475569;font-size:.92rem;line-height:1.65;margin-bottom:1.3rem;">
             Este canal está destinado a denuncias de <strong>acoso laboral, acoso sexual y violencia en el trabajo</strong>
             en el marco de la <strong>Ley N° 21.643 (Ley Karin)</strong>.
         </p>
-        <p style="color:#475569;font-size:.88rem;line-height:1.6;margin-bottom:1.5rem;
+        <p class="text-justify" style="color:#475569;font-size:.88rem;line-height:1.6;margin-bottom:1.5rem;
             background:#f8fafc;border-radius:10px;padding:.75rem 1rem;border-left:3px solid #93c5fd;">
             <i class="bi bi-info-circle me-1" style="color:#1a6591;"></i>
             Si tu denuncia es sobre <strong>operaciones del puerto, contratos, medio ambiente u otras materias</strong>,
@@ -203,14 +203,14 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <i class="bi bi-check-lg text-white" style="font-size: 3rem;"></i>
                         </div>
                         <h2 class="text-dark fw-bold">Denuncia Registrada</h2>
-                        <p class="text-muted mb-4">Tu denuncia ha sido recibida y registrada de forma confidencial.</p>
+                        <p class="text-muted mb-4 text-justify">Tu denuncia ha sido recibida y registrada de forma confidencial.</p>
 
                         <div class="bg-light rounded-3 p-4 mb-4">
                             <p class="text-muted small mb-1">Tu número de seguimiento es:</p>
                             <h3 class="text-primary-dark fw-bold mb-0" id="complaintCode"><?= htmlspecialchars($complaintNumber) ?></h3>
                         </div>
 
-                        <div class="alert alert-warning text-start">
+                        <div class="alert alert-warning text-start text-justify">
                             <i class="bi bi-exclamation-triangle me-2"></i>
                             <strong>¡Importante!</strong> Guarda este código. Es la única forma de consultar el estado de tu denuncia.
                         </div>
@@ -237,11 +237,11 @@ require_once __DIR__ . '/../includes/encabezado.php';
                 <div class="col-lg-9">
                     <div class="text-white text-center mb-4 fade-in">
                         <h2 class="fw-bold"><i class="bi bi-pencil-square me-2"></i>Realizar Denuncia</h2>
-                        <p class="opacity-75">Todos los campos marcados con * son obligatorios. Tu información será tratada de forma confidencial.</p>
+                        <p class="opacity-75 text-justify">Todos los campos marcados con * son obligatorios. Tu información será tratada de forma confidencial.</p>
                     </div>
 
                     <?php if (!empty($errors)): ?>
-                    <div class="alert alert-danger fade-in">
+                    <div class="alert alert-danger fade-in text-justify">
                         <i class="bi bi-exclamation-circle me-2"></i>
                         <strong>Errores:</strong>
                         <ul class="mb-0 mt-2">
@@ -351,7 +351,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                 " ondragover="event.preventDefault();this.style.cssText='border:2px dashed #2380b0;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;background:#eff6ff;transition:all 0.2s;'" ondragleave="this.style.cssText='border:2px dashed #cbd5e1;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;background:#f8fafc;transition:all 0.2s;'" ondrop="handleDrop(event)">
                                     <i class="bi bi-cloud-arrow-up" style="font-size:2.2rem; color:#94a3b8;"></i>
                                     <p class="mb-1 mt-2" style="color:#475569; font-size:0.92rem;">Arrastra archivos aquí o <strong style="color:#1a6591;">haz clic para seleccionar</strong></p>
-                                    <p class="mb-0" style="color:#94a3b8; font-size:0.78rem;">Imágenes, audio, PDF, Word, Excel, video &middot; Máx. 10 MB &middot; Hasta 10 archivos</p>
+                                    <p class="mb-0 text-justify" style="color:#94a3b8; font-size:0.78rem;">Imágenes, audio, PDF, Word, Excel, video &middot; Máx. 10 MB &middot; Hasta 10 archivos</p>
                                 </div>
                                 <input type="file" id="fileInput" name="attachments[]" multiple accept="image/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.mp3,.wav,.ogg,.m4a,.aac,.webm,.mp4,.mov" style="display:none" onchange="updateFileList(this.files)">
                                 <ul id="fileList" class="list-unstyled mt-2 mb-0"></ul>
@@ -368,7 +368,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                     <i class="bi bi-incognito text-primary me-2"></i>Denunciar de forma anónima
                                 </label>
                             </div>
-                            <div class="form-text mt-2 text-muted">
+                            <div class="form-text mt-2 text-muted text-justify">
                                 Si desactivas el anonimato, podrás proporcionar tus datos. Quedarán encriptados y estrictamente protegidos para quienes investiguen el caso.
                             </div>
                         </div>
@@ -397,8 +397,8 @@ require_once __DIR__ . '/../includes/encabezado.php';
                                     <input type="text" name="reporter_department" class="form-control" value="<?= htmlspecialchars($_POST['reporter_department'] ?? '') ?>" placeholder="Tu departamento">
                                 </div>
                             </div>
-                            <div class="mt-3 form-text text-primary" style="font-size:0.85rem;">
-                                <i class="bi bi-info-circle me-1"></i> Estos datos quedarán estrictamente protegidos bajo AES-256 para quienes investiguen el caso.
+                            <div class="mt-3 form-text text-primary text-justify" style="font-size:0.85rem;">
+                                <i class="bi bi-info-circle me-1"></i> Estos datos quedarán estrictamente protegidos con encriptación de alta seguridad para quienes investiguen el caso.
                             </div>
                         </div>
 
