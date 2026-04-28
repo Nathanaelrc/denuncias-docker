@@ -4,7 +4,7 @@
  */
 $pageTitle = 'Panel de Administración';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN, ROLE_INVESTIGADOR, ROLE_VIEWER]);
+requireComplaintAccess();
 
 $user = getCurrentUser();
 $isAdmin = hasRole([ROLE_ADMIN]);
@@ -191,7 +191,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                             </td>
                             <td class="text-muted small"><?= timeAgo($row['created_at']) ?></td>
                             <td>
-                                <?php if ($isAdmin || $isInvestigador): ?>
+                                <?php if ($isInvestigador): ?>
                                 <a href="/detalle_denuncia?id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i>
                                 </a>

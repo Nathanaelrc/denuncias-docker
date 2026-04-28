@@ -8,9 +8,11 @@ $pageTitle = 'Notificaciones';
 require_once __DIR__ . '/../includes/bootstrap.php';
 requireAuth();
 
-$userId = $_SESSION['user_id'];
-$userRole = getUserRole();
+$user = getCurrentUser();
+$userId = $user['id'];
+$userRole = $user['role'];
 $isAdmin = $userRole === ROLE_ADMIN;
+$notifFilter = getComplaintNotificationVisibilityFilter($user, 'n', 'c');
 
 // =============================================
 // AJAX: Marcar notificación como leída
@@ -147,22 +149,22 @@ $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 20;
 $offset = ($page - 1) * $perPage;
 
-$unreadCount = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
-$unreadCount->execute([$userId]);
+$unreadCount = $pdo->prepare("SELECT COUNT(*) FROM notifications n WHERE n.user_id = ? AND n.is_read = 0 {$notifFilter['and_sql']}");
+$unreadCount->execute(array_merge([$userId], $notifFilter['params']));
 $unreadCount = $unreadCount->fetchColumn();
 
-$totalNotif = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ?");
-$totalNotif->execute([$userId]);
+$totalNotif = $pdo->prepare("SELECT COUNT(*) FROM notifications n WHERE n.user_id = ? {$notifFilter['and_sql']}");
+$totalNotif->execute(array_merge([$userId], $notifFilter['params']));
 $totalNotif = $totalNotif->fetchColumn();
 $totalPages = max(1, ceil($totalNotif / $perPage));
 
 $stmtNotif = $pdo->prepare("
-    SELECT * FROM notifications 
-    WHERE user_id = ?
+    SELECT n.* FROM notifications n
+    WHERE n.user_id = ? {$notifFilter['and_sql']}
     ORDER BY created_at DESC 
     LIMIT $perPage OFFSET $offset
 ");
-$stmtNotif->execute([$userId]);
+$stmtNotif->execute(array_merge([$userId], $notifFilter['params']));
 $myNotifications = $stmtNotif->fetchAll();
 
 // Admin: grupos y usuarios

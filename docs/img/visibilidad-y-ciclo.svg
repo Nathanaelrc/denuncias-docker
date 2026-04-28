@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc">
+  <title id="title">Visibilidad y ciclo del caso</title>
+  <desc id="desc">Comparacion entre lo que puede hacer el publico y lo que puede hacer el equipo interno, junto con los estados principales de una denuncia.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7fafc"/>
+      <stop offset="100%" stop-color="#eef4f8"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#6d8291"/>
+    </marker>
+    <style>
+      .title { font: 800 34px 'Segoe UI', Arial, sans-serif; fill: #12344d; }
+      .subtitle { font: 500 18px 'Segoe UI', Arial, sans-serif; fill: #607789; }
+      .panel-title { font: 800 24px 'Segoe UI', Arial, sans-serif; fill: #16364d; }
+      .step { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #16364d; }
+      .text { font: 500 16px 'Segoe UI', Arial, sans-serif; fill: #4f6776; }
+      .small { font: 700 13px 'Segoe UI', Arial, sans-serif; fill: #6b8190; }
+      .panel { fill: #ffffff; stroke: #d8e4ed; stroke-width: 2; rx: 26; }
+      .box { fill: #f8fbfd; stroke: #d2e0ea; stroke-width: 2; rx: 18; }
+      .line { stroke: #6d8291; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="920" fill="url(#bg)"/>
+  <text x="90" y="72" class="title">Visibilidad del sistema y ciclo del caso</text>
+  <text x="90" y="105" class="subtitle">El sistema separa claramente lo que puede ver el publico de lo que puede hacer el equipo interno.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="90" y="160" width="650" height="420" class="panel"/>
+    <rect x="120" y="190" width="168" height="34" rx="17" fill="#e7f2f9"/>
+    <text x="154" y="213" style="font:700 15px 'Segoe UI', Arial, sans-serif; fill:#1a6591;">Vista publica</text>
+    <text x="120" y="270" class="panel-title">Lo que ve el denunciante o visitante</text>
+
+    <rect x="120" y="320" width="160" height="92" class="box"/>
+    <text x="157" y="360" class="step">Landing</text>
+    <text x="145" y="388" class="text">Selecciona el</text>
+    <text x="146" y="410" class="text">portal correcto</text>
+
+    <rect x="335" y="320" width="160" height="92" class="box"/>
+    <text x="356" y="360" class="step">Nueva denuncia</text>
+    <text x="359" y="388" class="text">Completa el</text>
+    <text x="364" y="410" class="text">formulario</text>
+
+    <rect x="550" y="320" width="160" height="92" class="box"/>
+    <text x="587" y="360" class="step">Seguimiento</text>
+    <text x="582" y="388" class="text">Consulta por</text>
+    <text x="575" y="410" class="text">codigo unico</text>
+
+    <path d="M280 366 L335 366" class="line"/>
+    <path d="M495 366 L550 366" class="line"/>
+
+    <text x="120" y="475" class="step">Datos visibles para el publico</text>
+    <text x="120" y="510" class="text">- codigo del caso</text>
+    <text x="120" y="538" class="text">- estado del caso</text>
+    <text x="350" y="510" class="text">- tipo de denuncia</text>
+    <text x="350" y="538" class="text">- fechas de registro, actualizacion y resolucion</text>
+    <text x="120" y="564" class="small">No se exponen los textos sensibles ni el detalle de investigacion.</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="860" y="160" width="650" height="420" class="panel"/>
+    <rect x="890" y="190" width="206" height="34" rx="17" fill="#e7f2f9"/>
+    <text x="922" y="213" style="font:700 15px 'Segoe UI', Arial, sans-serif; fill:#1a6591;">Vista interna</text>
+    <text x="890" y="270" class="panel-title">Lo que hace el equipo administrativo e investigador</text>
+
+    <rect x="890" y="320" width="120" height="92" class="box"/>
+    <text x="924" y="360" class="step">Acceso</text>
+    <text x="912" y="388" class="text">Login y sesion</text>
+
+    <rect x="1050" y="320" width="120" height="92" class="box"/>
+    <text x="1088" y="360" class="step">Panel</text>
+    <text x="1068" y="388" class="text">Metricas</text>
+
+    <rect x="1210" y="320" width="120" height="92" class="box"/>
+    <text x="1238" y="360" class="step">Listado</text>
+    <text x="1221" y="388" class="text">Filtros y casos</text>
+
+    <rect x="1370" y="320" width="120" height="92" class="box"/>
+    <text x="1405" y="360" class="step">Detalle</text>
+    <text x="1390" y="388" class="text">Caso completo</text>
+
+    <path d="M1010 366 L1050 366" class="line"/>
+    <path d="M1170 366 L1210 366" class="line"/>
+    <path d="M1330 366 L1370 366" class="line"/>
+
+    <text x="890" y="475" class="step">Capacidades internas</text>
+    <text x="890" y="510" class="text">- ver datos desencriptados segun rol</text>
+    <text x="890" y="538" class="text">- asignar investigador, prioridad y estado</text>
+    <text x="1190" y="510" class="text">- agregar notas y resolucion</text>
+    <text x="1190" y="538" class="text">- recibir notificaciones y correos</text>
+    <text x="890" y="564" class="small">El filtro de conflicto de interes puede ocultar casos a determinados investigadores.</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="90" y="650" width="1420" height="190" class="panel"/>
+    <text x="130" y="705" class="panel-title">Estados principales de una denuncia</text>
+
+    <rect x="155" y="742" width="220" height="58" rx="29" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+    <text x="229" y="778" class="step">Recibida</text>
+
+    <rect x="505" y="742" width="260" height="58" rx="29" fill="#fef3c7" stroke="#fbbf24" stroke-width="2"/>
+    <text x="562" y="778" class="step">En investigacion</text>
+
+    <rect x="905" y="742" width="220" height="58" rx="29" fill="#dcfce7" stroke="#4ade80" stroke-width="2"/>
+    <text x="978" y="778" class="step">Resuelta</text>
+
+    <rect x="1240" y="705" width="190" height="50" rx="25" fill="#eceff3" stroke="#9aa8b5" stroke-width="2"/>
+    <text x="1283" y="736" class="step">Desestimada</text>
+
+    <rect x="1240" y="770" width="190" height="50" rx="25" fill="#dfe6ec" stroke="#788896" stroke-width="2"/>
+    <text x="1294" y="801" class="step">Archivada</text>
+
+    <path d="M375 771 L505 771" class="line"/>
+    <path d="M765 771 L905 771" class="line"/>
+    <path d="M1125 771 L1240 730" class="line"/>
+    <path d="M1125 771 L1240 795" class="line"/>
+  </g>
+</svg>

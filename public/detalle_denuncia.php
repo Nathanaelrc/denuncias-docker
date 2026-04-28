@@ -1,11 +1,11 @@
 <?php
 /**
  * Portal de Denuncias Empresa Portuaria Coquimbo - Detalle de Denuncia (Desencriptado)
- * Solo accesible por admin e investigador
+ * Solo accesible por investigadores
  */
 $pageTitle = 'Detalle de Denuncia';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN, ROLE_INVESTIGADOR]);
+requireComplaintAccess();
 
 $user = getCurrentUser();
 $isAdmin = hasRole([ROLE_ADMIN]);
@@ -21,7 +21,7 @@ if (!$complaint) {
 }
 
 // Protección de conflicto de interés: investigadores no pueden ver denuncias donde son el acusado
-if ($user['role'] === ROLE_INVESTIGADOR && isComplaintConflict($id, $user)) {
+if (isComplaintConflict($id, $user)) {
     redirect('/denuncias_admin', 'No tienes acceso a esta denuncia (conflicto de interés).', 'danger');
 }
 
@@ -125,7 +125,7 @@ $notes = $notesStmt->fetchAll();
 $enc = getEncryptionService();
 
 // Obtener investigadores (para asignar)
-$investigators = $pdo->query("SELECT id, name, position FROM users WHERE role IN ('admin', 'investigador') AND is_active = 1")->fetchAll();
+$investigators = $pdo->query("SELECT id, name, position FROM users WHERE role = 'investigador' AND is_active = 1")->fetchAll();
 
 require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';

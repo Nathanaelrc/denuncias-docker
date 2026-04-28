@@ -4,13 +4,18 @@
  */
 $pageTitle = 'Panel';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN, ROLE_INVESTIGADOR, ROLE_VIEWER]);
+requireComplaintAccess();
 
 $user           = getCurrentUser();
 $isAdmin        = hasRole([ROLE_ADMIN]);
 $isInvestigador = hasRole([ROLE_INVESTIGADOR]);
 
-$stats = $pdo->query("
+$cf = getConflictFilter($user, 'c');
+$conflictWhere    = $cf['where_sql'];
+$conflictWhereAnd = $cf['and_sql'];
+$conflictParams   = $cf['params'];
+
+$stmtStats = $pdo->prepare("
     SELECT COUNT(*) as total,
         SUM(CASE WHEN status='recibida' THEN 1 ELSE 0 END) as recibidas,
         SUM(CASE WHEN status='en_investigacion' THEN 1 ELSE 0 END) as en_investigacion,
@@ -18,27 +23,36 @@ $stats = $pdo->query("
         SUM(CASE WHEN status='desestimada' THEN 1 ELSE 0 END) as desestimadas,
         SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) as semana,
         SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as mes
-    FROM complaints
-")->fetch();
+    FROM complaints c
+    $conflictWhere
+");
+$stmtStats->execute($conflictParams);
+$stats = $stmtStats->fetch();
 
-$byType = $pdo->query("SELECT complaint_type, COUNT(*) as total FROM complaints GROUP BY complaint_type ORDER BY total DESC")->fetchAll();
+$stmtType = $pdo->prepare("SELECT complaint_type, COUNT(*) as total FROM complaints c $conflictWhere GROUP BY complaint_type ORDER BY total DESC");
+$stmtType->execute($conflictParams);
+$byType = $stmtType->fetchAll();
 
 $perPage = 10;
 $page    = max(1, (int)($_GET['page'] ?? 1));
-$totalComplaints = (int)$pdo->query("SELECT COUNT(*) FROM complaints")->fetchColumn();
+$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints c $conflictWhere");
+$stmtTotal->execute($conflictParams);
+$totalComplaints = (int)$stmtTotal->fetchColumn();
 $totalPages = max(1, (int)ceil($totalComplaints / $perPage));
 $page   = min($page, $totalPages);
 $offset = ($page - 1) * $perPage;
 
-$stmtRecent = $pdo->prepare("SELECT id, complaint_number, complaint_type, status, is_anonymous, created_at FROM complaints ORDER BY created_at DESC LIMIT $perPage OFFSET $offset");
-$stmtRecent->execute();
+$stmtRecent = $pdo->prepare("SELECT id, complaint_number, complaint_type, status, is_anonymous, created_at FROM complaints c $conflictWhere ORDER BY created_at DESC LIMIT $perPage OFFSET $offset");
+$stmtRecent->execute($conflictParams);
 $recent = $stmtRecent->fetchAll();
 
-$monthly = $pdo->query("
+$stmtMonthly = $pdo->prepare("
     SELECT DATE_FORMAT(created_at,'%Y-%m') as month, COUNT(*) as total
-    FROM complaints WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    FROM complaints c WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) $conflictWhereAnd
     GROUP BY month ORDER BY month ASC
-")->fetchAll();
+");
+$stmtMonthly->execute($conflictParams);
+$monthly = $stmtMonthly->fetchAll();
 
 require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';
@@ -108,7 +122,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                             <td><span class="badge bg-<?= $row['is_anonymous'] ? 'secondary' : 'info' ?>"><?= $row['is_anonymous'] ? 'Anónima' : 'Identificada' ?></span></td>
                             <td class="text-muted small"><?= timeAgo($row['created_at']) ?></td>
                             <td>
-                                <?php if ($isAdmin || $isInvestigador): ?>
+                                <?php if ($isInvestigador): ?>
                                 <a href="/detalle_denuncia?id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
                                 <?php endif; ?>
                             </td>

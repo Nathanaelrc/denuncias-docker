@@ -4,7 +4,7 @@
  */
 require_once __DIR__ . '/../includes/bootstrap.php';
 
-if (isLoggedIn()) { header('Location: ' . APP_BASE_PATH . '/panel'); exit; }
+if (isLoggedIn()) { redirect(getDefaultAuthenticatedPath()); }
 
 $error = '';
 
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Completa todos los campos.';
         } elseif (login($identifier, $password)) {
             logActivity($_SESSION['user_id'], 'login', 'user', $_SESSION['user_id'], 'Login portal ciudadano');
-            header('Location: ' . APP_BASE_PATH . '/panel'); exit;
+            redirect(getDefaultAuthenticatedPath());
         } else {
             $error = 'Credenciales incorrectas o cuenta bloqueada.';
             logActivity(null, 'login_fallido', null, null, "Intento: $identifier");
@@ -26,12 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$dashStats = ['total' => 0, 'recibidas' => 0, 'resueltas' => 0];
-try {
-    if (isset($pdo)) {
-        $dashStats = $pdo->query("SELECT COUNT(*) as total, SUM(CASE WHEN status='recibida' THEN 1 ELSE 0 END) as recibidas, SUM(CASE WHEN status='resuelta' THEN 1 ELSE 0 END) as resueltas FROM complaints")->fetch();
-    }
-} catch (Exception $e) {}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -205,10 +199,10 @@ try {
                     <h6>Reportes</h6><p>Auditoría completa y trazabilidad.</p>
                 </div>
             </div>
-            <div class="stats-row">
-                <div style="text-align:center;"><div class="stat-num"><?= $dashStats['total'] ?? 0 ?></div><div class="stat-lbl">Denuncias</div></div>
-                <div style="text-align:center;"><div class="stat-num"><?= $dashStats['recibidas'] ?? 0 ?></div><div class="stat-lbl">Pendientes</div></div>
-                <div style="text-align:center;"><div class="stat-num"><?= $dashStats['resueltas'] ?? 0 ?></div><div class="stat-lbl">Resueltas</div></div>
+            <div class="stats-row" aria-label="Accesos autorizados del portal ciudadano interno">
+                <div style="text-align:center;"><div class="stat-num"><i class="bi bi-search"></i></div><div class="stat-lbl">Revisión</div></div>
+                <div style="text-align:center;"><div class="stat-num"><i class="bi bi-people"></i></div><div class="stat-lbl">Usuarios</div></div>
+                <div style="text-align:center;"><div class="stat-num"><i class="bi bi-journal-check"></i></div><div class="stat-lbl">Auditoría</div></div>
             </div>
         </div>
     </div>

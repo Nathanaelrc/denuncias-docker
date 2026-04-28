@@ -260,12 +260,9 @@ function emailTemplate(string $title, string $content): string {
 function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType, bool $isAnonymous): void {
     global $pdo;
 
-    // Obtener emails de admins e investigadores activos
-    $stmt = $pdo->query("SELECT email, name FROM users WHERE role IN ('admin', 'investigador') AND is_active = 1");
+    // Obtener emails solo de investigadores activos
+    $stmt = $pdo->query("SELECT email, name FROM users WHERE role = 'investigador' AND is_active = 1");
     $admins = $stmt->fetchAll();
-
-    // También enviar al email admin configurado
-    $adminEmail = SMTP_ADMIN_EMAIL;
 
     $typeLabel = COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType;
     $fecha = date('d/m/Y H:i');
@@ -310,17 +307,9 @@ function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType
     $subject = "Nueva Denuncia: $complaintNumber - $typeLabel";
     $html = emailTemplate('Nueva Denuncia Recibida', $content);
 
-    // Enviar a cada admin/investigador
+    // Enviar a cada investigador
     foreach ($admins as $admin) {
         sendEmail($admin['email'], $subject, $html);
-    }
-
-    // Enviar al email admin adicional si está configurado
-    if (!empty($adminEmail)) {
-        $alreadySent = array_column($admins, 'email');
-        if (!in_array($adminEmail, $alreadySent)) {
-            sendEmail($adminEmail, $subject, $html);
-        }
     }
 }
 

@@ -13,24 +13,29 @@ if (!$user) {
 
 $isAdmin = $user['role'] === ROLE_ADMIN;
 $isInvestigador = $user['role'] === ROLE_INVESTIGADOR;
+$hasComplaintAccess = canAccessComplaints($user);
 $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 
 // Estadísticas para badges
 global $pdo;
-$_cf = getConflictFilter($user, '');
-$_sidebarStmt = $pdo->prepare("
-    SELECT 
-        COUNT(*) as total,
-        SUM(CASE WHEN status = 'recibida' THEN 1 ELSE 0 END) as nuevas,
-        SUM(CASE WHEN status = 'en_investigacion' THEN 1 ELSE 0 END) as en_investigacion
-    FROM complaints " . ($_cf['where_sql'] ?: '') . "
-");
-$_sidebarStmt->execute($_cf['params']);
-$stats = $_sidebarStmt->fetch();
+$stats = ['total' => 0, 'nuevas' => 0, 'en_investigacion' => 0];
+if ($hasComplaintAccess) {
+    $_cf = getConflictFilter($user, '');
+    $_sidebarStmt = $pdo->prepare("
+        SELECT 
+            COUNT(*) as total,
+            SUM(CASE WHEN status = 'recibida' THEN 1 ELSE 0 END) as nuevas,
+            SUM(CASE WHEN status = 'en_investigacion' THEN 1 ELSE 0 END) as en_investigacion
+        FROM complaints " . ($_cf['where_sql'] ?: '') . "
+    ");
+    $_sidebarStmt->execute($_cf['params']);
+    $stats = $_sidebarStmt->fetch();
+}
 
 // Notificaciones no leídas
-$stmtUnread = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
-$stmtUnread->execute([$user['id']]);
+$notifFilter = getComplaintNotificationVisibilityFilter($user, 'n', 'c');
+$stmtUnread = $pdo->prepare("SELECT COUNT(*) FROM notifications n WHERE n.user_id = ? AND n.is_read = 0 {$notifFilter['and_sql']}");
+$stmtUnread->execute(array_merge([$user['id']], $notifFilter['params']));
 $unreadNotifs = $stmtUnread->fetchColumn();
 
 ?>
@@ -276,6 +281,7 @@ $unreadNotifs = $stmtUnread->fetchColumn();
     </div>
 
     <!-- Navegación principal -->
+    <?php if ($hasComplaintAccess): ?>
     <div class="sidebar-section">
         <div class="sidebar-section-title">Principal</div>
         <a href="/panel" class="sidebar-link <?= $currentPage === 'panel' ? 'active' : '' ?>">
@@ -288,9 +294,10 @@ $unreadNotifs = $stmtUnread->fetchColumn();
             <?php endif; ?>
         </a>
     </div>
+    <?php endif; ?>
 
     <!-- Investigación -->
-    <?php if ($isAdmin || $isInvestigador): ?>
+    <?php if ($hasComplaintAccess): ?>
     <div class="sidebar-section">
         <div class="sidebar-section-title">Investigación</div>
         <a href="/mis_investigaciones" class="sidebar-link <?= $currentPage === 'mis_investigaciones' ? 'active' : '' ?>">
@@ -301,6 +308,9 @@ $unreadNotifs = $stmtUnread->fetchColumn();
         </a>
         <a href="/detalle_denuncia" class="sidebar-link <?= $currentPage === 'detalle_denuncia' ? 'active' : '' ?>">
             <i class="bi bi-file-earmark-lock"></i> Ver Denuncia
+        </a>
+        <a href="/reportes" class="sidebar-link <?= $currentPage === 'reportes' ? 'active' : '' ?>">
+            <i class="bi bi-graph-up"></i> Reportes
         </a>
     </div>
     <?php endif; ?>
@@ -326,9 +336,6 @@ $unreadNotifs = $stmtUnread->fetchColumn();
         <a href="/registro_actividad" class="sidebar-link <?= $currentPage === 'registro_actividad' ? 'active' : '' ?>">
             <i class="bi bi-journal-text"></i> Registro de Actividad
         </a>
-        <a href="/reportes" class="sidebar-link <?= $currentPage === 'reportes' ? 'active' : '' ?>">
-            <i class="bi bi-graph-up"></i> Reportes
-        </a>
     </div>
     <?php endif; ?>
 
@@ -350,7 +357,7 @@ $unreadNotifs = $stmtUnread->fetchColumn();
                 <i class="bi bi-shield-lock text-success"></i>
                 <small class="text-success fw-semibold">Datos Encriptados</small>
             </div>
-            <small class="text-white-50" style="font-size: 0.75rem;">Alta Seguridad · Solo admin e investigadores pueden desencriptar</small>
+            <small class="text-white-50" style="font-size: 0.75rem;">Alta Seguridad · Solo investigadores pueden desencriptar</small>
         </div>
     </div>
 </nav>

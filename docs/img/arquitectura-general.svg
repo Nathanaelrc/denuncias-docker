@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Arquitectura general de la plataforma de denuncias</title>
+  <desc id="desc">Diagrama de alto nivel con Nginx como punto de entrada unico, landing, portal Ley Karin, portal ciudadano, bases de datos separadas y servicio SMTP compartido.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f4f8fb"/>
+      <stop offset="100%" stop-color="#e6eef5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#4b6475"/>
+    </marker>
+    <style>
+      .title { font: 800 34px 'Segoe UI', Arial, sans-serif; fill: #12344d; }
+      .subtitle { font: 500 18px 'Segoe UI', Arial, sans-serif; fill: #5f7484; }
+      .pill { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #1a6591; }
+      .box-title { font: 800 24px 'Segoe UI', Arial, sans-serif; fill: #16364d; }
+      .box-text { font: 500 17px 'Segoe UI', Arial, sans-serif; fill: #486070; }
+      .small { font: 600 14px 'Segoe UI', Arial, sans-serif; fill: #69808f; }
+      .box { fill: #ffffff; stroke: #d8e3ec; stroke-width: 2; rx: 28; }
+      .accent { fill: #1a6591; }
+      .accent-soft { fill: #dcebf5; }
+      .db { fill: #fdfdfd; stroke: #c6d6e2; stroke-width: 2; }
+      .line { stroke: #4b6475; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .line-soft { stroke: #86a0b2; stroke-width: 3; stroke-dasharray: 10 10; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <text x="90" y="78" class="title">Arquitectura general</text>
+  <text x="90" y="110" class="subtitle">Una entrada publica, dos portales de denuncias y dos bases de datos aisladas por dominio.</text>
+
+  <rect x="90" y="132" width="172" height="36" rx="18" fill="#e3f1fa"/>
+  <text x="123" y="156" class="pill">Entrada unica</text>
+  <rect x="278" y="132" width="216" height="36" rx="18" fill="#e3f1fa"/>
+  <text x="316" y="156" class="pill">Portales independientes</text>
+  <rect x="510" y="132" width="196" height="36" rx="18" fill="#e3f1fa"/>
+  <text x="544" y="156" class="pill">Seguridad transversal</text>
+
+  <g filter="url(#shadow)">
+    <rect x="95" y="235" width="260" height="128" class="box"/>
+    <circle cx="155" cy="299" r="34" class="accent-soft"/>
+    <circle cx="142" cy="291" r="8" class="accent"/>
+    <circle cx="167" cy="291" r="8" class="accent"/>
+    <path d="M126 319 C126 304 183 304 183 319" stroke="#1a6591" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <text x="205" y="286" class="box-title">Personas interesadas</text>
+    <text x="205" y="314" class="box-text">Publico, denunciantes,</text>
+    <text x="205" y="338" class="box-text">admins e investigadores</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="420" y="235" width="260" height="128" class="box"/>
+    <rect x="470" y="272" width="70" height="46" rx="8" fill="#dcebf5" stroke="#1a6591" stroke-width="3"/>
+    <rect x="488" y="325" width="35" height="8" rx="4" fill="#1a6591"/>
+    <text x="565" y="286" class="box-title">Cliente web</text>
+    <text x="565" y="314" class="box-text">Navegador o equipo</text>
+    <text x="565" y="338" class="box-text">que consume el sistema</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="760" y="200" width="300" height="198" class="box"/>
+    <rect x="790" y="238" width="240" height="42" rx="21" fill="#1a6591"/>
+    <text x="855" y="266" style="font:800 21px 'Segoe UI', Arial, sans-serif; fill:#ffffff;">Nginx reverse proxy</text>
+    <text x="812" y="318" class="box-text">Puerto de entrada unico para todo el sistema.</text>
+    <text x="812" y="345" class="box-text">Redirige y reescribe rutas para:</text>
+    <text x="832" y="372" class="box-text">/  /karin/  /generales/</text>
+  </g>
+
+  <path d="M355 299 L420 299" class="line"/>
+  <path d="M680 299 L760 299" class="line"/>
+
+  <g filter="url(#shadow)">
+    <rect x="120" y="500" width="320" height="160" class="box"/>
+    <rect x="145" y="525" width="116" height="30" rx="15" fill="#eff7fd"/>
+    <text x="177" y="546" class="pill">Landing</text>
+    <text x="146" y="590" class="box-title">Selector de portales</text>
+    <text x="146" y="620" class="box-text">Ayuda a entrar al canal correcto.</text>
+    <text x="146" y="646" class="small">Archivo principal: landing/public/index.php</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="540" y="480" width="360" height="200" class="box"/>
+    <rect x="565" y="505" width="168" height="30" rx="15" fill="#eff7fd"/>
+    <text x="597" y="526" class="pill">Portal Ley Karin</text>
+    <text x="566" y="570" class="box-title">Aplicacion PHP + Apache</text>
+    <text x="566" y="600" class="box-text">Formularios publicos, login,</text>
+    <text x="566" y="626" class="box-text">panel, detalle, notas y reportes.</text>
+    <text x="566" y="652" class="small">Comparte bootstrap, autenticacion,</text>
+    <text x="566" y="673" class="small">utilidades, correo y cifrado.</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="980" y="480" width="360" height="200" class="box"/>
+    <rect x="1005" y="505" width="192" height="30" rx="15" fill="#eff7fd"/>
+    <text x="1038" y="526" class="pill">Portal ciudadano</text>
+    <text x="1006" y="570" class="box-title">Aplicacion PHP + Apache</text>
+    <text x="1006" y="600" class="box-text">Replica la misma arquitectura,</text>
+    <text x="1006" y="626" class="box-text">pero con reglas de denuncia general.</text>
+    <text x="1006" y="652" class="small">Carpeta espejo: denuncias-generales/</text>
+  </g>
+
+  <path d="M910 398 L910 448" class="line"/>
+  <path d="M910 448 L280 448 L280 500" class="line-soft"/>
+  <path d="M910 448 L720 448 L720 480" class="line"/>
+  <path d="M910 448 L1160 448 L1160 480" class="line"/>
+
+  <g filter="url(#shadow)">
+    <ellipse cx="720" cy="790" rx="150" ry="50" class="db"/>
+    <rect x="570" y="790" width="300" height="55" class="db"/>
+    <ellipse cx="720" cy="845" rx="150" ry="50" class="db"/>
+    <text x="642" y="800" class="box-title">MySQL denuncias</text>
+    <text x="622" y="828" class="box-text">Casos Ley Karin y tablas</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <ellipse cx="1160" cy="790" rx="150" ry="50" class="db"/>
+    <rect x="1010" y="790" width="300" height="55" class="db"/>
+    <ellipse cx="1160" cy="845" rx="150" ry="50" class="db"/>
+    <text x="1042" y="800" class="box-title">MySQL denuncias_generales</text>
+    <text x="1067" y="828" class="box-text">Casos del portal ciudadano</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="180" y="730" width="260" height="110" class="box"/>
+    <text x="245" y="776" class="box-title">SMTP / correo</text>
+    <text x="208" y="806" class="box-text">Envio de avisos internos y</text>
+    <text x="230" y="830" class="box-text">mensajes al denunciante</text>
+  </g>
+
+  <path d="M720 680 L720 732" class="line"/>
+  <path d="M1160 680 L1160 732" class="line"/>
+  <path d="M590 640 L440 758" class="line-soft"/>
+  <path d="M1030 640 L440 782" class="line-soft"/>
+
+  <text x="1180" y="872" class="small">Cada portal opera con su propia base y comparte servicios comunes de aplicacion.</text>
+</svg>

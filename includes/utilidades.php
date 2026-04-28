@@ -15,7 +15,7 @@
 function getConflictFilter(array $user, string $alias = 'c'): array
 {
     $empty = ['and_sql' => '', 'where_sql' => '', 'params' => []];
-    if (($user['role'] ?? '') !== ROLE_INVESTIGADOR) return $empty;
+    if (!canAccessComplaints($user)) return $empty;
 
     $enc    = getEncryptionService();
     $tokens = $enc->computeInvestigatorTokens(
@@ -54,7 +54,7 @@ function getConflictFilter(array $user, string $alias = 'c'): array
 function isComplaintConflict(int $complaintId, array $user): bool
 {
     global $pdo;
-    if (($user['role'] ?? '') !== ROLE_INVESTIGADOR) return false;
+    if (!canAccessComplaints($user)) return false;
 
     $enc    = getEncryptionService();
     $tokens = $enc->computeInvestigatorTokens(
@@ -78,6 +78,32 @@ function isComplaintConflict(int $complaintId, array $user): bool
 }
 
 /**
+ * Genera un filtro para ocultar notificaciones ligadas a denuncias a usuarios sin acceso,
+ * o para excluir denuncias en conflicto cuando el usuario sí es investigador.
+ */
+function getComplaintNotificationVisibilityFilter(array $user, string $notificationAlias = 'n', string $complaintAlias = 'c'): array
+{
+    $notifCol = $notificationAlias !== '' ? $notificationAlias . '.' : '';
+
+    if (!canAccessComplaints($user)) {
+        return [
+            'and_sql' => "AND ({$notifCol}entity_type <> 'complaint' OR {$notifCol}entity_id IS NULL)",
+            'params' => [],
+        ];
+    }
+
+    $cf = getConflictFilter($user, $complaintAlias);
+    if ($cf['and_sql'] === '') {
+        return ['and_sql' => '', 'params' => []];
+    }
+
+    return [
+        'and_sql' => "AND ({$notifCol}entity_type <> 'complaint' OR {$notifCol}entity_id IS NULL OR EXISTS (SELECT 1 FROM complaints {$complaintAlias} WHERE {$complaintAlias}.id = {$notifCol}entity_id {$cf['and_sql']}))",
+        'params' => $cf['params'],
+    ];
+}
+
+/**
  * Enviar notificación a usuarios suscritos a un grupo
  */
 function sendNotification(string $groupSlug, string $title, string $message = '', string $entityType = null, int $entityId = null): void {
@@ -85,7 +111,7 @@ function sendNotification(string $groupSlug, string $title, string $message = ''
     try {
         // Obtener usuarios suscritos a este grupo o a "todas" con su email
         $stmt = $pdo->prepare("
-            SELECT DISTINCT u.id, u.email, u.name
+            SELECT DISTINCT u.id, u.email, u.name, u.role, u.position, u.department
             FROM notification_subscriptions ns
             JOIN notification_groups ng ON ns.group_id = ng.id
             JOIN users u ON ns.user_id = u.id
@@ -112,6 +138,12 @@ function sendNotification(string $groupSlug, string $title, string $message = ''
         $groupLabel = $groupLabels[$groupSlug] ?? 'Notificación';
 
         foreach ($subscribers as $user) {
+            if ($entityType === 'complaint' && $entityId) {
+                if (!canAccessComplaints($user) || isComplaintConflict((int)$entityId, $user)) {
+                    continue;
+                }
+            }
+
             // Guardar notificación en BD
             $ins->execute([$user['id'], $groupSlug, $title, $message, $entityType, $entityId]);
 
@@ -229,7 +261,6 @@ function createComplaint(array $data): array {
             is_anonymous,
             reporter_name_encrypted, reporter_name_nonce,
             reporter_lastname_encrypted, reporter_lastname_nonce,
-            reporter_lastname_encrypted, reporter_lastname_nonce,
             reporter_email_encrypted, reporter_email_nonce,
             reporter_phone_encrypted, reporter_phone_nonce,
             reporter_department_encrypted, reporter_department_nonce,
@@ -240,26 +271,7 @@ function createComplaint(array $data): array {
             incident_date,
             incident_location_encrypted, incident_location_nonce,
             status
-        ) VALUES (
-            ?, ?,
-            ?, ?,
-            ?, ?,
-            ?, ?,
-            ?, ?,
-            ?,
-            ?, ?,
-            ?, ?,
-            ?, ?,
-            ?, ?,
-            ?, ?,
-            ?, ?, ?,
-            ?, ?,
-            ?, ?,
-            ?, ?,
-            ?,
-            ?, ?,
-            'recibida'
-        )";
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'recibida')";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -269,11 +281,9 @@ function createComplaint(array $data): array {
             $involvedPersons['encrypted'], $involvedPersons['nonce'],
             $evidenceDesc['encrypted'], $evidenceDesc['nonce'],
             $data['is_anonymous'] ?? 1,
-            $reporterLastname['encrypted'], $reporterLastname['nonce'],
-            $reporterLastname['encrypted'], $reporterLastname['nonce'],
             $reporterName['encrypted'], $reporterName['nonce'],
-            $reporterEmail['encrypted'], $reporterEmail['nonce'],
             $reporterLastname['encrypted'], $reporterLastname['nonce'],
+            $reporterEmail['encrypted'], $reporterEmail['nonce'],
             $reporterPhone['encrypted'], $reporterPhone['nonce'],
             $reporterDept['encrypted'], $reporterDept['nonce'],
             $accusedName['encrypted'], $accusedName['nonce'], $accusedNameHmac,
@@ -400,16 +410,11 @@ function getComplaintDecrypted(int $id): ?array {
     if (!$complaint) return null;
 
     $enc = getEncryptionService();
-    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
-    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
-
-    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
-    // Desencriptar todos los campos
     $complaint['description'] = $enc->decrypt($complaint['description_encrypted'], $complaint['description_nonce']);
     $complaint['involved_persons'] = $enc->decrypt($complaint['involved_persons_encrypted'], $complaint['involved_persons_nonce']);
-    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
     $complaint['evidence_description'] = $enc->decrypt($complaint['evidence_description_encrypted'], $complaint['evidence_description_nonce']);
     $complaint['reporter_name'] = $enc->decrypt($complaint['reporter_name_encrypted'], $complaint['reporter_name_nonce']);
+    $complaint['reporter_lastname'] = $enc->decrypt($complaint['reporter_lastname_encrypted'] ?? null, $complaint['reporter_lastname_nonce'] ?? null);
     $complaint['reporter_email'] = $enc->decrypt($complaint['reporter_email_encrypted'], $complaint['reporter_email_nonce']);
     $complaint['reporter_phone'] = $enc->decrypt($complaint['reporter_phone_encrypted'], $complaint['reporter_phone_nonce']);
     $complaint['reporter_department'] = $enc->decrypt($complaint['reporter_department_encrypted'], $complaint['reporter_department_nonce']);

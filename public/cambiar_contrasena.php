@@ -9,7 +9,7 @@ requireAuth();
 
 // Si ya no requiere cambio, redirigir al panel
 if (empty($_SESSION['must_change_password'])) {
-    redirect('/panel');
+    redirect(getDefaultAuthenticatedPath());
 }
 
 $errors = [];
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ->execute([password_hash($newPass, PASSWORD_DEFAULT), $userId]);
                 $_SESSION['must_change_password'] = false;
                 logActivity($userId, 'cambio_contrasena', 'user', $userId, 'Contraseña inicial cambiada');
-                redirect('/panel', 'Contraseña actualizada correctamente. Bienvenido al sistema.');
+                redirect(getDefaultAuthenticatedPath(), 'Contraseña actualizada correctamente. Bienvenido al sistema.');
             }
         }
     }

@@ -4,7 +4,7 @@
  */
 $pageTitle = 'Mis Investigaciones';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN, ROLE_INVESTIGADOR]);
+requireComplaintAccess();
 
 $user = getCurrentUser();
 

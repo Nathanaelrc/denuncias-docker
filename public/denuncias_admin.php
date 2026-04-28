@@ -4,7 +4,7 @@
  */
 $pageTitle = 'Gestión de Denuncias';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN, ROLE_INVESTIGADOR, ROLE_VIEWER]);
+requireComplaintAccess();
 
 $user = getCurrentUser();
 

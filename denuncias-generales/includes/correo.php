@@ -145,11 +145,10 @@ function emailTemplate(string $title, string $content): string {
 </body></html>';
 }
 
-function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType, bool $isAnonymous): void {
+function notifyAdminsNewComplaint(int $complaintId, string $complaintNumber, string $complaintType, bool $isAnonymous): void {
     global $pdo;
-    $stmt = $pdo->query("SELECT email, name FROM users WHERE role IN ('admin', 'investigador') AND is_active = 1");
+    $stmt = $pdo->query("SELECT email, name, role, position, department FROM users WHERE role = 'investigador' AND is_active = 1");
     $admins = $stmt->fetchAll();
-    $adminEmail = SMTP_ADMIN_EMAIL;
     $typeLabel = COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType;
     $leyRef    = COMPLAINT_TYPES[$complaintType]['ley'] ?? '';
     $fecha     = date('d/m/Y H:i');
@@ -175,10 +174,10 @@ function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType
     $html    = emailTemplate('Nueva Denuncia Ciudadana', $content);
 
     foreach ($admins as $admin) {
+        if (isComplaintConflict($complaintId, $admin)) {
+            continue;
+        }
         sendEmail($admin['email'], $subject, $html);
-    }
-    if (!empty($adminEmail) && !in_array($adminEmail, array_column($admins, 'email'))) {
-        sendEmail($adminEmail, $subject, $html);
     }
 }
 

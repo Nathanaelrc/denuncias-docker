@@ -5,6 +5,8 @@
 
 /**
  * Genera el fragmento SQL (AND/WHERE) y parámetros para excluir denuncias en conflicto de interés.
+ * En el portal ciudadano se considera conflicto cualquier coincidencia por nombre completo,
+ * nombre o apellido del usuario revisor contra los tokens del denunciado.
  * Para consultas sin alias de tabla pasa $alias = ''.
  *
  * @param  array  $user   Usuario actual (con 'role', 'name', 'position', 'department')
@@ -14,14 +16,10 @@
 function getConflictFilter(array $user, string $alias = 'c'): array
 {
     $empty = ['and_sql' => '', 'where_sql' => '', 'params' => []];
-    if (($user['role'] ?? '') !== ROLE_INVESTIGADOR) return $empty;
+    if (!canAccessComplaints($user)) return $empty;
 
     $enc    = getEncryptionService();
-    $tokens = $enc->computeInvestigatorTokens(
-        $user['name'],
-        $user['position']   ?? null,
-        $user['department'] ?? null
-    );
+    $tokens = $enc->computePersonNameTokens((string)($user['name'] ?? ''));
     if (empty($tokens)) return $empty;
 
     $col  = $alias !== '' ? "{$alias}." : '';
@@ -29,11 +27,12 @@ function getConflictFilter(array $user, string $alias = 'c'): array
     $parts  = [];
     $params = [];
 
+    // Si el nombre completo denunciado coincide exactamente con el nombre o apellido del revisor, se excluye.
     $parts[]  = "({$col}accused_name_hmac IS NULL OR {$col}accused_name_hmac NOT IN ($ph))";
     $params   = array_merge($params, $tokens);
 
-    // Check expandido: tabla complaint_conflict_tokens — requiere al menos 2 tokens coincidentes
-    $parts[]  = "{$col}id NOT IN (SELECT cct.complaint_id FROM complaint_conflict_tokens cct WHERE cct.token_hmac IN ($ph) GROUP BY cct.complaint_id HAVING COUNT(DISTINCT cct.token_hmac) >= 2)";
+    // Si cualquier token del nombre/apellido del revisor aparece en los tokens del denunciado, se excluye.
+    $parts[]  = "{$col}id NOT IN (SELECT cct.complaint_id FROM complaint_conflict_tokens cct WHERE cct.token_hmac IN ($ph))";
     $params   = array_merge($params, $tokens);
 
     $combined = implode(' AND ', $parts);
@@ -50,14 +49,10 @@ function getConflictFilter(array $user, string $alias = 'c'): array
 function isComplaintConflict(int $complaintId, array $user): bool
 {
     global $pdo;
-    if (($user['role'] ?? '') !== ROLE_INVESTIGADOR) return false;
+    if (!canAccessComplaints($user)) return false;
 
     $enc    = getEncryptionService();
-    $tokens = $enc->computeInvestigatorTokens(
-        $user['name'],
-        $user['position']   ?? null,
-        $user['department'] ?? null
-    );
+    $tokens = $enc->computePersonNameTokens((string)($user['name'] ?? ''));
     if (empty($tokens)) return false;
 
     $stmt = $pdo->prepare("SELECT accused_name_hmac FROM complaints WHERE id = ?");
@@ -65,18 +60,42 @@ function isComplaintConflict(int $complaintId, array $user): bool
     $storedHmac = $stmt->fetchColumn();
     if ($storedHmac && in_array($storedHmac, $tokens, true)) return true;
 
-    // Check tabla de tokens expandidos — requiere al menos 2 coincidencias
     $ph    = implode(',', array_fill(0, count($tokens), '?'));
-    $stmt2 = $pdo->prepare("SELECT COUNT(DISTINCT token_hmac) FROM complaint_conflict_tokens WHERE complaint_id = ? AND token_hmac IN ($ph)");
+    $stmt2 = $pdo->prepare("SELECT 1 FROM complaint_conflict_tokens WHERE complaint_id = ? AND token_hmac IN ($ph) LIMIT 1");
     $stmt2->execute(array_merge([$complaintId], $tokens));
-    return (int)$stmt2->fetchColumn() >= 2;
+    return (bool)$stmt2->fetchColumn();
+}
+
+/**
+ * Genera un filtro para ocultar notificaciones ligadas a denuncias en conflicto.
+ */
+function getComplaintNotificationVisibilityFilter(array $user, string $notificationAlias = 'n', string $complaintAlias = 'c'): array
+{
+    $notifCol = $notificationAlias !== '' ? $notificationAlias . '.' : '';
+
+    if (!canAccessComplaints($user)) {
+        return [
+            'and_sql' => "AND ({$notifCol}entity_type <> 'complaint' OR {$notifCol}entity_id IS NULL)",
+            'params' => [],
+        ];
+    }
+
+    $cf = getConflictFilter($user, $complaintAlias);
+    if ($cf['and_sql'] === '') {
+        return ['and_sql' => '', 'params' => []];
+    }
+
+    return [
+        'and_sql' => "AND ({$notifCol}entity_type <> 'complaint' OR {$notifCol}entity_id IS NULL OR EXISTS (SELECT 1 FROM complaints {$complaintAlias} WHERE {$complaintAlias}.id = {$notifCol}entity_id {$cf['and_sql']}))",
+        'params' => $cf['params'],
+    ];
 }
 
 function sendNotification(string $groupSlug, string $title, string $message = '', string $entityType = null, int $entityId = null): void {
     global $pdo;
     try {
         $stmt = $pdo->prepare("
-            SELECT DISTINCT u.id, u.email, u.name
+            SELECT DISTINCT u.id, u.email, u.name, u.role, u.position, u.department
             FROM notification_subscriptions ns
             JOIN notification_groups ng ON ns.group_id = ng.id
             JOIN users u ON ns.user_id = u.id
@@ -98,6 +117,12 @@ function sendNotification(string $groupSlug, string $title, string $message = ''
         $appUrl     = getenv('APP_URL') ?: 'http://localhost:8093';
 
         foreach ($subscribers as $user) {
+            if ($entityType === 'complaint' && $entityId) {
+                if (!canAccessComplaints($user) || isComplaintConflict((int)$entityId, $user)) {
+                    continue;
+                }
+            }
+
             $ins->execute([$user['id'], $groupSlug, $title, $message, $entityType, $entityId]);
             if (!empty($user['email'])) {
                 $detailLink = '';
@@ -223,7 +248,7 @@ function createComplaint(array $data): array {
         addComplaintLog($complaintId, 'creada', 'Denuncia recibida en el sistema', null, false);
 
         try {
-            notifyAdminsNewComplaint($complaintNumber, $data['complaint_type'], (bool)($data['is_anonymous'] ?? 1));
+            notifyAdminsNewComplaint($complaintId, $complaintNumber, $data['complaint_type'], (bool)($data['is_anonymous'] ?? 1));
             if (!($data['is_anonymous'] ?? 1) && !empty($data['reporter_email'])) {
                 notifyComplainant($data['reporter_email'], $complaintNumber, $data['complaint_type']);
             }

@@ -5,7 +5,7 @@
 $pageTitle = 'Acceso de Delegados';
 require_once __DIR__ . '/../includes/bootstrap.php';
 
-if (isLoggedIn()) { redirect('/panel'); }
+if (isLoggedIn()) { redirect(getDefaultAuthenticatedPath()); }
 
 $errors = [];
 
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'Ingresa usuario/correo y contraseña.';
         } elseif (login($identifier, $password)) {
             logActivity($_SESSION['user_id'], 'login', 'user', $_SESSION['user_id'], 'Inicio de sesión exitoso');
-            redirect('/panel');
+            redirect(getDefaultAuthenticatedPath());
         } else {
             logActivity(null, 'login_fallido', 'user', null, "Intento fallido: $identifier");
             $errors[] = 'Credenciales incorrectas o cuenta bloqueada.';

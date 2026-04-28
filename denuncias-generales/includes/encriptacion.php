@@ -102,6 +102,44 @@ class EncryptionService
     }
 
     /**
+     * Genera HMACs de identidad basados solo en el nombre de una persona.
+     * Incluye nombre completo normalizado, palabras relevantes y combinaciones nombre+apellido.
+     * @return array<string>
+     */
+    public function computePersonNameTokens(string $name): array
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return [];
+        }
+
+        $hmacs = [];
+
+        foreach ($this->tokenizeField($name) as $token) {
+            $hmacs[] = $this->computeSearchHash($token);
+        }
+
+        $norm  = strtr(mb_strtolower(trim(preg_replace('/\s+/', ' ', $name)), 'UTF-8'), ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n']);
+        $words = preg_split('/\s+/', $norm, -1, PREG_SPLIT_NO_EMPTY);
+        $count = count($words);
+
+        if ($count >= 2) {
+            $firstName      = $words[0];
+            $firstLastname  = $count >= 3 ? $words[$count - 2] : $words[1];
+            $secondLastname = $count >= 3 ? $words[$count - 1] : null;
+
+            $hmacs[] = $this->computeSearchHash("$firstName $firstLastname");
+
+            if ($secondLastname) {
+                $hmacs[] = $this->computeSearchHash("$firstName $firstLastname $secondLastname");
+                $hmacs[] = $this->computeSearchHash("$firstLastname $secondLastname");
+            }
+        }
+
+        return array_values(array_unique(array_filter($hmacs)));
+    }
+
+    /**
      * Genera los HMACs de identidad de un investigador para comparar contra los tokens del acusado.
      * Incluye: nombre completo, nombre, apellido(s), combinaciones nombre+apellido,
      *          cargo completo, palabras del cargo, departamento completo, palabras del departamento.

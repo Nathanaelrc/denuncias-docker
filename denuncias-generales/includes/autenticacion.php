@@ -103,11 +103,40 @@ function requireAuth($redirect = '/iniciar_sesion') {
     }
 }
 
-function requireRole($roles, $redirect = '/panel') {
+function getDefaultAuthenticatedPath(?array $user = null): string {
+    $role = $user['role'] ?? getUserRole();
+
+    if ($role === ROLE_INVESTIGADOR) {
+        return '/panel';
+    }
+
+    if ($role === ROLE_ADMIN) {
+        return '/admin_usuarios';
+    }
+
+    return '/notificaciones';
+}
+
+function canAccessComplaints(?array $user = null): bool {
+    if ($user !== null) {
+        return ($user['role'] ?? null) === ROLE_INVESTIGADOR;
+    }
+
+    return hasRole([ROLE_INVESTIGADOR]);
+}
+
+function requireRole($roles, $redirect = null) {
     requireAuth();
     if (!hasRole($roles)) {
-        header('Location: ' . APP_BASE_PATH . $redirect);
-        exit;
+        redirect($redirect ?? getDefaultAuthenticatedPath(), 'No tienes permisos para acceder a esta sección.', 'danger');
+    }
+}
+
+function requireComplaintAccess($redirect = null): void {
+    requireAuth();
+
+    if (!canAccessComplaints()) {
+        redirect($redirect ?? getDefaultAuthenticatedPath(), 'Solo los investigadores pueden acceder a las denuncias.', 'danger');
     }
 }
 
@@ -120,6 +149,6 @@ function getCurrentUser() {
     return $stmt->fetch();
 }
 
-function canDecrypt() {
-    return hasRole([ROLE_ADMIN, ROLE_INVESTIGADOR]);
+function canDecrypt(?array $user = null) {
+    return canAccessComplaints($user);
 }

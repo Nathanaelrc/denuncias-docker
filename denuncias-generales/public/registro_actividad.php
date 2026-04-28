@@ -17,6 +17,8 @@ $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 25;
 $offset = ($page - 1) * $perPage;
 
+$baseWhere = "(al.entity_type IS NULL OR al.entity_type <> 'complaint')";
+
 $where = [];
 $params = [];
 if ($filterAction !== '') { $where[] = "al.action = ?"; $params[] = $filterAction; }
@@ -29,7 +31,10 @@ if ($search !== '') {
     $params[] = $searchParam; $params[] = $searchParam; $params[] = $searchParam;
 }
 
-$whereSQL = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+$whereSQL = 'WHERE ' . $baseWhere;
+if ($where) {
+    $whereSQL .= ' AND ' . implode(' AND ', $where);
+}
 
 $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM activity_logs al $whereSQL");
 $stmtCount->execute($params);
@@ -47,13 +52,13 @@ $stmtLogs = $pdo->prepare("
 $stmtLogs->execute($params);
 $logs = $stmtLogs->fetchAll();
 
-$actions = $pdo->query("SELECT DISTINCT action FROM activity_logs ORDER BY action")->fetchAll(PDO::FETCH_COLUMN);
+$actions = $pdo->query("SELECT DISTINCT action FROM activity_logs WHERE entity_type IS NULL OR entity_type <> 'complaint' ORDER BY action")->fetchAll(PDO::FETCH_COLUMN);
 $users = $pdo->query("SELECT id, name FROM users ORDER BY name")->fetchAll();
 
-$todayCount = $pdo->query("SELECT COUNT(*) FROM activity_logs WHERE DATE(created_at) = CURDATE()")->fetchColumn();
-$weekCount = $pdo->query("SELECT COUNT(*) FROM activity_logs WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")->fetchColumn();
+$todayCount = $pdo->query("SELECT COUNT(*) FROM activity_logs WHERE (entity_type IS NULL OR entity_type <> 'complaint') AND DATE(created_at) = CURDATE()")->fetchColumn();
+$weekCount = $pdo->query("SELECT COUNT(*) FROM activity_logs WHERE (entity_type IS NULL OR entity_type <> 'complaint') AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")->fetchColumn();
 $loginCount = $pdo->query("SELECT COUNT(*) FROM activity_logs WHERE action = 'login' AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetchColumn();
-$uniqueUsers = $pdo->query("SELECT COUNT(DISTINCT user_id) FROM activity_logs WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetchColumn();
+$uniqueUsers = $pdo->query("SELECT COUNT(DISTINCT user_id) FROM activity_logs WHERE (entity_type IS NULL OR entity_type <> 'complaint') AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")->fetchColumn();
 
 // Todos los registros para el informe (sin paginación, máx. 2000)
 $stmtReport = $pdo->prepare("

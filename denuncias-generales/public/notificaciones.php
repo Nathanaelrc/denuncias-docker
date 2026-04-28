@@ -6,9 +6,11 @@ $pageTitle = 'Notificaciones';
 require_once __DIR__ . '/../includes/bootstrap.php';
 requireAuth();
 
-$userId = $_SESSION['user_id'];
-$userRole = getUserRole();
+$user = getCurrentUser();
+$userId = $user['id'];
+$userRole = $user['role'];
 $isAdmin = $userRole === ROLE_ADMIN;
+$notifFilter = getComplaintNotificationVisibilityFilter($user, 'n', 'c');
 
 // AJAX handlers
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
@@ -108,17 +110,17 @@ $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 20;
 $offset = ($page - 1) * $perPage;
 
-$unreadCount = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
-$unreadCount->execute([$userId]);
+$unreadCount = $pdo->prepare("SELECT COUNT(*) FROM notifications n WHERE n.user_id = ? AND n.is_read = 0 {$notifFilter['and_sql']}");
+$unreadCount->execute(array_merge([$userId], $notifFilter['params']));
 $unreadCount = $unreadCount->fetchColumn();
 
-$totalNotif = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ?");
-$totalNotif->execute([$userId]);
+$totalNotif = $pdo->prepare("SELECT COUNT(*) FROM notifications n WHERE n.user_id = ? {$notifFilter['and_sql']}");
+$totalNotif->execute(array_merge([$userId], $notifFilter['params']));
 $totalNotif = $totalNotif->fetchColumn();
 $totalPages = max(1, ceil($totalNotif / $perPage));
 
-$stmtNotif = $pdo->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT $perPage OFFSET $offset");
-$stmtNotif->execute([$userId]);
+$stmtNotif = $pdo->prepare("SELECT n.* FROM notifications n WHERE n.user_id = ? {$notifFilter['and_sql']} ORDER BY n.created_at DESC LIMIT $perPage OFFSET $offset");
+$stmtNotif->execute(array_merge([$userId], $notifFilter['params']));
 $myNotifications = $stmtNotif->fetchAll();
 
 $groups = [];
@@ -162,38 +164,38 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 <style>
 .notif-tabs .nav-link {
     border: none; border-radius: 12px; padding: 10px 20px;
-    font-weight: 600; color: rgba(255,255,255,0.55); font-size: 0.9rem; transition: all 0.2s;
+    font-weight: 600; color: #475569; background: #eef4f8; font-size: 0.9rem; transition: all 0.2s;
 }
-.notif-tabs .nav-link.active { background: #1a6591; color: white; }
-.notif-tabs .nav-link:hover:not(.active) { background: rgba(255,255,255,0.04); color: #1a6591; }
+.notif-tabs .nav-link.active { background: #1a6591; color: white; box-shadow: 0 8px 20px rgba(26, 101, 145, 0.18); }
+.notif-tabs .nav-link:hover:not(.active) { background: #dcebf5; color: #145275; }
 .notif-item {
     display: flex; gap: 14px; padding: 16px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.04); transition: all 0.2s;
-    cursor: pointer; position: relative;
+    border-bottom: 1px solid #e2e8f0; transition: all 0.2s;
+    cursor: pointer; position: relative; background: #ffffff;
 }
-.notif-item:hover { background: rgba(255,255,255,0.04); }
-.notif-item.unread { background: rgba(26,101,145,0.03); border-left: 3px solid #1a6591; }
+.notif-item:hover { background: #f8fafc; }
+.notif-item.unread { background: linear-gradient(90deg, rgba(26,101,145,0.08) 0%, rgba(26,101,145,0.02) 180px, #ffffff 100%); border-left: 3px solid #1a6591; padding-left: 17px; }
 .notif-item.unread .notif-title { font-weight: 700; }
 .notif-icon-wrap {
     width: 42px; height: 42px; min-width: 42px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
 }
-.notif-title { font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 500; }
-.notif-message { font-size: 0.82rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
-.notif-time { font-size: 0.75rem; color: rgba(255,255,255,0.5); white-space: nowrap; min-width: 90px; text-align: right; }
+.notif-title { font-size: 0.95rem; color: #0f172a; font-weight: 600; }
+.notif-message { font-size: 0.84rem; color: #64748b; margin-top: 4px; }
+.notif-time { font-size: 0.75rem; color: #94a3b8; white-space: nowrap; min-width: 90px; text-align: right; }
 .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: #1a6591; position: absolute; top: 20px; left: 8px; }
 .user-card {
-    background: rgba(255,255,255,0.06); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);
-    padding: 20px; transition: all 0.3s;
+    background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0;
+    padding: 20px; transition: all 0.3s; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
 }
-.user-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+.user-card:hover { box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08); border-color: #cbd5e1; transform: translateY(-1px); }
 .group-chip {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 6px 14px; border-radius: 10px; font-size: 0.8rem;
     font-weight: 500; cursor: pointer; transition: all 0.2s;
     border: 2px solid transparent; user-select: none;
 }
-.group-chip.active { border-color: currentColor; font-weight: 700; }
+.group-chip.active { border-color: currentColor; font-weight: 700; box-shadow: inset 0 0 0 1px currentColor; }
 .group-chip:hover { transform: scale(1.03); }
 .group-chip input { display: none; }
 .empty-notif { text-align: center; padding: 60px 20px; }
@@ -341,7 +343,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                                placeholder="Agregar email..."
                                data-original="<?= htmlspecialchars($pu['email'] ?? '') ?>"
                                oninput="onEmailChange(this)"
-                               style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-size: 0.82rem; padding: 6px 10px;">
+                               style="border: 1px solid #dbe3ec; border-radius: 8px; font-size: 0.82rem; padding: 6px 10px; background: #ffffff;">
                         <button class="btn btn-sm email-save-btn" style="display:none; border-radius: 8px; padding: 4px 10px;"
                                 onclick="saveEmail(<?= $pu['id'] ?>, this)">
                             <i class="bi bi-check-lg"></i>

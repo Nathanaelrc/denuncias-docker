@@ -4,11 +4,17 @@
  */
 $pageTitle = 'Reportes';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN]);
+requireComplaintAccess();
+
+$user = getCurrentUser();
+$cf = getConflictFilter($user, '');
+$conflictWhere = $cf['where_sql'];
+$conflictWhereAnd = $cf['and_sql'];
+$conflictParams = $cf['params'];
 
 // Exportación CSV
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
-    $rows = $pdo->query("
+    $stmt = $pdo->prepare("
         SELECT
             complaint_number   AS 'Número',
             complaint_type     AS 'Tipo',
@@ -19,9 +25,11 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
             DATE_FORMAT(created_at,     '%d/%m/%Y %H:%i')     AS 'Recibida',
             DATE_FORMAT(assigned_at,    '%d/%m/%Y %H:%i')     AS 'Asignada',
             DATE_FORMAT(resolved_at,    '%d/%m/%Y %H:%i')     AS 'Resuelta'
-        FROM complaints
+        FROM complaints $conflictWhere
         ORDER BY created_at DESC
-    ")->fetchAll(PDO::FETCH_ASSOC);
+    ");
+    $stmt->execute($conflictParams);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $filename = 'denuncias_ciudadanas_' . date('Ymd_His') . '.csv';
     header('Content-Type: text/csv; charset=UTF-8');
@@ -40,7 +48,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
 }
 
 // Estadísticas
-$overview = $pdo->query("
+$overviewStmt = $pdo->prepare("
     SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN status = 'recibida' THEN 1 ELSE 0 END) as recibidas,
@@ -51,17 +59,23 @@ $overview = $pdo->query("
         SUM(CASE WHEN is_anonymous = 1 THEN 1 ELSE 0 END) as anonimas,
         SUM(CASE WHEN is_anonymous = 0 THEN 1 ELSE 0 END) as identificadas,
         AVG(CASE WHEN resolved_at IS NOT NULL THEN DATEDIFF(resolved_at, created_at) END) as avg_resolution_days
-    FROM complaints
-")->fetch();
+    FROM complaints $conflictWhere
+");
+$overviewStmt->execute($conflictParams);
+$overview = $overviewStmt->fetch();
 
-$byType = $pdo->query("SELECT complaint_type, COUNT(*) as total FROM complaints GROUP BY complaint_type ORDER BY total DESC")->fetchAll();
+$byTypeStmt = $pdo->prepare("SELECT complaint_type, COUNT(*) as total FROM complaints $conflictWhere GROUP BY complaint_type ORDER BY total DESC");
+$byTypeStmt->execute($conflictParams);
+$byType = $byTypeStmt->fetchAll();
 
-$byMonth = $pdo->query("
+$byMonthStmt = $pdo->prepare("
     SELECT DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total
     FROM complaints 
-    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH) $conflictWhereAnd
     GROUP BY month ORDER BY month
-")->fetchAll();
+");
+$byMonthStmt->execute($conflictParams);
+$byMonth = $byMonthStmt->fetchAll();
 
 require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';
