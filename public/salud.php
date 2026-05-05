@@ -7,7 +7,9 @@
 header('Content-Type: application/json; charset=UTF-8');
 
 $healthToken = getenv('HEALTH_CHECK_TOKEN') ?: '';
-if (!empty($healthToken)) {
+$remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '';
+$isLocalhost = in_array($remoteAddr, ['127.0.0.1', '::1'], true);
+if (!empty($healthToken) && !$isLocalhost) {
     $provided = $_GET['token'] ?? ($_SERVER['HTTP_X_HEALTH_TOKEN'] ?? '');
     if (!hash_equals($healthToken, $provided)) {
         http_response_code(403);
