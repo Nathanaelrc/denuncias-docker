@@ -42,6 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Validaciones para denuncias identificadas (no anónimas)
+    $anonymousEmail = trim($_POST['anonymous_email'] ?? '');
+    if (!empty($anonymousEmail) && !filter_var($anonymousEmail, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'El correo de contacto ingresado no es válido.';
+    }
+
     $reporterName  = '';
     $reporterEmail = '';
     $reporterPhone = '';
@@ -75,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'evidence_description' => trim($_POST['evidence_description'] ?? '') ?: null,
             'reporter_name'       => $isAnonymous ? null : ($reporterName ?: null),
             'reporter_lastname'   => $isAnonymous ? null : ($reporterLastname ?: null),
-            'reporter_email'      => $isAnonymous ? null : ($reporterEmail ?: null),
+            'reporter_email'      => $isAnonymous ? ($anonymousEmail ?: null) : ($reporterEmail ?: null),
             'reporter_phone'      => $isAnonymous ? null : ($reporterPhone ?: null),
             'reporter_department' => $isAnonymous ? null : ($reporterDept ?: null),
             'accused_name' => trim($_POST['accused_name'] ?? '') ?: null,
@@ -384,6 +389,20 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <div class="form-text mt-2 text-muted text-justify">
                                 Si desactivas el anonimato, podrás proporcionar tus datos. Quedarán encriptados y estrictamente protegidos para quienes investiguen el caso.
                             </div>
+
+                            <div id="anonymousEmailField" class="mt-3" style="display: none;">
+                                <label class="form-label fw-semibold text-dark" for="anonymous_email">
+                                    <i class="bi bi-envelope me-1"></i>Correo de contacto
+                                    <span class="fw-normal text-muted">(opcional)</span>
+                                </label>
+                                <input type="email" name="anonymous_email" id="anonymous_email"
+                                    class="form-control"
+                                    value="<?= htmlspecialchars($_POST['anonymous_email'] ?? '') ?>"
+                                    placeholder="Para recibir notificaciones sobre tu denuncia">
+                                <div class="form-text mt-1" style="color:#1a6591;">
+                                    <i class="bi bi-shield-check me-1"></i>Solo se usará para notificarte del estado de tu denuncia. Queda encriptado y <strong>no compromete tu anonimato</strong>.
+                                </div>
+                            </div>
                         </div>
 
                         <div id="reporterFields" style="display: none; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1.5rem; margin-top: 0.5rem;">
@@ -437,10 +456,12 @@ require_once __DIR__ . '/../includes/encabezado.php';
 <script>
 function toggleReporterFields() {
     const fields = document.getElementById('reporterFields');
+    const anonymousEmailField = document.getElementById('anonymousEmailField');
     if (!fields) return;
     
     const isAnon = document.getElementById('optIdentidad_anonima').checked;
     fields.style.display = isAnon ? 'none' : 'block';
+    if (anonymousEmailField) anonymousEmailField.style.display = isAnon ? 'block' : 'none';
     
     // Select input fields and update their 'required' property
     const inputs = document.querySelectorAll('.reporter-input');

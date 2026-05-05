@@ -483,11 +483,11 @@ function notifyStatusChange(int $complaintId, string $newStatus): void {
     $stmt->execute([$complaintId]);
     $complaint = $stmt->fetch();
 
-    if (!$complaint || $complaint['is_anonymous']) {
+    if (!$complaint) {
         return;
     }
 
-    // Desencriptar email del denunciante
+    // Desencriptar email del denunciante (si es anónima, solo notificar si dejó correo opcional)
     $enc = getEncryptionService();
     $email = $enc->decrypt($complaint['reporter_email_encrypted'], $complaint['reporter_email_nonce']);
 

@@ -112,7 +112,7 @@ function createComplaint(array $data): array
 
         try {
             notifyAdminsNewComplaint($complaintNumber, $data['complaint_type'], (bool)($data['is_anonymous'] ?? 1));
-            if (!($data['is_anonymous'] ?? 1) && !empty($data['reporter_email'])) {
+            if (!empty($data['reporter_email'])) {
                 notifyComplainant($data['reporter_email'], $complaintNumber, $data['complaint_type']);
             }
         } catch (Throwable $e) {
