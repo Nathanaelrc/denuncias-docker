@@ -10,7 +10,7 @@ requireComplaintAccess();
 $user = getCurrentUser();
 $isSuperAdmin = ($user['role'] ?? null) === ROLE_SUPERADMIN;
 $hasAreaSupport = hasAreaAssignmentSupport();
-$canModify = canModifyComplaints($user);   // superadmin + investigador
+$canModify = $isSuperAdmin;                // Solo superadmin puede modificar
 $canDelete = canDeleteComplaints($user);   // solo superadmin
 $canDecryptData = canDecrypt($user);       // superadmin + investigador
 
@@ -44,6 +44,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$canModify) {
 // Procesar acciones POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     $action = $_POST['action'] ?? '';
+
+    if ($action === 'delete_complaint') {
+        if (!$canDelete) {
+            redirect('/detalle_denuncia?id=' . $id, 'No tienes permisos para eliminar esta denuncia.', 'danger');
+        }
+
+        try {
+            $pdo->prepare('DELETE FROM complaints WHERE id = ?')->execute([$id]);
+            logActivity($_SESSION['user_id'], 'eliminar_denuncia', 'complaint', $id, 'Denuncia eliminada por superadmin');
+            redirect('/denuncias_admin', 'Denuncia eliminada correctamente.', 'success');
+        } catch (Exception $e) {
+            error_log('[Denuncias Generales] Error eliminando denuncia: ' . $e->getMessage());
+            redirect('/detalle_denuncia?id=' . $id, 'No se pudo eliminar la denuncia.', 'danger');
+        }
+    }
 
     if ($action === 'change_status') {
         $newStatus = sanitize($_POST['new_status'] ?? '');
@@ -175,6 +190,48 @@ $investigators = $pdo->query(
 require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';
 ?>
+
+<style>
+.action-panel .action-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.action-panel .section-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #334155;
+    margin-bottom: 8px;
+}
+
+.action-panel .form-select,
+.action-panel .form-control {
+    background: #ffffff;
+}
+
+.action-panel .form-select {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+}
+
+.action-panel .form-select:focus {
+    color: #0f172a !important;
+}
+
+.action-panel .form-select option {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+}
+
+.action-panel .form-select option:checked {
+    color: #ffffff !important;
+    background: #1a6591 linear-gradient(0deg, #1a6591, #1a6591) !important;
+}
+</style>
 
 <div class="main-content">
     <?php $flash = getFlashMessage(); if ($flash): ?>
@@ -422,111 +479,118 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             </div>
 
             <?php if ($canModify): ?>
-            <!-- Cambiar Estado -->
-            <div class="card border-0 shadow-sm mb-4">
+            <div class="card border-0 shadow-sm mb-4 action-panel">
                 <div class="card-header bg-dark-blue border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-gear me-2"></i>Cambiar Estado</h6>
+                    <h6 class="fw-bold mb-0"><i class="bi bi-sliders me-2"></i>Gestión del Caso</h6>
                 </div>
-                <div class="card-body">
-                    <form method="POST">
-                        <?= csrfInput() ?>
-                        <input type="hidden" name="action" value="change_status">
-                        <select name="new_status" class="form-select mb-2">
-                            <?php foreach (COMPLAINT_STATUSES as $key => $st): ?>
-                            <option value="<?= $key ?>" <?= $complaint['status'] === $key ? 'selected' : '' ?>><?= $st['label'] ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check me-1"></i>Actualizar</button>
-                    </form>
-                </div>
-            </div>
+                <div class="card-body d-grid gap-3">
+                    <div class="action-section">
+                        <div class="section-title">Estado</div>
+                        <form method="POST" class="row g-2 align-items-end">
+                            <?= csrfInput() ?>
+                            <input type="hidden" name="action" value="change_status">
+                            <div class="col-12">
+                                <select name="new_status" class="form-select form-select-sm">
+                                    <?php foreach (COMPLAINT_STATUSES as $key => $st): ?>
+                                    <option value="<?= $key ?>" <?= $complaint['status'] === $key ? 'selected' : '' ?>><?= $st['label'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check me-1"></i>Actualizar</button>
+                            </div>
+                        </form>
+                    </div>
 
-            <?php if ($isSuperAdmin && $hasAreaSupport): ?>
-            <!-- Asignar Área -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-dark-blue border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-diagram-3 me-2"></i>Asignar Área</h6>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        <?= csrfInput() ?>
-                        <input type="hidden" name="action" value="assign_area">
-                        <select name="assigned_area" class="form-select mb-2" required>
-                            <option value="">Seleccionar área</option>
-                            <?php foreach (INVESTIGATION_AREAS as $areaKey => $areaLabel): ?>
-                            <option value="<?= htmlspecialchars($areaKey) ?>" <?= ($complaint['assigned_area'] ?? '') === $areaKey ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($areaLabel) ?>
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check me-1"></i>Asignar Área</button>
-                    </form>
-                </div>
-            </div>
+                    <?php if ($isSuperAdmin && $hasAreaSupport): ?>
+                    <div class="action-section">
+                        <div class="section-title">Asignación de Área</div>
+                        <form method="POST" class="row g-2 align-items-end">
+                            <?= csrfInput() ?>
+                            <input type="hidden" name="action" value="assign_area">
+                            <div class="col-12">
+                                <select name="assigned_area" class="form-select form-select-sm" required>
+                                    <option value="">Seleccionar área</option>
+                                    <?php foreach (INVESTIGATION_AREAS as $areaKey => $areaLabel): ?>
+                                    <option value="<?= htmlspecialchars($areaKey) ?>" <?= ($complaint['assigned_area'] ?? '') === $areaKey ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($areaLabel) ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check me-1"></i>Asignar Área</button>
+                            </div>
+                        </form>
+                    </div>
 
-            <!-- Asignar Delegado -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-dark-blue border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-person-plus me-2"></i>Asignar Delegado</h6>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        <?= csrfInput() ?>
-                        <input type="hidden" name="action" value="assign_investigator">
-                        <select name="investigator_id" class="form-select mb-2">
-                            <option value="">Sin asignar</option>
-                            <?php foreach ($investigators as $inv): ?>
-                            <option value="<?= $inv['id'] ?>" <?= $complaint['investigator_id'] == $inv['id'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($inv['name']) ?>
-                                <?php if (!empty($inv['position'])): ?> (<?= htmlspecialchars($inv['position']) ?>)<?php endif; ?>
-                                · <?= htmlspecialchars(getInvestigationAreaLabel($inv['investigator_area'] ?? null)) ?>
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check me-1"></i>Asignar</button>
-                    </form>
-                </div>
-            </div>
-            <?php endif; ?>
+                    <div class="action-section">
+                        <div class="section-title">Asignación de Delegado</div>
+                        <form method="POST" class="row g-2 align-items-end">
+                            <?= csrfInput() ?>
+                            <input type="hidden" name="action" value="assign_investigator">
+                            <div class="col-12">
+                                <select name="investigator_id" class="form-select form-select-sm">
+                                    <option value="">Sin asignar</option>
+                                    <?php foreach ($investigators as $inv): ?>
+                                    <option value="<?= $inv['id'] ?>" <?= $complaint['investigator_id'] == $inv['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($inv['name']) ?>
+                                        <?php if (!empty($inv['position'])): ?> (<?= htmlspecialchars($inv['position']) ?>)<?php endif; ?>
+                                        · <?= htmlspecialchars(getInvestigationAreaLabel($inv['investigator_area'] ?? null)) ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check me-1"></i>Asignar</button>
+                            </div>
+                        </form>
+                    </div>
+                    <?php endif; ?>
 
-            <!-- Cambiar Prioridad -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-dark-blue border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-flag me-2"></i>Prioridad</h6>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        <?= csrfInput() ?>
-                        <input type="hidden" name="action" value="change_priority">
-                        <div class="d-flex gap-2">
-                            <?php foreach (['normal' => 'secondary', 'alta' => 'warning', 'urgente' => 'danger'] as $prio => $color): ?>
-                            <button type="submit" name="new_priority" value="<?= $prio ?>" class="btn btn-<?= $complaint['priority'] === $prio ? $color : "outline-$color" ?> btn-sm flex-fill">
-                                <?= ucfirst($prio) ?>
+                    <div class="action-section">
+                        <div class="section-title">Prioridad</div>
+                        <form method="POST">
+                            <?= csrfInput() ?>
+                            <input type="hidden" name="action" value="change_priority">
+                            <div class="d-flex gap-2">
+                                <?php foreach (['normal' => 'secondary', 'alta' => 'warning', 'urgente' => 'danger'] as $prio => $color): ?>
+                                <button type="submit" name="new_priority" value="<?= $prio ?>" class="btn btn-<?= $complaint['priority'] === $prio ? $color : "outline-$color" ?> btn-sm flex-fill">
+                                    <?= ucfirst($prio) ?>
+                                </button>
+                                <?php endforeach; ?>
+                            </div>
+                        </form>
+                    </div>
+
+                    <?php if (!$complaint['resolution'] && $complaint['status'] !== 'resuelta'): ?>
+                    <div class="action-section">
+                        <div class="section-title">Resolver Caso</div>
+                        <form method="POST">
+                            <?= csrfInput() ?>
+                            <input type="hidden" name="action" value="add_resolution">
+                            <textarea name="resolution" class="form-control form-control-sm mb-2" rows="3" placeholder="Describe la resolución del caso..." required></textarea>
+                            <button type="submit" class="btn btn-success btn-sm w-100" onclick="return confirm('¿Confirmar resolución?')">
+                                <i class="bi bi-check-circle me-1"></i>Marcar como Resuelta
                             </button>
-                            <?php endforeach; ?>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                        </form>
+                    </div>
+                    <?php endif; ?>
 
-            <!-- Resolver Caso -->
-            <?php if (!$complaint['resolution'] && $complaint['status'] !== 'resuelta'): ?>
-            <div class="card border-0 shadow-sm mb-4 border-top border-success border-3">
-                <div class="card-header bg-dark-blue border-0 py-3">
-                    <h6 class="fw-bold mb-0 text-info"><i class="bi bi-check-circle me-2"></i>Resolver Caso</h6>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        <?= csrfInput() ?>
-                        <input type="hidden" name="action" value="add_resolution">
-                        <textarea name="resolution" class="form-control mb-2" rows="4" placeholder="Describe la resolución del caso..." required></textarea>
-                        <button type="submit" class="btn btn-success btn-sm w-100" onclick="return confirm('¿Confirmar resolución?')">
-                            <i class="bi bi-check-circle me-1"></i>Marcar como Resuelta
-                        </button>
-                    </form>
+                    <?php if ($canDelete): ?>
+                    <div class="action-section border border-danger-subtle bg-danger-subtle">
+                        <div class="section-title text-danger">Eliminar Denuncia</div>
+                        <form method="POST" onsubmit="return confirm('Esta accion eliminara la denuncia y sus registros asociados. ¿Continuar?');">
+                            <?= csrfInput() ?>
+                            <input type="hidden" name="action" value="delete_complaint">
+                            <button type="submit" class="btn btn-danger btn-sm w-100">
+                                <i class="bi bi-trash me-1"></i>Eliminar definitivamente
+                            </button>
+                        </form>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
-            <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>

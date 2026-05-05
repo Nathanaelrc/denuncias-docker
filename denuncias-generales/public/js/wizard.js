@@ -203,8 +203,13 @@ class ComplaintWizard {
             currentStep: this.currentStep,
             fields: {}
         };
+
+        const excludedFieldNames = new Set(['csrf_token', 'captcha_token', 'website']);
         
         for (let [key, value] of formData.entries()) {
+            if (excludedFieldNames.has(key)) {
+                continue;
+            }
             data.fields[key] = value;
         }
         
@@ -237,6 +242,9 @@ class ComplaintWizard {
             // Restore field values
             if (data.fields) {
                 for (let [key, value] of Object.entries(data.fields)) {
+                    if (key === 'csrf_token' || key === 'captcha_token' || key === 'website') {
+                        continue;
+                    }
                     const input = this.form.querySelector(`[name="${key}"]`);
                     if (input) {
                         if (input.type === 'checkbox') {

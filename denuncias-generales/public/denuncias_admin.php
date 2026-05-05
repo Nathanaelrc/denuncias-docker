@@ -46,6 +46,12 @@ require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';
 ?>
 
+<style>
+.complaint-row-clickable {
+    cursor: pointer;
+}
+</style>
+
 <div class="main-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -112,7 +118,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <tr><td colspan="<?= $hasAreaSupport ? '9' : '8' ?>" class="text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay denuncias</td></tr>
                         <?php else: ?>
                         <?php foreach ($complaints as $c): ?>
-                        <tr>
+                        <tr class="complaint-row-clickable" data-href="/detalle_denuncia?id=<?= (int)$c['id'] ?>">
                             <td><code class="fw-bold"><?= htmlspecialchars($c['complaint_number']) ?></code></td>
                             <td><?= getTypeBadge($c['complaint_type']) ?></td>
                             <td><?= getStatusBadge($c['status']) ?></td>
@@ -151,5 +157,20 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+document.querySelectorAll('tr.complaint-row-clickable').forEach((row) => {
+    row.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target.closest('a, button, input, select, textarea, label, form')) {
+            return;
+        }
+        const href = row.getAttribute('data-href');
+        if (href) {
+            window.location.href = href;
+        }
+    });
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/pie_pagina.php'; ?>

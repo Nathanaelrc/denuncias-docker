@@ -241,7 +241,7 @@ function emailTemplate(string $title, string $content): string {
 
 function notifyAdminsNewComplaint(int $complaintId, string $complaintNumber, string $complaintType, bool $isAnonymous): void {
     global $pdo;
-    $stmt = $pdo->query("SELECT email, name, role, position, department FROM users WHERE role = 'investigador' AND is_active = 1");
+    $stmt = $pdo->query("SELECT email, name, role, position, department FROM users WHERE role IN ('investigador','admin','superadmin') AND is_active = 1 AND email IS NOT NULL AND email <> ''");
     $admins = $stmt->fetchAll();
     $typeLabel = COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType;
     $leyRef    = COMPLAINT_TYPES[$complaintType]['ley'] ?? '';
@@ -314,8 +314,9 @@ function notifyStatusChange(int $complaintId, string $newStatus): void {
     $stmt = $pdo->prepare("SELECT complaint_number, complaint_type, is_anonymous, reporter_email_encrypted, reporter_email_nonce FROM complaints WHERE id = ?");
     $stmt->execute([$complaintId]);
     $complaint = $stmt->fetch();
-    if (!$complaint || $complaint['is_anonymous']) return;
+    if (!$complaint) return;
 
+    // Si es anónima solo notificar si dejó email de contacto
     $enc   = getEncryptionService();
     $email = $enc->decrypt($complaint['reporter_email_encrypted'], $complaint['reporter_email_nonce']);
     if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) return;

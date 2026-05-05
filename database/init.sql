@@ -338,8 +338,7 @@ INSERT INTO users (name, username, email, password, role, department, position, 
 -- VERIFICACIÓN FINAL Y OPTIMIZACIONES
 -- =============================================
 
--- Agregar índices FULLTEXT para búsquedas rápidas (si no existen)
-ALTER TABLE complaints ADD FULLTEXT INDEX ft_search (description, involved_persons, witnesses, complaint_type, reporter_name);
+-- Nota: no se crea FULLTEXT sobre campos sensibles porque ahora se almacenan encriptados.
 
 SELECT '✓ Base de datos Denuncias v1.0 inicializada exitosamente!' AS mensaje;
 SELECT CONCAT('Usuarios: ', COUNT(*)) AS info FROM users;

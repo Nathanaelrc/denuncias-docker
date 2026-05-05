@@ -245,6 +245,33 @@ body.epco-admin-layout .text-muted {
     color: #64748b !important;
 }
 
+body.epco-admin-layout .form-control,
+body.epco-admin-layout .form-select,
+body.epco-admin-layout textarea.form-control {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+body.epco-admin-layout .form-control::placeholder,
+body.epco-admin-layout textarea.form-control::placeholder {
+    color: #94a3b8;
+}
+
+body.epco-admin-layout .form-control:focus,
+body.epco-admin-layout .form-select:focus,
+body.epco-admin-layout textarea.form-control:focus {
+    background: #ffffff;
+    border-color: #1a6591;
+    color: #0f172a;
+    box-shadow: 0 0 0 0.2rem rgba(26, 101, 145, 0.18);
+}
+
+body.epco-admin-layout .form-select option {
+    color: #0f172a;
+    background: #ffffff;
+}
+
 body.epco-admin-layout .table {
     color: #1e293b;
     --bs-table-bg: transparent;

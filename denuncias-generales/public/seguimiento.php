@@ -43,6 +43,44 @@ if (!empty($codigoInput)) {
 require_once __DIR__ . '/../includes/encabezado.php';
 ?>
 <?php require_once __DIR__ . '/../includes/navbar_publica.php'; ?>
+<style>
+.seguimiento-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
+}
+.seguimiento-info-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+.seguimiento-label {
+    color: #64748b;
+}
+/* Overrides para anular text-white heredado de card-epco cuando tiene fondo blanco */
+.card-epco.seguimiento-card,
+.seguimiento-card { color: #0f172a !important; }
+.card-epco.seguimiento-card .text-dark,
+.seguimiento-card .text-dark { color: #0f172a !important; }
+.card-epco.seguimiento-card .text-muted,
+.seguimiento-card .text-muted { color: #64748b !important; }
+.card-epco.seguimiento-card h5,
+.card-epco.seguimiento-card h6,
+.card-epco.seguimiento-card .fw-bold,
+.card-epco.seguimiento-card .fw-semibold,
+.seguimiento-card h5,
+.seguimiento-card h6,
+.seguimiento-card .fw-bold,
+.seguimiento-card .fw-semibold { color: #0f172a !important; }
+.card-epco.seguimiento-card p,
+.card-epco.seguimiento-card small,
+.card-epco.seguimiento-card .small,
+.seguimiento-card p,
+.seguimiento-card small,
+.seguimiento-card .small { color: #334155; }
+.seguimiento-card .text-white { color: #ffffff !important; }
+</style>
 
 <div style="padding-top: 70px;">
 <section class="gradient-bg py-5 min-vh-100">
@@ -54,7 +92,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     <p class="opacity-75">Ingresa tu código de seguimiento para consultar el estado</p>
                 </div>
 
-                <div class="p-4 mb-4 fade-in" style="background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.12);">
+                <div class="seguimiento-card p-4 mb-4 fade-in">
                     <form method="GET" action="/seguimiento">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text" style="background:#f8fafc;border:1px solid #cbd5e1;color:#1a6591;"><i class="bi bi-upc-scan"></i></span>
@@ -68,20 +106,20 @@ require_once __DIR__ . '/../includes/encabezado.php';
                 </div>
 
                 <?php if ($rateLimitError): ?>
-                <div class="p-4 text-center fade-in" style="background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.12);">
+                <div class="seguimiento-card p-4 text-center fade-in">
                     <i class="bi bi-shield-exclamation fs-1 mb-3" style="color:#f59e0b;"></i>
                     <h5 class="text-dark fw-bold">Demasiadas consultas</h5>
                     <p class="text-muted">Has realizado demasiadas búsquedas en poco tiempo. Por favor espera unos minutos antes de intentarlo nuevamente.</p>
                 </div>
                 <?php elseif ($notFound): ?>
-                <div class="card-epco p-4 text-center fade-in">
+                <div class="card-epco seguimiento-card p-4 text-center fade-in">
                     <i class="bi bi-exclamation-circle fs-1 mb-3" style="color:#dc2626;"></i>
                     <h5 class="text-dark fw-bold">Código no encontrado</h5>
                     <p class="text-muted">El código <strong><?= htmlspecialchars($codigoInput) ?></strong> no existe o ha sido eliminado.</p>
                     <p class="text-muted small">Verifica que el código sea el que recibiste al presentar tu denuncia.</p>
                 </div>
                 <?php elseif ($result): ?>
-                <div class="card-epco p-4 fade-in">
+                <div class="card-epco seguimiento-card p-4 fade-in">
                     <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
                         <div>
                             <h5 class="fw-bold text-dark mb-1">Denuncia <?= htmlspecialchars($result['complaint_number']) ?></h5>
@@ -92,14 +130,14 @@ require_once __DIR__ . '/../includes/encabezado.php';
 
                     <div class="row g-3 mb-4">
                         <div class="col-6">
-                            <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.06);">
-                                <div class="small mb-1" style="color:rgba(255,255,255,0.5);">Tipo de Denuncia</div>
+                            <div class="seguimiento-info-box p-3">
+                                <div class="small mb-1 seguimiento-label">Tipo de Denuncia</div>
                                 <div class="fw-semibold text-dark"><?= getTypeBadge($result['complaint_type']) ?></div>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.06);">
-                                <div class="small mb-1" style="color:rgba(255,255,255,0.5);">Modalidad</div>
+                            <div class="seguimiento-info-box p-3">
+                                <div class="small mb-1 seguimiento-label">Modalidad</div>
                                 <div class="fw-semibold text-dark">
                                     <?php if ($result['is_anonymous']): ?>
                                     <i class="bi bi-incognito me-1"></i>Anónima
@@ -110,14 +148,14 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.06);">
-                                <div class="small mb-1" style="color:rgba(255,255,255,0.5);">Fecha del Incidente</div>
+                            <div class="seguimiento-info-box p-3">
+                                <div class="small mb-1 seguimiento-label">Fecha del Incidente</div>
                                 <div class="fw-semibold text-dark"><?= $result['incident_date'] ? formatDate($result['incident_date']) : 'No especificada' ?></div>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.06);">
-                                <div class="small mb-1" style="color:rgba(255,255,255,0.5);">Última Actualización</div>
+                            <div class="seguimiento-info-box p-3">
+                                <div class="small mb-1 seguimiento-label">Última Actualización</div>
                                 <div class="fw-semibold text-dark"><?= formatDateTime($result['updated_at']) ?></div>
                             </div>
                         </div>
@@ -161,26 +199,91 @@ require_once __DIR__ . '/../includes/encabezado.php';
                         <?php endif; ?>
                     </div>
 
-                    <?php if ($result['resolved_at']): ?>
-                    <div class="alert alert-success small">
-                        <i class="bi bi-check-circle me-2"></i>
-                        Denuncia resuelta el <?= formatDateTime($result['resolved_at']) ?>
-                    </div>
-                    <?php endif; ?>
-
                     <!-- Logs públicos -->
                     <?php 
                     $logs = getComplaintLogs((int)$result['id'], false);
-                    if (!empty($logs)): ?>
+                    $latestUpdates = array_slice(array_reverse($logs), 0, 5);
+                    $presentAction = static function (?string $rawAction): array {
+                        $action = strtolower(trim((string)$rawAction));
+
+                        if ($action === '') {
+                            return ['Actualizacion del caso', 'bi-arrow-repeat'];
+                        }
+                        if (str_contains($action, 'cread') || str_contains($action, 'ingres')) {
+                            return ['Denuncia creada', 'bi-file-earmark-plus'];
+                        }
+                        if (str_contains($action, 'asign')) {
+                            return ['Asignacion de responsable', 'bi-person-check'];
+                        }
+                        if (str_contains($action, 'estado') || str_contains($action, 'investig')) {
+                            return ['Cambio de estado', 'bi-diagram-3'];
+                        }
+                        if (str_contains($action, 'nota') || str_contains($action, 'coment')) {
+                            return ['Nueva actualizacion interna', 'bi-chat-left-text'];
+                        }
+                        if (str_contains($action, 'resol') || str_contains($action, 'cerr') || str_contains($action, 'final')) {
+                            return ['Resolucion final del caso', 'bi-check2-circle'];
+                        }
+                        if (str_contains($action, 'archiv')) {
+                            return ['Caso archivado', 'bi-archive'];
+                        }
+                        if (str_contains($action, 'desestim')) {
+                            return ['Caso desestimado', 'bi-x-circle'];
+                        }
+
+                        return ['Actualizacion del caso', 'bi-arrow-repeat'];
+                    };
+                    $resolutionLog = null;
+                    foreach (array_reverse($logs) as $logItem) {
+                        $actionText = strtolower((string)($logItem['action'] ?? ''));
+                        if (str_contains($actionText, 'resol') || str_contains($actionText, 'cerr') || str_contains($actionText, 'final')) {
+                            $resolutionLog = $logItem;
+                            break;
+                        }
+                    }
+                    ?>
+
+                    <?php if ($result['resolved_at']): ?>
+                    <div class="alert alert-success mt-3 mb-0">
+                        <h6 class="fw-bold mb-2"><i class="bi bi-check2-circle me-2"></i>Resolución Final</h6>
+                        <div class="small mb-1">Denuncia resuelta el <?= formatDateTime($result['resolved_at']) ?></div>
+                        <?php if (!empty($resolutionLog['description'])): ?>
+                        <div class="small"><?= htmlspecialchars($resolutionLog['description']) ?></div>
+                        <?php else: ?>
+                        <div class="small">La investigación concluyó y el caso fue cerrado por el equipo autorizado.</div>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($latestUpdates)): ?>
                     <hr class="my-4">
-                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-list-ul me-2"></i>Historial</h6>
-                    <?php foreach ($logs as $log): ?>
+                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-journal-text me-2"></i>Actualizaciones Recientes</h6>
+                    <?php foreach ($latestUpdates as $update): ?>
+                    <?php [$actionLabel, $actionIcon] = $presentAction($update['action'] ?? null); ?>
                     <div class="d-flex gap-3 mb-3">
                         <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:32px;height:32px;background:#1a6591;">
-                            <i class="bi bi-check text-white" style="font-size:0.8rem;"></i>
+                            <i class="bi <?= htmlspecialchars($actionIcon) ?> text-white" style="font-size:0.8rem;"></i>
                         </div>
                         <div>
-                            <div class="small text-dark fw-semibold"><?= htmlspecialchars($log['action']) ?></div>
+                            <div class="small text-dark fw-semibold"><?= htmlspecialchars($actionLabel) ?></div>
+                            <?php if (!empty($update['description'])): ?><div class="small text-muted"><?= htmlspecialchars($update['description']) ?></div><?php endif; ?>
+                            <div class="small text-muted" style="font-size:0.7rem;"><?= formatDateTime($update['created_at']) ?></div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+
+                    <?php if (!empty($logs)): ?>
+                    <hr class="my-4">
+                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-list-ul me-2"></i>Historial Completo</h6>
+                    <?php foreach ($logs as $log): ?>
+                    <?php [$actionLabel, $actionIcon] = $presentAction($log['action'] ?? null); ?>
+                    <div class="d-flex gap-3 mb-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:32px;height:32px;background:#1a6591;">
+                            <i class="bi <?= htmlspecialchars($actionIcon) ?> text-white" style="font-size:0.8rem;"></i>
+                        </div>
+                        <div>
+                            <div class="small text-dark fw-semibold"><?= htmlspecialchars($actionLabel) ?></div>
                             <?php if ($log['description']): ?><div class="small text-muted"><?= htmlspecialchars($log['description']) ?></div><?php endif; ?>
                             <div class="small text-muted" style="font-size:0.7rem;"><?= formatDateTime($log['created_at']) ?></div>
                         </div>

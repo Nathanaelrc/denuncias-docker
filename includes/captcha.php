@@ -13,6 +13,8 @@
 class SimpleCaptcha {
 
     public static function generate(): array {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
         $type = rand(0, 3);
 
         switch ($type) {
@@ -39,7 +41,7 @@ class SimpleCaptcha {
         }
 
         $token = bin2hex(random_bytes(16));
-        $ip    = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $ip    = $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
         $_SESSION['captcha'] = [
             'answer'  => $answer,
@@ -52,6 +54,8 @@ class SimpleCaptcha {
     }
 
     public static function validate(string $userAnswer, string $token): bool {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
         if (!isset($_SESSION['captcha'])) return false;
         $captcha = $_SESSION['captcha'];
         unset($_SESSION['captcha']); // Consumir siempre (prevenir replay)
@@ -66,7 +70,7 @@ class SimpleCaptcha {
         if ((time() - ($captcha['created'] ?? 0)) < 2) return false;
 
         // Verificar binding de IP
-        $ip      = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $ip      = $_SERVER['HTTP_X_REAL_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
         $expected = hash('sha256', $ip . $token);
         if (!hash_equals($captcha['ip_hash'] ?? '', $expected)) return false;
 

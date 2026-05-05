@@ -115,7 +115,7 @@ function createComplaint(array $data): array
             if (!($data['is_anonymous'] ?? 1) && !empty($data['reporter_email'])) {
                 notifyComplainant($data['reporter_email'], $complaintNumber, $data['complaint_type']);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             error_log("[Denuncias] Error enviando notificaciones: " . $e->getMessage());
         }
 
@@ -227,11 +227,34 @@ function getComplaintDecrypted(int $id): ?array
 function addComplaintLog(int $complaintId, string $action, ?string $description, ?int $userId, bool $isConfidential = false): void
 {
     global $pdo;
-    $enc     = getEncryptionService();
-    $descEnc = $enc->encryptForDb($description);
+    static $usesActionSchema = null;
 
-    $pdo->prepare("INSERT INTO complaint_logs (complaint_id, action, description_encrypted, description_nonce, user_id, is_confidential) VALUES (?, ?, ?, ?, ?, ?)")
-        ->execute([$complaintId, $action, $descEnc['encrypted'], $descEnc['nonce'], $userId, $isConfidential ? 1 : 0]);
+    if ($usesActionSchema === null) {
+        try {
+            $stmt = $pdo->prepare(
+                'SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?'
+            );
+            $stmt->execute([DB_NAME, 'complaint_logs', 'action']);
+            $usesActionSchema = ((int)$stmt->fetchColumn() > 0);
+        } catch (Throwable $e) {
+            $usesActionSchema = false;
+        }
+    }
+
+    $enc = getEncryptionService();
+
+    if ($usesActionSchema) {
+        $descEnc = $enc->encryptForDb($description);
+        $pdo->prepare("INSERT INTO complaint_logs (complaint_id, action, description_encrypted, description_nonce, user_id, is_confidential) VALUES (?, ?, ?, ?, ?, ?)")
+            ->execute([$complaintId, $action, $descEnc['encrypted'], $descEnc['nonce'], $userId, $isConfidential ? 1 : 0]);
+        return;
+    }
+
+    // Compatibilidad con esquema legacy sin columna action.
+    $legacyMessage = trim(($action !== '' ? '[' . $action . '] ' : '') . (string)($description ?? ''));
+    $contentEnc = $enc->encryptForDb($legacyMessage);
+    $pdo->prepare("INSERT INTO complaint_logs (complaint_id, user_id, content_encrypted, content_nonce, is_confidential) VALUES (?, ?, ?, ?, ?)")
+        ->execute([$complaintId, $userId, $contentEnc['encrypted'], $contentEnc['nonce'], $isConfidential ? 1 : 0]);
 }
 
 /**
@@ -240,6 +263,19 @@ function addComplaintLog(int $complaintId, string $action, ?string $description,
 function getComplaintLogs(int $complaintId, bool $includeConfidential = false): array
 {
     global $pdo;
+    static $usesActionSchema = null;
+
+    if ($usesActionSchema === null) {
+        try {
+            $stmt = $pdo->prepare(
+                'SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?'
+            );
+            $stmt->execute([DB_NAME, 'complaint_logs', 'action']);
+            $usesActionSchema = ((int)$stmt->fetchColumn() > 0);
+        } catch (Throwable $e) {
+            $usesActionSchema = false;
+        }
+    }
 
     $sql = "SELECT cl.*, u.name as user_name FROM complaint_logs cl LEFT JOIN users u ON cl.user_id = u.id WHERE cl.complaint_id = ?";
     if (!$includeConfidential) {
@@ -253,7 +289,17 @@ function getComplaintLogs(int $complaintId, bool $includeConfidential = false): 
 
     $enc = getEncryptionService();
     foreach ($logs as &$log) {
-        $log['description'] = $enc->decrypt($log['description_encrypted'], $log['description_nonce']);
+        if ($usesActionSchema) {
+            $log['description'] = $enc->decrypt($log['description_encrypted'] ?? null, $log['description_nonce'] ?? null);
+            continue;
+        }
+
+        $decoded = $enc->decrypt($log['content_encrypted'] ?? null, $log['content_nonce'] ?? null);
+        $log['description'] = $decoded;
+        if (empty($log['action']) && is_string($decoded) && preg_match('/^\[([^\]]+)\]\s*(.*)$/', $decoded, $m)) {
+            $log['action'] = $m[1];
+            $log['description'] = $m[2];
+        }
     }
 
     return $logs;

@@ -359,8 +359,8 @@ function emailTemplate(string $title, string $content): string {
 function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType, bool $isAnonymous): void {
     global $pdo;
 
-    // Obtener emails solo de investigadores activos
-    $stmt = $pdo->query("SELECT email, name FROM users WHERE role = 'investigador' AND is_active = 1");
+    // Notificar a usuarios internos activos con rol operativo
+    $stmt = $pdo->query("SELECT email, name FROM users WHERE role IN ('investigador','admin','superadmin') AND is_active = 1 AND email IS NOT NULL AND email <> ''");
     $admins = $stmt->fetchAll();
 
     $typeLabel = COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType;

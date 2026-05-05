@@ -7,6 +7,50 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 requireComplaintAccess();
 
 $user = getCurrentUser();
+$canRunChannelTest = hasRole([ROLE_ADMIN, ROLE_SUPERADMIN]);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'run_channel_test') {
+    if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
+        redirect('/panel', 'Token de seguridad invalido. Intenta nuevamente.', 'danger');
+    }
+
+    if (!$canRunChannelTest) {
+        redirect('/panel', 'No tienes permisos para ejecutar pruebas del canal.', 'danger');
+    }
+
+    $daysAgo = random_int(0, 30);
+    $incidentDate = (new DateTimeImmutable('today'))->sub(new DateInterval('P' . $daysAgo . 'D'))->format('Y-m-d');
+    $typeKeys = array_keys(COMPLAINT_TYPES);
+    $randomType = !empty($typeKeys) ? $typeKeys[array_rand($typeKeys)] : 'general';
+    $token = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+
+    $result = createComplaint([
+        'complaint_type'       => $randomType,
+        'description'          => 'TEST AUTOMATICO DE CANAL [' . $token . ']. Verificacion interna del flujo completo desde creacion hasta envio.',
+        'is_anonymous'         => 1,
+        'involved_persons'     => 'Prueba automatizada desde dashboard',
+        'evidence_description' => 'Sin evidencia adjunta',
+        'reporter_name'        => null,
+        'reporter_lastname'    => null,
+        'reporter_email'       => null,
+        'reporter_phone'       => null,
+        'reporter_department'  => null,
+        'accused_name'         => 'Prueba de canal',
+        'accused_department'   => 'Sistema',
+        'accused_position'     => 'Validacion operativa',
+        'witnesses'            => null,
+        'incident_date'        => $incidentDate,
+        'incident_location'    => 'Dashboard administrativo',
+    ]);
+
+    if ($result['success']) {
+        logActivity((int)$user['id'], 'prueba_canal_generada', 'complaint', (int)$result['id'], 'Token: ' . $token . ' | Dias aleatorios: ' . $daysAgo);
+        redirect('/panel', 'Prueba ejecutada. Denuncia de test creada: ' . $result['complaint_number'] . ' (' . $daysAgo . ' dias atras).', 'success');
+    } else {
+        redirect('/panel', 'No se pudo ejecutar la prueba del canal. ' . ($result['message'] ?? ''), 'danger');
+    }
+}
+
 $canModifyComplaints = canModifyComplaints(getCurrentUser());
 $isInvestigador = hasRole([ROLE_INVESTIGADOR]);
 
@@ -85,9 +129,25 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             <p class="text-muted mb-0">Bienvenido, <?= htmlspecialchars($user['name']) ?></p>
         </div>
         <div class="d-flex gap-2">
+            <?php if ($canRunChannelTest): ?>
+            <form method="POST" action="/panel" class="m-0" onsubmit="return confirm('Se creara una denuncia de prueba con fecha aleatoria. ¿Continuar?');">
+                <?= csrfInput() ?>
+                <input type="hidden" name="action" value="run_channel_test">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-bezier2 me-1"></i>Probar canal
+                </button>
+            </form>
+            <?php endif; ?>
             <span class="badge bg-light text-dark p-2"><i class="bi bi-calendar me-1"></i><?= date('d/m/Y') ?></span>
         </div>
     </div>
+
+    <?php $flash = getFlashMessage(); if ($flash): ?>
+    <div class="alert alert-<?= $flash['type'] ?> alert-dismissible fade show" role="alert">
+        <?= htmlspecialchars($flash['message']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    <?php endif; ?>
 
     <!-- KPIs -->
     <div class="row g-3 mb-4">
@@ -180,7 +240,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <tr><td colspan="6" class="text-center text-muted py-4">No hay denuncias registradas</td></tr>
                         <?php else: ?>
                         <?php foreach ($recent as $row): ?>
-                        <tr>
+                        <tr class="complaint-row-clickable" data-href="/detalle_denuncia?id=<?= (int)$row['id'] ?>">
                             <td><code><?= htmlspecialchars($row['complaint_number']) ?></code></td>
                             <td><?= getTypeBadge($row['complaint_type']) ?></td>
                             <td><?= getStatusBadge($row['status']) ?></td>
@@ -261,6 +321,19 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 </div>
 
 <script>
+document.querySelectorAll('tr.complaint-row-clickable').forEach((row) => {
+    row.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target.closest('a, button, input, select, textarea, label, form')) {
+            return;
+        }
+        const href = row.getAttribute('data-href');
+        if (href) {
+            window.location.href = href;
+        }
+    });
+});
+
 // Gráfico por tipo
 const typeLabels = <?= json_encode(array_map(fn($t) => COMPLAINT_TYPES[$t['complaint_type']]['label'] ?? $t['complaint_type'], $byType)) ?>;
 const typeData = <?= json_encode(array_map(fn($t) => (int)$t['total'], $byType)) ?>;

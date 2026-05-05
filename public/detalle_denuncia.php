@@ -8,7 +8,8 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 requireComplaintAccess();
 
 $user = getCurrentUser();
-$canModify = canModifyComplaints($user);   // superadmin + investigador
+$isSuperAdmin = hasRole([ROLE_SUPERADMIN]);
+$canModify = $isSuperAdmin;                // Solo superadmin puede modificar
 $canDelete = canDeleteComplaints($user);   // solo superadmin
 $canDecryptData = canDecrypt($user);       // superadmin + investigador
 
@@ -38,6 +39,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$canModify) {
 // Procesar acciones POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
     $action = $_POST['action'] ?? '';
+
+    if ($action === 'delete_complaint') {
+        if (!$canDelete) {
+            redirect('/detalle_denuncia?id=' . $id, 'No tienes permisos para eliminar esta denuncia.', 'danger');
+        }
+
+        try {
+            $pdo->prepare('DELETE FROM complaints WHERE id = ?')->execute([$id]);
+            logActivity($_SESSION['user_id'], 'eliminar_denuncia', 'complaint', $id, 'Denuncia eliminada por superadmin');
+            redirect('/denuncias_admin', 'Denuncia eliminada correctamente.', 'success');
+        } catch (Exception $e) {
+            error_log('[Denuncias] Error eliminando denuncia: ' . $e->getMessage());
+            redirect('/detalle_denuncia?id=' . $id, 'No se pudo eliminar la denuncia.', 'danger');
+        }
+    }
 
     if ($action === 'change_status') {
         $newStatus = sanitize($_POST['new_status'] ?? '');
@@ -138,6 +154,24 @@ $investigators = $pdo->query("SELECT id, name, position FROM users WHERE role = 
 require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';
 ?>
+<style>
+.card .form-select,
+.card select {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+}
+.card .form-select option,
+.card select option {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+}
+.card .form-select option:checked,
+.card select option:checked {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+</style>
 
 <div class="main-content">
     <?php $flash = getFlashMessage(); if ($flash): ?>
@@ -457,6 +491,24 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <textarea name="resolution" class="form-control mb-2" rows="4" placeholder="Describe la resolución del caso..." required></textarea>
                         <button type="submit" class="btn btn-success btn-sm w-100" onclick="return confirm('¿Confirmar resolución?')">
                             <i class="bi bi-check-circle me-1"></i>Marcar como Resuelta
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($canDelete): ?>
+            <!-- Eliminar Denuncia -->
+            <div class="card border-0 shadow-sm mb-4 border-top border-danger border-3">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-bold mb-0 text-danger"><i class="bi bi-trash me-2"></i>Eliminar Denuncia</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" onsubmit="return confirm('Esta accion eliminara la denuncia y sus registros asociados. ¿Continuar?');">
+                        <?= csrfInput() ?>
+                        <input type="hidden" name="action" value="delete_complaint">
+                        <button type="submit" class="btn btn-danger btn-sm w-100">
+                            <i class="bi bi-trash me-1"></i>Eliminar definitivamente
                         </button>
                     </form>
                 </div>

@@ -297,7 +297,7 @@ $urlGeneral = rtrim(getenv('APP_URL_GENERAL') ?: '/generales', '/');
             <div class="card-label">Legislación Chilena General</div>
             <div class="card-title">Canal de Denuncias</div>
             <p class="card-desc">
-                Para ciudadanos que desean ejercer sus derechos como consumidores,
+                Para personas que desean ejercer sus derechos como consumidores,
                 usuarios de servicios públicos o en otros ámbitos de la ley chilena.
             </p>
             <div class="tags">
@@ -305,6 +305,7 @@ $urlGeneral = rtrim(getenv('APP_URL_GENERAL') ?: '/generales', '/');
                 <span class="tag"><i class="bi bi-heart-pulse-fill"></i> Salud</span>
                 <span class="tag"><i class="bi bi-building-fill"></i> Sector Público</span>
                 <span class="tag"><i class="bi bi-tree-fill"></i> Medioambiente</span>
+                <span class="tag"><i class="bi bi-three-dots"></i> Otros</span>
             </div>
             <a href="<?php echo htmlspecialchars($urlGeneral); ?>/" class="btn">
                 <i class="bi bi-box-arrow-in-right"></i> Ingresar al portal
