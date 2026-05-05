@@ -249,7 +249,7 @@ function notifyAdminsNewComplaint(int $complaintId, string $complaintNumber, str
     $appUrl    = getenv('APP_URL') ?: 'http://localhost:8093';
 
     $content = '
-        <p style="color:#374151;font-size:14px;line-height:1.7;">Se ha recibido una <strong>nueva denuncia ciudadana</strong> que requiere su atención.</p>
+        <p style="color:#374151;font-size:14px;line-height:1.7;">Se ha recibido una <strong>nueva denuncia en el Portal General</strong> que requiere su atención.</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:8px;padding:20px;margin:15px 0;">
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;width:40%;">N° de Denuncia:</td>
                 <td style="padding:8px 15px;color:#1a6591;font-weight:700;font-size:14px;">' . htmlspecialchars($complaintNumber) . '</td></tr>
@@ -264,8 +264,8 @@ function notifyAdminsNewComplaint(int $complaintId, string $complaintNumber, str
             <a href="' . $appUrl . '/acceso" style="background:linear-gradient(135deg,#1a6591,#2380b0);color:#ffffff;text-decoration:none;padding:12px 30px;border-radius:8px;font-weight:600;font-size:14px;display:inline-block;">Ir al Dashboard</a>
         </div>';
 
-    $subject = "Nueva Denuncia Ciudadana: $complaintNumber - $typeLabel";
-    $html    = emailTemplate('Nueva Denuncia Ciudadana', $content);
+    $subject = "Nueva Denuncia Portal General: $complaintNumber - $typeLabel";
+    $html    = emailTemplate('Nueva Denuncia Portal General', $content);
 
     foreach ($admins as $admin) {
         if (isComplaintConflict($complaintId, $admin)) {

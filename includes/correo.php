@@ -368,7 +368,7 @@ function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType
 
     $content = '
         <p style="color: #374151; font-size: 14px; line-height: 1.7;">
-            Se ha recibido una <strong>nueva denuncia</strong> en el Canal de Denuncias que requiere su atención.
+            Se ha recibido una <strong>nueva denuncia Ley Karin</strong> en el Canal de Denuncias que requiere su atención.
         </p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 15px 0;">
             <tr>
@@ -403,8 +403,8 @@ function notifyAdminsNewComplaint(string $complaintNumber, string $complaintType
             </a>
         </div>';
 
-    $subject = "Nueva Denuncia: $complaintNumber - $typeLabel";
-    $html = emailTemplate('Nueva Denuncia Recibida', $content);
+    $subject = "Nueva Denuncia Ley Karin: $complaintNumber - $typeLabel";
+    $html = emailTemplate('Nueva Denuncia Ley Karin', $content);
 
     // Enviar a cada investigador
     foreach ($admins as $admin) {
