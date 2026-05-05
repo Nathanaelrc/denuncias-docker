@@ -4,9 +4,10 @@
  */
 $pageTitle = 'Gestión de Usuarios';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN]);
+requireUserManagement();
 
 $user = getCurrentUser();
+$isSuperAdmin = $user['role'] === ROLE_SUPERADMIN;
 $errors = [];
 $success = '';
 
@@ -52,9 +53,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
     if ($action === 'toggle_user') {
         $userId = (int)($_POST['user_id'] ?? 0);
         if ($userId && $userId !== $user['id']) {
-            $pdo->prepare("UPDATE users SET is_active = NOT is_active WHERE id = ?")->execute([$userId]);
-            logActivity($_SESSION['user_id'], 'toggle_usuario', 'user', $userId, '');
-            $success = 'Estado del usuario actualizado.';
+            $targetStmt = $pdo->prepare("SELECT role, is_active FROM users WHERE id = ?");
+            $targetStmt->execute([$userId]);
+            $target = $targetStmt->fetch();
+
+            if (!$target) {
+                $errors[] = 'Usuario no encontrado.';
+            } elseif (!$isSuperAdmin && $target['role'] === ROLE_SUPERADMIN) {
+                $errors[] = 'Solo el superadmin puede modificar el estado de otro superadmin.';
+            } elseif ((int)$target['is_active'] === 1 && $target['role'] === ROLE_ADMIN) {
+                $adminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1")->fetchColumn();
+                if ($adminCount <= 1) {
+                    $errors[] = 'No se puede desactivar el último administrador activo.';
+                }
+            } elseif ((int)$target['is_active'] === 1 && $target['role'] === ROLE_SUPERADMIN) {
+                $superAdminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'superadmin' AND is_active = 1")->fetchColumn();
+                if ($superAdminCount <= 1) {
+                    $errors[] = 'No se puede desactivar el último superadmin activo.';
+                }
+            }
+
+            if (empty($errors)) {
+                $pdo->prepare("UPDATE users SET is_active = NOT is_active WHERE id = ?")->execute([$userId]);
+                logActivity($_SESSION['user_id'], 'toggle_usuario', 'user', $userId, '');
+                $success = 'Estado del usuario actualizado.';
+            }
         }
     }
 
@@ -67,7 +90,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
         if (!preg_match('/[a-z]/', $newPass))             $passErrors[] = 'una minúscula';
         if (!preg_match('/[0-9]/', $newPass))             $passErrors[] = 'un número';
         if (!preg_match('/[^A-Za-z0-9]/', $newPass))     $passErrors[] = 'un carácter especial';
-        if ($userId && empty($passErrors)) {
+
+        $targetRole = null;
+        if ($userId) {
+            $targetStmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
+            $targetStmt->execute([$userId]);
+            $targetRole = $targetStmt->fetchColumn();
+        }
+
+        if ($targetRole === false) {
+            $errors[] = 'Usuario no encontrado.';
+        } elseif (!$isSuperAdmin && $targetRole === ROLE_SUPERADMIN) {
+            $errors[] = 'Solo el superadmin puede resetear la contraseña de otro superadmin.';
+        } elseif ($userId && empty($passErrors)) {
             $pdo->prepare("UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?")->execute([password_hash($newPass, PASSWORD_DEFAULT), $userId]);
             logActivity($_SESSION['user_id'], 'reset_password', 'user', $userId, '');
             $success = 'Contraseña actualizada. El usuario deberá cambiarla al iniciar sesión.';
@@ -105,12 +140,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
         $userId = (int)($_POST['user_id'] ?? 0);
         if ($userId && $userId !== $user['id']) {
             // Verificar que no sea el último admin
-            $adminCount = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1")->fetchColumn();
+            $adminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1")->fetchColumn();
+            $superAdminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'superadmin' AND is_active = 1")->fetchColumn();
             $targetUser = $pdo->prepare("SELECT role, username FROM users WHERE id = ?");
             $targetUser->execute([$userId]);
             $target = $targetUser->fetch();
 
-            if ($target && $target['role'] === 'admin' && $adminCount <= 1) {
+            if ($target && $target['role'] === ROLE_SUPERADMIN && !$isSuperAdmin) {
+                $errors[] = 'Solo el superadmin puede eliminar a otro superadmin.';
+            } elseif ($target && $target['role'] === 'superadmin' && $superAdminCount <= 1) {
+                $errors[] = 'No se puede eliminar el último superadmin activo.';
+            } elseif ($target && $target['role'] === 'admin' && $adminCount <= 1) {
                 $errors[] = 'No se puede eliminar el último administrador activo.';
             } elseif ($target) {
                 // Reasignar denuncias del investigador a null
@@ -131,7 +171,7 @@ $users = $pdo->query("SELECT * FROM users ORDER BY role, name")->fetchAll();
 // Stats
 $totalUsers = count($users);
 $activeUsers = count(array_filter($users, fn($u) => $u['is_active']));
-$totalAdmins = count(array_filter($users, fn($u) => $u['role'] === 'admin'));
+$totalAdmins = count(array_filter($users, fn($u) => in_array($u['role'], [ROLE_ADMIN, ROLE_SUPERADMIN], true)));
 $totalInvestigadores = count(array_filter($users, fn($u) => $u['role'] === 'investigador'));
 $totalViewers = count(array_filter($users, fn($u) => $u['role'] === 'viewer'));
 
@@ -472,8 +512,12 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small">Rol *</label>
                             <select name="role" class="form-select" style="border-radius: 10px; border: 2px solid #e5e7eb; padding: 10px 14px;">
+                                <?php if ($isSuperAdmin): ?>
+                                <option value="superadmin">⭐ Superadmin</option>
+                                <?php endif; ?>
                                 <option value="viewer">👁️ Viewer</option>
                                 <option value="investigador">🔍 Investigador</option>
+                                <option value="auditor">📊 Auditor</option>
                                 <option value="admin">🛡️ Admin</option>
                             </select>
                         </div>
@@ -531,8 +575,12 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small">Rol *</label>
                             <select name="role" id="edit_role" class="form-select" style="border-radius: 10px; border: 2px solid #e5e7eb; padding: 10px 14px;">
+                                <?php if ($isSuperAdmin): ?>
+                                <option value="superadmin">⭐ Superadmin</option>
+                                <?php endif; ?>
                                 <option value="viewer">👁️ Viewer</option>
                                 <option value="investigador">🔍 Investigador</option>
+                                <option value="auditor">📊 Auditor</option>
                                 <option value="admin">🛡️ Admin</option>
                             </select>
                         </div>
@@ -633,7 +681,20 @@ function resetPassword(userId, username) {
     if (newPass && newPass.length >= <?= PASSWORD_MIN_LENGTH ?>) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.innerHTML = `<?= csrfInput() ?><input type="hidden" name="action" value="reset_password"><input type="hidden" name="user_id" value="${userId}"><input type="hidden" name="new_password" value="${newPass}">`;
+        form.innerHTML = `<?= csrfInput() ?><input type="hidden" name="action" value="reset_password">`;
+
+        const userIdInput = document.createElement('input');
+        userIdInput.type = 'hidden';
+        userIdInput.name = 'user_id';
+        userIdInput.value = String(userId);
+        form.appendChild(userIdInput);
+
+        const passwordInput = document.createElement('input');
+        passwordInput.type = 'hidden';
+        passwordInput.name = 'new_password';
+        passwordInput.value = newPass;
+        form.appendChild(passwordInput);
+
         document.body.appendChild(form);
         form.submit();
     } else if (newPass) {

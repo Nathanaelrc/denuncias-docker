@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <nav class="access-nav">
     <a href="/" class="access-nav-brand">
         <img src="/img/Logo01.png" alt="Empresa Portuaria Coquimbo" onerror="this.style.display='none'">
-        <span>Portal Ciudadano</span>
+        <span>Canal de Denuncias</span>
     </a>
     <ul class="nav-links">
         <li><a href="/"><i class="bi bi-house me-1"></i>Inicio</a></li>
@@ -176,10 +176,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="access-left">
         <div class="access-left-inner">
             <div class="badge-restricted"><i class="bi bi-lock-fill"></i> Acceso Restringido · Personal Autorizado</div>
-            <h1 class="access-title">Panel de Gestión<br>de Denuncias Ciudadanas</h1>
+            <h1 class="access-title">Panel de Gestión<br>del Canal de Denuncias</h1>
             <p class="access-desc">
-                Plataforma centralizada para la revisión, seguimiento y resolución de denuncias ciudadanas
-                recibidas conforme a la legislación chilena vigente (Ley 19.496, Ley 19.880, Ley 19.300 y otras).
+                Plataforma centralizada para la revisión, seguimiento y resolución de denuncias
+                recibidas conforme al marco legal y regulatorio aplicable a la operación institucional y portuaria.
             </p>
             <div class="feat-grid">
                 <div class="feat-card">
@@ -199,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h6>Reportes</h6><p>Auditoría completa y trazabilidad.</p>
                 </div>
             </div>
-            <div class="stats-row" aria-label="Accesos autorizados del portal ciudadano interno">
+            <div class="stats-row" aria-label="Accesos autorizados del canal interno de denuncias">
                 <div style="text-align:center;"><div class="stat-num"><i class="bi bi-search"></i></div><div class="stat-lbl">Revisión</div></div>
                 <div style="text-align:center;"><div class="stat-num"><i class="bi bi-people"></i></div><div class="stat-lbl">Usuarios</div></div>
                 <div style="text-align:center;"><div class="stat-num"><i class="bi bi-journal-check"></i></div><div class="stat-lbl">Auditoría</div></div>

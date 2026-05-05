@@ -1,6 +1,6 @@
 <?php
-$urlKarin   = '/karin';
-$urlGeneral = '/generales';
+$urlKarin   = rtrim(getenv('APP_URL_KARIN')   ?: '/karin',    '/');
+$urlGeneral = rtrim(getenv('APP_URL_GENERAL') ?: '/generales', '/');
 ?>
 <!DOCTYPE html>
 <html lang="es">

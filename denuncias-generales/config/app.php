@@ -55,9 +55,19 @@ define('APP_NAME', 'Canal de Denuncias');
 // =============================================
 // ROLES
 // =============================================
-define('ROLE_ADMIN',       'admin');
-define('ROLE_INVESTIGADOR','investigador');
-define('ROLE_VIEWER',      'viewer');
+define('ROLE_SUPERADMIN',   'superadmin');   // Ve y modifica denuncias + gestiona usuarios (con filtro de conflicto)
+define('ROLE_ADMIN',        'admin');         // Solo gestión de usuarios, sin acceso a denuncias
+define('ROLE_INVESTIGADOR', 'investigador'); // Investiga y modifica denuncias asignadas
+define('ROLE_VIEWER',       'viewer');        // Solo lectura de denuncias (sin desencriptar datos sensibles)
+define('ROLE_AUDITOR',      'auditor');       // Solo logs y registro de actividad
+
+// Áreas habilitadas para investigadores del portal de denuncias generales
+define('INVESTIGATION_AREAS', [
+    'concesiones'    => 'Concesiones',
+    'ingenieria'     => 'Ingeniería',
+    'finanzas'       => 'Finanzas',
+    'sostenibilidad' => 'Sostenibilidad',
+]);
 
 // =============================================
 // ESTADOS DE DENUNCIA
@@ -74,15 +84,15 @@ define('COMPLAINT_STATUSES', [
 // TIPOS DE DENUNCIA (ámbito portuario Empresa Portuaria Coquimbo)
 // =============================================
 define('COMPLAINT_TYPES', [
-    'operaciones'       => ['label' => 'Operaciones Portuarias',        'icon' => 'bi-box-seam',            'ley' => 'Ley N° 18.696 / DFL N° 340',    'descripcion' => 'Irregularidades en el funcionamiento del puerto, incumplimiento de normativa portuaria, accidentes operacionales o prácticas indebidas en el movimiento de carga y descarga.'],
-    'medioambiente'     => ['label' => 'Medio Ambiente y Contaminación','icon' => 'bi-water',               'ley' => 'Ley N° 19.300',                 'descripcion' => 'Contaminación del mar, suelo o aire, vertimiento de residuos peligrosos, derrames de combustible u otro impacto ambiental causado por actividades del puerto.'],
-    'seguridad'         => ['label' => 'Seguridad en Recintos',         'icon' => 'bi-shield-exclamation',  'ley' => 'DS N° 90 / Normativa ISPS',     'descripcion' => 'Fallas en la seguridad del recinto portuario, acceso no autorizado, incumplimiento de protocolos ISPS o riesgos para la integridad física de trabajadores y usuarios.'],
-    'contratos'         => ['label' => 'Contratos y Licitaciones',      'icon' => 'bi-file-earmark-text',   'ley' => 'Ley N° 19.886',                 'descripcion' => 'Irregularidades en procesos de licitación pública, adjudicaciones indebidas, incumplimiento de contratos o favorecimiento injustificado a proveedores.'],
-    'corrupcion'        => ['label' => 'Corrupción o Fraude',           'icon' => 'bi-cash-coin',           'ley' => 'Ley N° 20.393',                 'descripcion' => 'Cohecho, malversación de fondos públicos, fraude, tráfico de influencias u otros actos de corrupción vinculados a la empresa portuaria o a sus funcionarios.'],
-    'impacto_comunidad' => ['label' => 'Impacto en la Comunidad',       'icon' => 'bi-people',              'ley' => 'Ley N° 19.300 / Ley N° 20.936', 'descripcion' => 'Afectaciones a vecinos y comunidades cercanas al puerto: ruido excesivo, polvo, restricción de acceso vial, daño al entorno urbano o impacto social negativo.'],
-    'servicios'         => ['label' => 'Servicios al Usuario',          'icon' => 'bi-person-check',        'ley' => 'Ley N° 19.880',                 'descripcion' => 'Deficiencias en la atención al usuario, demoras injustificadas en trámites, trato discriminatorio o denegación de acceso a información pública.'],
-    'infraestructura'   => ['label' => 'Infraestructura y Obras',       'icon' => 'bi-tools',               'ley' => 'Ley N° 19.886',                 'descripcion' => 'Obras o instalaciones portuarias deficientes, incumplimientos constructivos, fallas estructurales o peligros derivados de infraestructura en mal estado.'],
-    'otro'              => ['label' => 'Otro',                          'icon' => 'bi-question-circle',     'ley' => 'General',                       'descripcion' => 'Cualquier otra irregularidad no clasificada en las categorías anteriores. Describe con detalle el tipo de situación que deseas denunciar.'],
+    'operaciones'       => ['label' => 'Operaciones Portuarias',        'icon' => 'bi-box-seam',            'ley' => 'Ley N° 19.542',                                           'descripcion' => 'Hechos relacionados con seguridad operacional, navegación, control de accesos, maniobras, circulación interna, prevención de contaminación o incumplimientos vinculados a la normativa marítima y portuaria aplicable.'],
+    'medioambiente'     => ['label' => 'Medio Ambiente y Contaminación','icon' => 'bi-water',               'ley' => 'Ley N° 20.417 / Ley N° 19.300',                        'descripcion' => 'Contaminación del mar, suelo o aire, derrames, emisiones, residuos o cualquier situación que pueda generar afectación ambiental y eventualmente ser fiscalizada por la Superintendencia del Medio Ambiente.'],
+    'seguridad'         => ['label' => 'Seguridad y Emergencias',       'icon' => 'bi-shield-exclamation',  'ley' => 'Ley N° 16.744 / DS N° 594 / Ley N° 21.012',            'descripcion' => 'Incumplimientos en condiciones de seguridad, higiene, prevención de riesgos, emergencias, protección de trabajadores, visitantes o terceros dentro del entorno portuario.'],
+    'contratos'         => ['label' => 'Concesiones, Contratos y Bases','icon' => 'bi-file-earmark-text',   'ley' => 'Contrato de Concesión y Bases de Licitación',          'descripcion' => 'Situaciones asociadas al cumplimiento de obligaciones concesionales, bases de licitación o deberes operativos frente a terceros. Las controversias contractuales directas entre EPCO y sus concesionarios quedan excluidas de este canal.'],
+    'corrupcion'        => ['label' => 'Probidad, Fraude y Conflictos', 'icon' => 'bi-cash-coin',           'ley' => 'Ley N° 18.575 / Ley N° 20.393 / Ley N° 21.595 / Ley N° 21.121', 'descripcion' => 'Cohecho, soborno, fraude, negociación incompatible, conflicto de interés, uso indebido de recursos o hechos que puedan comprometer la probidad o la responsabilidad penal de la organización.'],
+    'impacto_comunidad' => ['label' => 'Impacto en la Comunidad',       'icon' => 'bi-people',              'ley' => 'Ley N° 19.300 / Normativa sectorial aplicable',        'descripcion' => 'Afectaciones a vecinos, usuarios y comunidades del entorno portuario, tales como ruido, polvo, tránsito, señalización deficiente, daños a terceros o impactos relevantes sobre el entorno inmediato.'],
+    'servicios'         => ['label' => 'Atención y Servicios',          'icon' => 'bi-person-check',        'ley' => 'Ley N° 19.880 / Principios de servicio público',       'descripcion' => 'Deficiencias en atención, trato impropio, demoras injustificadas, desinformación, obstáculos para la gestión de usuarios o respuestas administrativas improcedentes.'],
+    'infraestructura'   => ['label' => 'Infraestructura y Obras',       'icon' => 'bi-tools',               'ley' => 'DS N° 594 / Ley N° 16.744 / Normativa técnica aplicable', 'descripcion' => 'Fallas constructivas, instalaciones en mal estado, riesgos físicos derivados de obras o infraestructura portuaria y omisiones que puedan afectar la seguridad operacional o sanitaria.'],
+    'otro'              => ['label' => 'Otro',                          'icon' => 'bi-question-circle',     'ley' => 'Otras normas aplicables',                              'descripcion' => 'Cualquier otra situación irregular no clasificada en las categorías anteriores. Describe los hechos con el mayor detalle posible para orientar su revisión.'],
 ]);
 
 // =============================================

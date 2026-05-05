@@ -1,32 +1,126 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Servicio de Correo (Gmail SMTP)
+ * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Servicio de Correo
+ *
+ * Compatible con Gmail, Microsoft 365 / Outlook / Hotmail y cualquier SMTP.
+ * Usa PHPMailer cuando está disponible (Composer); fallback SMTP nativo.
+ *
+ * Proveedores comunes (configurar en variables de entorno o .env):
+ *
+ * Gmail:
+ *   SMTP_HOST=smtp.gmail.com  SMTP_PORT=587  SMTP_ENCRYPTION=tls
+ *   SMTP_PASS = Contraseña de aplicación (https://myaccount.google.com/apppasswords)
+ *
+ * Microsoft 365 / Outlook empresarial:
+ *   SMTP_HOST=smtp.office365.com  SMTP_PORT=587  SMTP_ENCRYPTION=tls
+ *
+ * Outlook.com / Hotmail personal:
+ *   SMTP_HOST=smtp-mail.outlook.com  SMTP_PORT=587  SMTP_ENCRYPTION=tls
+ *
+ * Yahoo Mail:
+ *   SMTP_HOST=smtp.mail.yahoo.com  SMTP_PORT=587  SMTP_ENCRYPTION=tls
+ *
+ * Servidor propio / corporativo:
+ *   SMTP_HOST=mail.midominio.cl  SMTP_PORT=587  SMTP_ENCRYPTION=tls
  */
 
 if (!defined('GENERALES_APP')) {
     die('Acceso directo no permitido');
 }
 
+if (!function_exists('_smtpPresetFromUser')) {
+    function _smtpPresetFromUser(string $user): array {
+        $domain  = strtolower(substr($user, strrpos($user, '@') + 1));
+        $presets = [
+            'gmail.com'    => ['smtp.gmail.com',           587, 'tls'],
+            'outlook.com'  => ['smtp-mail.outlook.com',    587, 'tls'],
+            'hotmail.com'  => ['smtp-mail.outlook.com',    587, 'tls'],
+            'live.com'     => ['smtp-mail.outlook.com',    587, 'tls'],
+            'live.cl'      => ['smtp-mail.outlook.com',    587, 'tls'],
+            'msn.com'      => ['smtp-mail.outlook.com',    587, 'tls'],
+            'yahoo.com'    => ['smtp.mail.yahoo.com',      587, 'tls'],
+            'yahoo.es'     => ['smtp.mail.yahoo.com',      587, 'tls'],
+            'zoho.com'     => ['smtp.zoho.com',            587, 'tls'],
+            'zohomail.com' => ['smtp.zoho.com',            587, 'tls'],
+            'icloud.com'   => ['smtp.mail.me.com',         587, 'tls'],
+            'me.com'       => ['smtp.mail.me.com',         587, 'tls'],
+        ];
+        return $presets[$domain] ?? ['smtp.gmail.com', 587, 'tls'];
+    }
+}
+
+$_smtpUser   = getenv('SMTP_USER') ?: '';
+$_smtpPreset = !empty($_smtpUser) ? _smtpPresetFromUser($_smtpUser) : ['smtp.gmail.com', 587, 'tls'];
+
 define('SMTP_ENABLED',    filter_var(getenv('SMTP_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN));
-define('SMTP_HOST',       getenv('SMTP_HOST') ?: 'smtp.gmail.com');
-define('SMTP_PORT',       (int)(getenv('SMTP_PORT') ?: 587));
-define('SMTP_USER',       getenv('SMTP_USER') ?: '');
+define('SMTP_HOST',       getenv('SMTP_HOST') ?: $_smtpPreset[0]);
+define('SMTP_PORT',       (int)(getenv('SMTP_PORT') ?: $_smtpPreset[1]));
+define('SMTP_USER',       $_smtpUser);
 define('SMTP_PASS',       getenv('SMTP_PASS') ?: '');
-define('SMTP_ENCRYPTION', getenv('SMTP_ENCRYPTION') ?: 'tls');
+define('SMTP_ENCRYPTION', getenv('SMTP_ENCRYPTION') ?: $_smtpPreset[2]);
 define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL') ?: 'denuncias@epco.cl');
 define('SMTP_FROM_NAME',  getenv('SMTP_FROM_NAME')  ?: 'Portal Ciudadano - Empresa Portuaria Coquimbo');
 define('SMTP_ADMIN_EMAIL',getenv('SMTP_ADMIN_EMAIL') ?: '');
 
 function sendEmail(string $to, string $subject, string $htmlBody): bool {
     if (!SMTP_ENABLED || empty(SMTP_USER) || empty(SMTP_PASS)) {
-        error_log("[Correo] SMTP deshabilitado o sin configurar. To: $to | Subject: $subject");
+        log_email($to, $subject, false, 'SMTP disabled or not configured');
         return false;
     }
+
+    // Usar PHPMailer si está instalado via Composer
+    $autoloader = __DIR__ . '/../vendor/autoload.php';
+    if (file_exists($autoloader)) {
+        require_once $autoloader;
+        try {
+            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+            $verifyPeer = filter_var(getenv('SMTP_VERIFY_SSL') ?: 'true', FILTER_VALIDATE_BOOLEAN);
+
+            $mail->isSMTP();
+            $mail->Host       = SMTP_HOST;
+            $mail->Port       = SMTP_PORT;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = SMTP_USER;
+            $mail->Password   = SMTP_PASS;
+            $mail->SMTPSecure = SMTP_ENCRYPTION === 'ssl'
+                ? \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS
+                : \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->SMTPOptions = ['ssl' => [
+                'verify_peer'       => $verifyPeer,
+                'verify_peer_name'  => $verifyPeer,
+                'allow_self_signed' => !$verifyPeer,
+            ]];
+            $mail->CharSet = 'UTF-8';
+            $mail->Timeout = 15;
+
+            $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+            $mail->addAddress($to);
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $htmlBody;
+            $mail->AltBody = strip_tags(str_replace(
+                ['<br>', '<br/>', '<br />', '</p>', '</li>'], "\n", $htmlBody
+            ));
+
+            return $mail->send();
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            log_email($to, $subject, false, 'PHPMailer error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Fallback: implementación SMTP nativa
     try {
         $smtp = new SmtpMailer(SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_ENCRYPTION);
-        return $smtp->send(SMTP_FROM_EMAIL, SMTP_FROM_NAME, $to, $subject, $htmlBody);
+        $sent = $smtp->send(SMTP_FROM_EMAIL, SMTP_FROM_NAME, $to, $subject, $htmlBody);
+        if ($sent) {
+            log_email($to, $subject, true);
+        } else {
+            log_email($to, $subject, false, 'SmtpMailer send returned false');
+        }
+        return $sent;
     } catch (Exception $e) {
-        error_log("[Correo] Error: " . $e->getMessage());
+        log_email($to, $subject, false, 'SmtpMailer error: ' . $e->getMessage());
         return false;
     }
 }

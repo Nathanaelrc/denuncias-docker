@@ -160,8 +160,9 @@ El archivo `.env` es generado automáticamente por `start.sh`. Las variables dis
 | `DB_PASS` | Contraseña del usuario de base de datos |
 | `DB_ROOT_PASSWORD` | Contraseña root de MySQL |
 | `HEALTH_CHECK_TOKEN` | Token de autenticación para el endpoint `/salud` |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | Configuración SMTP para notificaciones |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | Configuración SMTP para notificaciones (host/puerto/cifrado pueden autodetectarse por dominio de `SMTP_USER` si quedan vacíos) |
 | `SMTP_FROM_EMAIL` / `SMTP_FROM_NAME` | Remitente de correos del sistema |
+| `EMAIL_QUEUE_BATCH` | Cantidad de correos por ciclo de worker (default: `25`) |
 | `APP_ENV` | Entorno de ejecución (`production` / `development`) |
 
 ## Actualización de Versiones
@@ -228,6 +229,38 @@ docker compose build --no-cache && docker compose up -d
 ```
 
 Los backups se guardan como `.sql.gz` en `backups/` con marca de tiempo y se eliminan automáticamente después de 30 días. **Realizar siempre un backup antes de actualizar MySQL.**
+
+## Cola de Correos Asíncrona
+
+Las notificaciones por email se encolan en base de datos (`email_queue`) y se procesan en segundo plano. Esto evita que la respuesta web quede bloqueada por SMTP.
+
+Ejecución manual:
+
+```bash
+php scripts/process-email-queue-karin.php
+php scripts/process-email-queue-generales.php
+```
+
+Con límite personalizado por corrida:
+
+```bash
+php scripts/process-email-queue-karin.php 50
+php scripts/process-email-queue-generales.php 50
+```
+
+Cron recomendado (cada minuto):
+
+```cron
+* * * * * cd /ruta/al/proyecto && php scripts/process-email-queue-karin.php >> logs/email-queue-karin.log 2>&1
+* * * * * cd /ruta/al/proyecto && php scripts/process-email-queue-generales.php >> logs/email-queue-generales.log 2>&1
+```
+
+En Docker, ejecútalo dentro del contenedor correspondiente:
+
+```bash
+docker compose exec app php scripts/process-email-queue-karin.php
+docker compose exec app-generales php scripts/process-email-queue-generales.php
+```
 
 - Las claves de encriptación y contraseñas de base de datos son generadas automáticamente con entropía suficiente.
 - El archivo `.env` no debe ser versionado ni compartido.

@@ -4,7 +4,7 @@
  */
 $pageTitle = 'Mis Investigaciones';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireComplaintAccess();
+requireComplaintModify(); // Solo superadmin e investigador gestionan investigaciones
 
 $user = getCurrentUser();
 

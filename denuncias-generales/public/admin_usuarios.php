@@ -4,9 +4,11 @@
  */
 $pageTitle = 'Gestión de Usuarios';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN]);
+requireUserManagement();
 
 $user = getCurrentUser();
+$isSuperAdmin = $user['role'] === ROLE_SUPERADMIN;
+$hasAreaSupport = hasAreaAssignmentSupport();
 $errors = [];
 $success = '';
 
@@ -20,11 +22,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
         $email = sanitize($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $role = sanitize($_POST['role'] ?? ROLE_VIEWER);
+        $investigatorArea = $hasAreaSupport ? normalizeInvestigationArea($_POST['investigator_area'] ?? null) : null;
         $department = sanitize($_POST['department'] ?? '');
         $position = sanitize($_POST['position'] ?? '');
 
+        $allowedRoles = [ROLE_ADMIN, ROLE_INVESTIGADOR, ROLE_VIEWER, ROLE_AUDITOR];
+        if ($isSuperAdmin) {
+            $allowedRoles[] = ROLE_SUPERADMIN;
+        }
+
         if (empty($name) || empty($username) || empty($email) || empty($password)) {
             $errors[] = 'Todos los campos obligatorios deben completarse.';
+        } elseif (!in_array($role, $allowedRoles, true)) {
+            $errors[] = 'El rol seleccionado no es válido para tu perfil.';
         } elseif (strlen($password) < PASSWORD_MIN_LENGTH) {
             $errors[] = 'La contraseña debe tener al menos ' . PASSWORD_MIN_LENGTH . ' caracteres.';
         } elseif (!preg_match('/[A-Z]/', $password)) {
@@ -41,8 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
             if ($check->fetch()) {
                 $errors[] = 'El usuario o email ya existe.';
             } else {
-                $pdo->prepare("INSERT INTO users (name, username, email, password, role, department, position, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?, 1)")
-                    ->execute([$name, $username, $email, password_hash($password, PASSWORD_DEFAULT), $role, $department, $position]);
+                if ($hasAreaSupport) {
+                    $pdo->prepare("INSERT INTO users (name, username, email, password, role, investigator_area, department, position, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)")
+                        ->execute([$name, $username, $email, password_hash($password, PASSWORD_DEFAULT), $role, $investigatorArea, $department, $position]);
+                } else {
+                    $pdo->prepare("INSERT INTO users (name, username, email, password, role, department, position, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?, 1)")
+                        ->execute([$name, $username, $email, password_hash($password, PASSWORD_DEFAULT), $role, $department, $position]);
+                }
                 logActivity($_SESSION['user_id'], 'crear_usuario', 'user', $pdo->lastInsertId(), "Usuario: $username, Rol: $role");
                 $success = "Usuario '$username' creado exitosamente.";
             }
@@ -52,9 +67,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
     if ($action === 'toggle_user') {
         $userId = (int)($_POST['user_id'] ?? 0);
         if ($userId && $userId !== $user['id']) {
-            $pdo->prepare("UPDATE users SET is_active = NOT is_active WHERE id = ?")->execute([$userId]);
-            logActivity($_SESSION['user_id'], 'toggle_usuario', 'user', $userId, '');
-            $success = 'Estado del usuario actualizado.';
+            $targetStmt = $pdo->prepare("SELECT role, is_active FROM users WHERE id = ?");
+            $targetStmt->execute([$userId]);
+            $target = $targetStmt->fetch();
+
+            if (!$target) {
+                $errors[] = 'Usuario no encontrado.';
+            } elseif (!$isSuperAdmin && $target['role'] === ROLE_SUPERADMIN) {
+                $errors[] = 'Solo el superadmin puede modificar el estado de otro superadmin.';
+            } elseif ((int)$target['is_active'] === 1 && $target['role'] === ROLE_ADMIN) {
+                $adminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1")->fetchColumn();
+                if ($adminCount <= 1) {
+                    $errors[] = 'No se puede desactivar el último administrador activo.';
+                }
+            } elseif ((int)$target['is_active'] === 1 && $target['role'] === ROLE_SUPERADMIN) {
+                $superAdminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'superadmin' AND is_active = 1")->fetchColumn();
+                if ($superAdminCount <= 1) {
+                    $errors[] = 'No se puede desactivar el último superadmin activo.';
+                }
+            }
+
+            if (empty($errors)) {
+                $pdo->prepare("UPDATE users SET is_active = NOT is_active WHERE id = ?")->execute([$userId]);
+                logActivity($_SESSION['user_id'], 'toggle_usuario', 'user', $userId, '');
+                $success = 'Estado del usuario actualizado.';
+            }
         }
     }
 
@@ -67,7 +104,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
         if (!preg_match('/[a-z]/', $newPass))             $passErrors[] = 'una minúscula';
         if (!preg_match('/[0-9]/', $newPass))             $passErrors[] = 'un número';
         if (!preg_match('/[^A-Za-z0-9]/', $newPass))     $passErrors[] = 'un carácter especial';
-        if ($userId && empty($passErrors)) {
+
+        $targetRole = null;
+        if ($userId) {
+            $targetStmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
+            $targetStmt->execute([$userId]);
+            $targetRole = $targetStmt->fetchColumn();
+        }
+
+        if ($targetRole === false) {
+            $errors[] = 'Usuario no encontrado.';
+        } elseif (!$isSuperAdmin && $targetRole === ROLE_SUPERADMIN) {
+            $errors[] = 'Solo el superadmin puede resetear la contraseña de otro superadmin.';
+        } elseif ($userId && empty($passErrors)) {
             $pdo->prepare("UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?")->execute([password_hash($newPass, PASSWORD_DEFAULT), $userId]);
             logActivity($_SESSION['user_id'], 'reset_password', 'user', $userId, '');
             $success = 'Contraseña actualizada. El usuario deberá cambiarla al iniciar sesión.';
@@ -81,17 +130,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
         $name = sanitize($_POST['name'] ?? '');
         $email = sanitize($_POST['email'] ?? '');
         $role = sanitize($_POST['role'] ?? '');
+        $investigatorArea = $hasAreaSupport ? normalizeInvestigationArea($_POST['investigator_area'] ?? null) : null;
         $department = sanitize($_POST['department'] ?? '');
         $position = sanitize($_POST['position'] ?? '');
 
-        if ($userId && !empty($name) && !empty($email) && in_array($role, ['admin', 'investigador', 'viewer'])) {
+        $targetUser = null;
+        if ($userId > 0) {
+            $targetStmt = $pdo->prepare('SELECT id, role FROM users WHERE id = ?');
+            $targetStmt->execute([$userId]);
+            $targetUser = $targetStmt->fetch();
+        }
+
+        // Un admin puede editar usuarios, pero no crear/promover superadmin.
+        // Si edita a un superadmin, se conserva ese rol para evitar cambios accidentales.
+        if (!$isSuperAdmin && $targetUser && $targetUser['role'] === ROLE_SUPERADMIN) {
+            $role = ROLE_SUPERADMIN;
+        }
+
+        $allowedRoles = [ROLE_ADMIN, ROLE_INVESTIGADOR, ROLE_VIEWER, ROLE_AUDITOR];
+        if ($isSuperAdmin) {
+            $allowedRoles[] = ROLE_SUPERADMIN;
+        } elseif ($targetUser && $targetUser['role'] === ROLE_SUPERADMIN) {
+            $allowedRoles[] = ROLE_SUPERADMIN;
+        }
+
+        if (!$isSuperAdmin && $role === ROLE_SUPERADMIN && (!$targetUser || $targetUser['role'] !== ROLE_SUPERADMIN)) {
+            $errors[] = 'Solo el superadmin puede asignar el rol superadmin.';
+        }
+
+        if ($userId && !empty($name) && !empty($email) && in_array($role, $allowedRoles, true)) {
             $check = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
             $check->execute([$email, $userId]);
             if ($check->fetch()) {
                 $errors[] = 'El email ya está en uso por otro usuario.';
+            } elseif (!empty($errors)) {
+                // Errores de validación acumulados
             } else {
-                $pdo->prepare("UPDATE users SET name = ?, email = ?, role = ?, department = ?, position = ? WHERE id = ?")
-                    ->execute([$name, $email, $role, $department, $position, $userId]);
+                if ($hasAreaSupport) {
+                    $pdo->prepare("UPDATE users SET name = ?, email = ?, role = ?, investigator_area = ?, department = ?, position = ? WHERE id = ?")
+                        ->execute([$name, $email, $role, $investigatorArea, $department, $position, $userId]);
+                } else {
+                    $pdo->prepare("UPDATE users SET name = ?, email = ?, role = ?, department = ?, position = ? WHERE id = ?")
+                        ->execute([$name, $email, $role, $department, $position, $userId]);
+                }
                 logActivity($_SESSION['user_id'], 'actualizar_usuario', 'user', $userId, "Datos actualizados");
                 $success = 'Usuario actualizado correctamente.';
             }
@@ -103,12 +184,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
     if ($action === 'delete_user') {
         $userId = (int)($_POST['user_id'] ?? 0);
         if ($userId && $userId !== $user['id']) {
-            $adminCount = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1")->fetchColumn();
+            $adminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1")->fetchColumn();
+            $superAdminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'superadmin' AND is_active = 1")->fetchColumn();
             $targetUser = $pdo->prepare("SELECT role, username FROM users WHERE id = ?");
             $targetUser->execute([$userId]);
             $target = $targetUser->fetch();
 
-            if ($target && $target['role'] === 'admin' && $adminCount <= 1) {
+            if ($target && $target['role'] === ROLE_SUPERADMIN && !$isSuperAdmin) {
+                $errors[] = 'Solo el superadmin puede eliminar a otro superadmin.';
+            } elseif ($target && $target['role'] === 'superadmin' && $superAdminCount <= 1) {
+                $errors[] = 'No se puede eliminar el último superadmin activo.';
+            } elseif ($target && $target['role'] === 'admin' && $adminCount <= 1) {
                 $errors[] = 'No se puede eliminar el último administrador activo.';
             } elseif ($target) {
                 $pdo->prepare("UPDATE complaints SET investigator_id = NULL WHERE investigator_id = ?")->execute([$userId]);
@@ -126,7 +212,7 @@ $users = $pdo->query("SELECT * FROM users ORDER BY role, name")->fetchAll();
 
 $totalUsers = count($users);
 $activeUsers = count(array_filter($users, fn($u) => $u['is_active']));
-$totalAdmins = count(array_filter($users, fn($u) => $u['role'] === 'admin'));
+$totalAdmins = count(array_filter($users, fn($u) => in_array($u['role'], [ROLE_ADMIN, ROLE_SUPERADMIN], true)));
 $totalInvestigadores = count(array_filter($users, fn($u) => $u['role'] === 'investigador'));
 $totalViewers = count(array_filter($users, fn($u) => $u['role'] === 'viewer'));
 
@@ -222,6 +308,73 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 .dropdown-menu { background: #fff; border: 1px solid #e2e8f0; }
 .dropdown-item { color: #334155; }
 .dropdown-item:hover { background: #f1f5f9; color: #1e293b; }
+
+/* Corrige contraste de los modales de usuarios frente al tema global oscuro */
+#createUserModal .modal-content,
+#editUserModal .modal-content,
+#deleteUserModal .modal-content {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #dbe4ee !important;
+}
+#createUserModal .modal-header,
+#editUserModal .modal-header,
+#createUserModal .modal-footer,
+#editUserModal .modal-footer {
+    border-color: #e2e8f0 !important;
+}
+#createUserModal .btn-close,
+#editUserModal .btn-close,
+#deleteUserModal .btn-close {
+    filter: none;
+}
+#createUserModal .text-muted,
+#editUserModal .text-muted,
+#deleteUserModal .text-muted,
+#createUserModal .form-text,
+#editUserModal .form-text {
+    color: #64748b !important;
+}
+#createUserModal .modal-title,
+#editUserModal .modal-title,
+#deleteUserModal .modal-title,
+#createUserModal .form-label,
+#editUserModal .form-label,
+#deleteUserModal .form-label,
+#createUserModal .fw-bold,
+#editUserModal .fw-bold,
+#deleteUserModal .fw-bold {
+    color: #0f172a !important;
+}
+#createUserModal .form-control,
+#createUserModal .form-select,
+#editUserModal .form-control,
+#editUserModal .form-select {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+#createUserModal .form-control:disabled,
+#editUserModal .form-control:disabled,
+#createUserModal .form-control[readonly],
+#editUserModal .form-control[readonly] {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    opacity: 1;
+}
+#createUserModal .form-control::placeholder,
+#editUserModal .form-control::placeholder {
+    color: #94a3b8;
+}
+#createUserModal .form-control:focus,
+#createUserModal .form-select:focus,
+#editUserModal .form-control:focus,
+#editUserModal .form-select:focus {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #1a6591;
+    box-shadow: 0 0 0 0.2rem rgba(26,101,145,0.18);
+}
 </style>
 
 <div class="main-content">
@@ -344,6 +497,11 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                                 <i class="bi <?= getUserRoleIcon($u['role']) ?>"></i>
                                 <?= $u['role'] === 'investigador' ? 'Delegado' : ucfirst($u['role']) ?>
                             </span>
+                            <?php if (!empty($u['investigator_area'])): ?>
+                            <span class="badge" style="background: rgba(37,99,235,0.12); color: #1d4ed8; font-size: 0.68rem; border-radius: 6px;">
+                                <?= htmlspecialchars(getInvestigationAreaLabel($u['investigator_area'] ?? null)) ?>
+                            </span>
+                            <?php endif; ?>
                             <span class="badge <?= $u['is_active'] ? '' : 'bg-danger' ?>" style="<?= $u['is_active'] ? 'background: #e8f0f6; color: #1a6591;' : '' ?> font-size: 0.7rem; border-radius: 6px;">
                                 <?= $u['is_active'] ? 'Activo' : 'Inactivo' ?>
                             </span>
@@ -414,6 +572,12 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <span class="text-truncate"><?= htmlspecialchars($u['position']) ?></span>
                     </div>
                     <?php endif; ?>
+                    <?php if (!empty($u['investigator_area'])): ?>
+                    <div class="u-info-row">
+                        <i class="bi bi-diagram-3 text-primary"></i>
+                        <span class="text-truncate">Área: <?= htmlspecialchars(getInvestigationAreaLabel($u['investigator_area'] ?? null)) ?></span>
+                    </div>
+                    <?php endif; ?>
                     <div class="u-info-row mt-2 pt-2" style="border-top: 1px solid #f1f5f9;">
                         <i class="bi bi-clock-history text-muted"></i>
                         <span class="text-muted"><small>Último login: <?= $u['last_login'] ? timeAgo($u['last_login']) : '<em>Nunca</em>' ?></small></span>
@@ -440,7 +604,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                 <input type="hidden" name="action" value="create_user">
                 <div class="modal-header border-0 pb-0" style="padding: 28px 28px 0;">
                     <div>
-                        <h5 class="modal-title fw-bold" style="font-size: 1.2rem;"><i class="bi bi-person-plus-fill me-2 text-primary"></i>Nuevo Usuario</h5>
+                        <h5 class="modal-title fw-bold" style="font-size: 1.2rem;">Nuevo Usuario</h5>
                         <p class="text-muted small mb-0">Complete los datos del nuevo usuario del portal</p>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -467,9 +631,22 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small">Rol *</label>
                             <select name="role" class="form-select" style="border-radius: 10px;">
-                                <option value="viewer">👁️ Viewer</option>
-                                <option value="investigador">🔍 Delegado</option>
-                                <option value="admin">🛡️ Admin</option>
+                                <?php if ($isSuperAdmin): ?>
+                                <option value="superadmin">Superadmin</option>
+                                <?php endif; ?>
+                                <option value="viewer">Viewer</option>
+                                <option value="investigador">Delegado</option>
+                                <option value="auditor">Auditor</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="create_area_wrapper">
+                            <label class="form-label fw-semibold small">Área (opcional)</label>
+                            <select name="investigator_area" id="create_investigator_area" class="form-select" style="border-radius: 10px;">
+                                <option value="">Seleccionar área</option>
+                                <?php foreach (INVESTIGATION_AREAS as $areaKey => $areaLabel): ?>
+                                <option value="<?= htmlspecialchars($areaKey) ?>"><?= htmlspecialchars($areaLabel) ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -484,9 +661,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                 </div>
                 <div class="modal-footer border-0 pt-0" style="padding: 0 28px 24px; gap: 10px;">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px; font-weight: 600;">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" style="border-radius: 10px; font-weight: 600;">
-                        <i class="bi bi-check-lg me-1"></i>Crear Usuario
-                    </button>
+                    <button type="submit" class="btn btn-primary" style="border-radius: 10px; font-weight: 600;">Crear Usuario</button>
                 </div>
             </form>
         </div>
@@ -503,7 +678,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                 <input type="hidden" name="user_id" id="edit_user_id">
                 <div class="modal-header border-0 pb-0" style="padding: 28px 28px 0;">
                     <div>
-                        <h5 class="modal-title fw-bold" style="font-size: 1.2rem;"><i class="bi bi-pencil-square me-2 text-primary"></i>Editar Usuario</h5>
+                        <h5 class="modal-title fw-bold" style="font-size: 1.2rem;">Editar Usuario</h5>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -525,9 +700,22 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <div class="col-md-4">
                             <label class="form-label fw-semibold small">Rol *</label>
                             <select name="role" id="edit_role" class="form-select" style="border-radius: 10px;">
-                                <option value="viewer">👁️ Viewer</option>
-                                <option value="investigador">🔍 Delegado</option>
-                                <option value="admin">🛡️ Admin</option>
+                                <?php if ($isSuperAdmin): ?>
+                                <option value="superadmin">Superadmin</option>
+                                <?php endif; ?>
+                                <option value="viewer">Viewer</option>
+                                <option value="investigador">Delegado</option>
+                                <option value="auditor">Auditor</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4" id="edit_area_wrapper">
+                            <label class="form-label fw-semibold small">Área (opcional)</label>
+                            <select name="investigator_area" id="edit_investigator_area" class="form-select" style="border-radius: 10px;">
+                                <option value="">Seleccionar área</option>
+                                <?php foreach (INVESTIGATION_AREAS as $areaKey => $areaLabel): ?>
+                                <option value="<?= htmlspecialchars($areaKey) ?>"><?= htmlspecialchars($areaLabel) ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -542,9 +730,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                 </div>
                 <div class="modal-footer border-0 pt-0" style="padding: 0 28px 24px; gap: 10px;">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px; font-weight: 600;">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" style="border-radius: 10px; font-weight: 600;">
-                        <i class="bi bi-check-lg me-1"></i>Guardar Cambios
-                    </button>
+                    <button type="submit" class="btn btn-primary" style="border-radius: 10px; font-weight: 600;">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -560,21 +746,15 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                 <input type="hidden" name="action" value="delete_user">
                 <input type="hidden" name="user_id" id="delete_user_id">
                 <div class="modal-body text-center" style="padding: 32px;">
-                    <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(220,38,38,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-                        <i class="bi bi-trash3-fill text-danger" style="font-size: 1.5rem;"></i>
-                    </div>
                     <h5 class="fw-bold mb-2">Eliminar Usuario</h5>
                     <p class="text-muted small mb-1">¿Estás seguro de que deseas eliminar a:</p>
                     <p class="fw-bold text-danger mb-3" id="delete_username_display" style="font-size: 1.1rem;"></p>
                     <div class="alert py-2 mb-3" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; font-size: 0.8rem; color: #92400e;">
-                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
                         Acción <strong>irreversible</strong>. Las denuncias se desvincularán.
                     </div>
                     <div class="d-flex gap-2 justify-content-center">
                         <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px; font-weight: 600;">Cancelar</button>
-                        <button type="submit" class="btn btn-danger" style="border-radius: 10px; font-weight: 600;">
-                            <i class="bi bi-trash3 me-1"></i>Eliminar
-                        </button>
+                        <button type="submit" class="btn btn-danger" style="border-radius: 10px; font-weight: 600;">Eliminar</button>
                     </div>
                 </div>
             </form>
@@ -614,6 +794,7 @@ function editUser(userData) {
     document.getElementById('edit_username').value = userData.username;
     document.getElementById('edit_email').value = userData.email;
     document.getElementById('edit_role').value = userData.role;
+    document.getElementById('edit_investigator_area').value = userData.investigator_area || '';
     document.getElementById('edit_department').value = userData.department || '';
     document.getElementById('edit_position').value = userData.position || '';
     new bootstrap.Modal(document.getElementById('editUserModal')).show();
@@ -624,7 +805,20 @@ function resetPassword(userId, username) {
     if (newPass && newPass.length >= <?= PASSWORD_MIN_LENGTH ?>) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.innerHTML = `<?= csrfInput() ?><input type="hidden" name="action" value="reset_password"><input type="hidden" name="user_id" value="${userId}"><input type="hidden" name="new_password" value="${newPass}">`;
+        form.innerHTML = `<?= csrfInput() ?><input type="hidden" name="action" value="reset_password">`;
+
+        const userIdInput = document.createElement('input');
+        userIdInput.type = 'hidden';
+        userIdInput.name = 'user_id';
+        userIdInput.value = String(userId);
+        form.appendChild(userIdInput);
+
+        const passwordInput = document.createElement('input');
+        passwordInput.type = 'hidden';
+        passwordInput.name = 'new_password';
+        passwordInput.value = newPass;
+        form.appendChild(passwordInput);
+
         document.body.appendChild(form);
         form.submit();
     } else if (newPass) {
@@ -637,6 +831,7 @@ function deleteUser(userId, username) {
     document.getElementById('delete_username_display').textContent = username;
     new bootstrap.Modal(document.getElementById('deleteUserModal')).show();
 }
+
 </script>
 
 <?php require_once __DIR__ . '/../includes/pie_pagina.php'; ?>

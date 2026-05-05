@@ -1,14 +1,16 @@
 <?php
 /**
- * Portal de Denuncias Empresa Portuaria Coquimbo - Detalle de Denuncia (Desencriptado)
- * Solo accesible por investigadores
+ * Portal de Denuncias Empresa Portuaria Coquimbo - Detalle de Denuncia
+ * Accesible por superadmin, investigador (editable) y viewer (solo lectura)
  */
 $pageTitle = 'Detalle de Denuncia';
 require_once __DIR__ . '/../includes/bootstrap.php';
 requireComplaintAccess();
 
 $user = getCurrentUser();
-$isAdmin = hasRole([ROLE_ADMIN]);
+$canModify = canModifyComplaints($user);   // superadmin + investigador
+$canDelete = canDeleteComplaints($user);   // solo superadmin
+$canDecryptData = canDecrypt($user);       // superadmin + investigador
 
 $id = (int)($_GET['id'] ?? 0);
 if (!$id) {
@@ -20,12 +22,18 @@ if (!$complaint) {
     redirect('/denuncias_admin', 'Denuncia no encontrada.', 'danger');
 }
 
-// Protección de conflicto de interés: investigadores no pueden ver denuncias donde son el acusado
+// Protección de conflicto de interés: no pueden ver denuncias donde son el acusado
 if (isComplaintConflict($id, $user)) {
     redirect('/denuncias_admin', 'No tienes acceso a esta denuncia (conflicto de interés).', 'danger');
 }
 
-logActivity($_SESSION['user_id'], 'ver_denuncia', 'complaint', $id, 'Acceso a denuncia desencriptada');
+$logMsg = $canDecryptData ? 'Acceso a denuncia (datos sensibles)' : 'Acceso a denuncia (modo lectura)';
+logActivity($_SESSION['user_id'], 'ver_denuncia', 'complaint', $id, $logMsg);
+
+// Acciones POST: solo para roles con permisos de modificación
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$canModify) {
+    redirect('/detalle_denuncia?id=' . $id, 'No tienes permisos para modificar esta denuncia.', 'danger');
+}
 
 // Procesar acciones POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
@@ -262,9 +270,11 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold mb-0"><i class="bi bi-journal-text me-2"></i>Notas de Investigación</h6>
+                    <?php if ($canModify): ?>
                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#addNoteForm">
                         <i class="bi bi-plus me-1"></i>Agregar Nota
                     </button>
+                    <?php endif; ?>
                 </div>
                 <div class="card-body">
                     <!-- Formulario agregar nota -->
@@ -372,7 +382,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             </div>
 
             <!-- Acciones -->
-            <?php if ($isAdmin): ?>
+            <?php if ($canModify): ?>
             <!-- Cambiar Estado -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-0 py-3">

@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas - Navbar Única
+ * Canal de Denuncias - Navbar Única
  */
 if (!defined('GENERALES_APP')) die('Acceso no permitido');
 
@@ -57,7 +57,7 @@ $_karinUrl   = '../karin/';
         </a>
         <span class="sep-dot">|</span>
         <a class="portal-pill" href="<?= htmlspecialchars($_karinUrl) ?>"><i class="bi bi-shield-check"></i>Ley Karin</a>
-        <span class="portal-pill active"><i class="bi bi-globe2"></i>Ciudadano</span>
+        <span class="portal-pill active"><i class="bi bi-globe2"></i>Denuncias</span>
         <span class="sep-dot">|</span>
         <a class="nav-link-n <?= str_starts_with($_navPage, '/nueva_denuncia') ? 'active' : '' ?>" href="/nueva_denuncia">
             <i class="bi bi-pencil-square"></i>Realizar Denuncia

@@ -7,13 +7,15 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 requireComplaintAccess();
 
 $user           = getCurrentUser();
-$isAdmin        = hasRole([ROLE_ADMIN]);
-$isInvestigador = hasRole([ROLE_INVESTIGADOR]);
-
+$hasComplaintAccess = canAccessComplaints($user);
+$hasAreaSupport = hasAreaAssignmentSupport();
 $cf = getConflictFilter($user, 'c');
-$conflictWhere    = $cf['where_sql'];
 $conflictWhereAnd = $cf['and_sql'];
 $conflictParams   = $cf['params'];
+$whereDashboard   = 'WHERE c.deleted_at IS NULL';
+if ($conflictWhereAnd) {
+    $whereDashboard .= ' ' . $conflictWhereAnd;
+}
 
 $stmtStats = $pdo->prepare("
     SELECT COUNT(*) as total,
@@ -24,31 +26,35 @@ $stmtStats = $pdo->prepare("
         SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) as semana,
         SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) as mes
     FROM complaints c
-    $conflictWhere
+    $whereDashboard
 ");
 $stmtStats->execute($conflictParams);
 $stats = $stmtStats->fetch();
 
-$stmtType = $pdo->prepare("SELECT complaint_type, COUNT(*) as total FROM complaints c $conflictWhere GROUP BY complaint_type ORDER BY total DESC");
+$stmtType = $pdo->prepare("SELECT complaint_type, COUNT(*) as total FROM complaints c $whereDashboard GROUP BY complaint_type ORDER BY total DESC");
 $stmtType->execute($conflictParams);
 $byType = $stmtType->fetchAll();
 
 $perPage = 10;
 $page    = max(1, (int)($_GET['page'] ?? 1));
-$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints c $conflictWhere");
+$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints c $whereDashboard");
 $stmtTotal->execute($conflictParams);
 $totalComplaints = (int)$stmtTotal->fetchColumn();
 $totalPages = max(1, (int)ceil($totalComplaints / $perPage));
 $page   = min($page, $totalPages);
 $offset = ($page - 1) * $perPage;
 
-$stmtRecent = $pdo->prepare("SELECT id, complaint_number, complaint_type, status, is_anonymous, created_at FROM complaints c $conflictWhere ORDER BY created_at DESC LIMIT $perPage OFFSET $offset");
+$assignedAreaSelect = $hasAreaSupport ? 'assigned_area' : 'NULL AS assigned_area';
+$stmtRecent = $pdo->prepare("SELECT id, complaint_number, complaint_type, status, $assignedAreaSelect, is_anonymous, created_at FROM complaints c $whereDashboard ORDER BY created_at DESC LIMIT $perPage OFFSET $offset");
 $stmtRecent->execute($conflictParams);
 $recent = $stmtRecent->fetchAll();
 
 $stmtMonthly = $pdo->prepare("
-    SELECT DATE_FORMAT(created_at,'%Y-%m') as month, COUNT(*) as total
-    FROM complaints c WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) $conflictWhereAnd
+    SELECT DATE_FORMAT(c.created_at,'%Y-%m') as month, COUNT(*) as total
+    FROM complaints c
+    WHERE c.deleted_at IS NULL
+      AND c.created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+      $conflictWhereAnd
     GROUP BY month ORDER BY month ASC
 ");
 $stmtMonthly->execute($conflictParams);
@@ -58,7 +64,85 @@ require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';
 ?>
 
-<div class="main-content">
+<style>
+.dashboard-page {
+    color: #1e293b;
+    opacity: 1 !important;
+    filter: none !important;
+}
+.dashboard-page .card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #1e293b !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06) !important;
+}
+.dashboard-page .card-header {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+.dashboard-page .bg-dark-blue {
+    background: linear-gradient(135deg, #0f5f8f 0%, #1a6591 100%) !important;
+    color: #ffffff !important;
+}
+.dashboard-page .bg-dark-blue .text-muted,
+.dashboard-page .bg-dark-blue .small,
+.dashboard-page .bg-dark-blue .fw-normal {
+    color: rgba(255,255,255,0.8) !important;
+}
+.dashboard-page .text-dark {
+    color: #0f172a !important;
+}
+.dashboard-page .text-muted {
+    color: #64748b !important;
+}
+.dashboard-page .table,
+.dashboard-page .table td,
+.dashboard-page .table th {
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+}
+.dashboard-page .table-light,
+.dashboard-page .table-light th {
+    background: #f8fafc !important;
+    color: #64748b !important;
+}
+.dashboard-page .table-hover tbody tr:hover {
+    background: #f8fafc !important;
+}
+.dashboard-page .btn-outline-secondary {
+    color: #475569 !important;
+    border-color: #cbd5e1 !important;
+    background: #ffffff !important;
+}
+.dashboard-page .bg-dark-blue .btn-outline-secondary {
+    color: #ffffff !important;
+    background: transparent !important;
+    border-color: rgba(255,255,255,0.4) !important;
+}
+.dashboard-page .bg-dark-blue .btn-outline-secondary:hover {
+    background: rgba(255,255,255,0.14) !important;
+    color: #ffffff !important;
+}
+.dashboard-page .pagination .page-link {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #1a6591 !important;
+}
+.dashboard-page .pagination .page-item.active .page-link {
+    background: #1a6591 !important;
+    border-color: #1a6591 !important;
+    color: #ffffff !important;
+}
+.dashboard-page code {
+    color: #1d4ed8 !important;
+    background: #eff6ff;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.35rem;
+}
+</style>
+
+<div class="main-content dashboard-page">
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold text-dark mb-1"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h4>
@@ -108,21 +192,22 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
-                        <tr><th>Número</th><th>Tipo</th><th>Estado</th><th>Modalidad</th><th>Hace</th><th></th></tr>
+                        <tr><th>Número</th><th>Tipo</th><th>Estado</th><th>Área</th><th>Modalidad</th><th>Hace</th><th></th></tr>
                     </thead>
                     <tbody>
                         <?php if (empty($recent)): ?>
-                        <tr><td colspan="6" class="text-center text-muted py-4"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay denuncias registradas</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted py-4"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay denuncias registradas</td></tr>
                         <?php else: ?>
                         <?php foreach ($recent as $row): ?>
                         <tr>
                             <td><code class="fw-bold"><?= htmlspecialchars($row['complaint_number']) ?></code></td>
                             <td><?= getTypeBadge($row['complaint_type']) ?></td>
                             <td><?= getStatusBadge($row['status']) ?></td>
+                            <td class="text-muted small"><?= htmlspecialchars(getInvestigationAreaLabel($row['assigned_area'] ?? null)) ?></td>
                             <td><span class="badge bg-<?= $row['is_anonymous'] ? 'secondary' : 'info' ?>"><?= $row['is_anonymous'] ? 'Anónima' : 'Identificada' ?></span></td>
                             <td class="text-muted small"><?= timeAgo($row['created_at']) ?></td>
                             <td>
-                                <?php if ($isInvestigador): ?>
+                                <?php if ($hasComplaintAccess): ?>
                                 <a href="/detalle_denuncia?id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
                                 <?php endif; ?>
                             </td>

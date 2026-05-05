@@ -21,6 +21,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Habilitar mod_rewrite de Apache
 RUN a2enmod rewrite
 
@@ -50,6 +53,9 @@ RUN mkdir -p /var/www/html/logs \
 
 # Copiar todo el proyecto con permisos optimizados
 COPY --chown=www-data:www-data . /var/www/html/
+
+# Instalar dependencias PHP via Composer (PHPMailer y otras)
+RUN cd /var/www/html && composer install --no-dev --no-interaction --optimize-autoloader --no-progress 2>/dev/null || true
 
 # Copiar entrypoint
 COPY --chown=root:root docker/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh

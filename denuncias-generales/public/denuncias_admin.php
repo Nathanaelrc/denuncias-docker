@@ -7,18 +7,21 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 requireComplaintAccess();
 
 $user = getCurrentUser();
+$hasAreaSupport = hasAreaAssignmentSupport();
 
 $filterStatus = sanitize($_GET['status'] ?? '');
 $filterType   = sanitize($_GET['type'] ?? '');
+$filterArea   = $hasAreaSupport ? normalizeInvestigationArea($_GET['area'] ?? null) : null;
 $search       = sanitize($_GET['q'] ?? '');
 $page         = max(1, (int)($_GET['page'] ?? 1));
 $perPage      = 15;
 $offset       = ($page - 1) * $perPage;
 
-$where  = [];
+$where  = ['c.deleted_at IS NULL'];
 $params = [];
 if ($filterStatus && array_key_exists($filterStatus, COMPLAINT_STATUSES)) { $where[] = "c.status = ?"; $params[] = $filterStatus; }
 if ($filterType   && array_key_exists($filterType, COMPLAINT_TYPES))      { $where[] = "c.complaint_type = ?"; $params[] = $filterType; }
+if ($hasAreaSupport && $filterArea)                                        { $where[] = "c.assigned_area = ?"; $params[] = $filterArea; }
 if ($search)                                                               { $where[] = "c.complaint_number LIKE ?"; $params[] = "%$search%"; }
 
 // Filtro de conflicto de interés: investigadores no ven denuncias donde son el acusado
@@ -35,7 +38,7 @@ $countStmt->execute($params);
 $totalRows  = $countStmt->fetchColumn();
 $totalPages = max(1, ceil($totalRows / $perPage));
 
-$stmt = $pdo->prepare("SELECT c.*, u.name as investigator_name FROM complaints c LEFT JOIN users u ON c.investigator_id = u.id $whereClause ORDER BY c.created_at DESC LIMIT $perPage OFFSET $offset");
+$stmt = $pdo->prepare("SELECT c.id, c.complaint_number, c.complaint_type, c.status, c.assigned_area, c.priority, c.is_anonymous, c.created_at, u.name as investigator_name FROM complaints c LEFT JOIN users u ON c.investigator_id = u.id $whereClause ORDER BY c.created_at DESC LIMIT $perPage OFFSET $offset");
 $stmt->execute($params);
 $complaints = $stmt->fetchAll();
 
@@ -77,7 +80,18 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-3 d-flex gap-2">
+                <?php if ($hasAreaSupport): ?>
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">Área</label>
+                    <select name="area" class="form-select">
+                        <option value="">Todas</option>
+                        <?php foreach (INVESTIGATION_AREAS as $areaKey => $areaLabel): ?>
+                        <option value="<?= htmlspecialchars($areaKey) ?>" <?= $filterArea === $areaKey ? 'selected' : '' ?>><?= htmlspecialchars($areaLabel) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php endif; ?>
+                <div class="col-md-2 d-flex gap-2">
                     <button type="submit" class="btn btn-primary flex-fill"><i class="bi bi-search me-1"></i>Filtrar</button>
                     <a href="/denuncias_admin" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
                 </div>
@@ -91,17 +105,20 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
-                        <tr><th>Número</th><th>Tipo</th><th>Estado</th><th>Prioridad</th><th>Modalidad</th><th>Delegado</th><th>Fecha</th><th></th></tr>
+                        <tr><th>Número</th><th>Tipo</th><th>Estado</th><?php if ($hasAreaSupport): ?><th>Área</th><?php endif; ?><th>Prioridad</th><th>Modalidad</th><th>Delegado</th><th>Fecha</th><th></th></tr>
                     </thead>
                     <tbody>
                         <?php if (empty($complaints)): ?>
-                        <tr><td colspan="8" class="text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay denuncias</td></tr>
+                        <tr><td colspan="<?= $hasAreaSupport ? '9' : '8' ?>" class="text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay denuncias</td></tr>
                         <?php else: ?>
                         <?php foreach ($complaints as $c): ?>
                         <tr>
                             <td><code class="fw-bold"><?= htmlspecialchars($c['complaint_number']) ?></code></td>
                             <td><?= getTypeBadge($c['complaint_type']) ?></td>
                             <td><?= getStatusBadge($c['status']) ?></td>
+                            <?php if ($hasAreaSupport): ?>
+                            <td class="text-muted small"><?= htmlspecialchars(getInvestigationAreaLabel($c['assigned_area'] ?? null)) ?></td>
+                            <?php endif; ?>
                             <td><span class="badge bg-<?= $c['priority'] === 'urgente' ? 'danger' : ($c['priority'] === 'alta' ? 'warning text-dark' : 'secondary') ?>"><?= ucfirst($c['priority']) ?></span></td>
                             <td><span class="badge bg-<?= $c['is_anonymous'] ? 'secondary' : 'info' ?>"><?= $c['is_anonymous'] ? 'Anónima' : 'Identificada' ?></span></td>
                             <td class="text-muted small"><?= htmlspecialchars($c['investigator_name'] ?? 'Sin asignar') ?></td>

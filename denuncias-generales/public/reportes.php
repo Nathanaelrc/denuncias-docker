@@ -85,7 +85,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold text-dark mb-1"><i class="bi bi-graph-up me-2"></i>Reportes</h4>
-            <p class="text-muted mb-0">Estadísticas del Portal Ciudadano de Denuncias</p>
+            <p class="text-muted mb-0">Estadísticas del Canal de Denuncias</p>
         </div>
         <div class="d-flex gap-2">
             <button onclick="generarPDF()" class="btn btn-outline-danger btn-sm">

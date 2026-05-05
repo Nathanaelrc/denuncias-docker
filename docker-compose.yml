@@ -38,13 +38,31 @@ services:
       - TZ=America/Santiago
       # Clave de encriptación (CAMBIAR EN PRODUCCIÓN)
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:-cambiar-esta-clave-en-produccion-32chars!}
-      # SMTP
+      # ── SMTP ────────────────────────────────────────────────────
+      # Si solo configuras SMTP_USER, el host/puerto/cifrado se
+      # detectan automáticamente según el dominio del correo:
+      #
+      #  Gmail           → SMTP_HOST=smtp.gmail.com  PORT=587 tls
+      #    SMTP_PASS = Contraseña de aplicación (myaccount.google.com/apppasswords)
+      #
+      #  Microsoft 365   → SMTP_HOST=smtp.office365.com  PORT=587 tls
+      #  Outlook/Hotmail → SMTP_HOST=smtp-mail.outlook.com  PORT=587 tls
+      #    SMTP_PASS = Contraseña de aplicación (account.microsoft.com/security)
+      #
+      #  Yahoo Mail      → SMTP_HOST=smtp.mail.yahoo.com  PORT=587 tls
+      #  Zoho Mail       → SMTP_HOST=smtp.zoho.com  PORT=587 tls
+      #  iCloud Mail     → SMTP_HOST=smtp.mail.me.com  PORT=587 tls
+      #
+      #  Servidor propio → definir SMTP_HOST, SMTP_PORT, SMTP_ENCRYPTION manualmente
+      #    Ejemplo: SMTP_HOST=mail.midominio.cl  SMTP_PORT=587  SMTP_ENCRYPTION=tls
+      #    O bien:  SMTP_HOST=mail.midominio.cl  SMTP_PORT=465  SMTP_ENCRYPTION=ssl
+      # ────────────────────────────────────────────────────────────
       - SMTP_ENABLED=${SMTP_ENABLED:-true}
-      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
-      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
       - SMTP_USER=${SMTP_USER:-}
       - SMTP_PASS=${SMTP_PASS:-}
-      - SMTP_ENCRYPTION=${SMTP_ENCRYPTION:-tls}
+      - SMTP_ENCRYPTION=${SMTP_ENCRYPTION:-}
       - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL:-denuncias@epco.cl}
       - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Canal de Denuncias - Empresa Portuaria Coquimbo}
       - SMTP_ADMIN_EMAIL=${SMTP_ADMIN_EMAIL:-}
@@ -119,11 +137,11 @@ services:
       - TZ=America/Santiago
       - ENCRYPTION_KEY=${GENERALES_ENCRYPTION_KEY:-cambiar-clave-generales-32chars!}
       - SMTP_ENABLED=${SMTP_ENABLED:-true}
-      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
-      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
       - SMTP_USER=${SMTP_USER:-}
       - SMTP_PASS=${SMTP_PASS:-}
-      - SMTP_ENCRYPTION=${SMTP_ENCRYPTION:-tls}
+      - SMTP_ENCRYPTION=${SMTP_ENCRYPTION:-}
       - SMTP_FROM_EMAIL=${SMTP_FROM_EMAIL:-denuncias@epco.cl}
       - SMTP_FROM_NAME=${SMTP_FROM_NAME:-Portal Ciudadano - Empresa Portuaria Coquimbo}
       - SMTP_ADMIN_EMAIL=${SMTP_ADMIN_EMAIL:-}

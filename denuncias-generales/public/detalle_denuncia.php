@@ -1,14 +1,18 @@
 <?php
 /**
- * Portal Ciudadano de Denuncias - Detalle de Denuncia (Desencriptado)
- * Solo accesible por investigadores
+ * Portal Ciudadano de Denuncias - Detalle de Denuncia
+ * Accesible por superadmin, investigador (editable) y viewer (solo lectura)
  */
 $pageTitle = 'Detalle de Denuncia';
 require_once __DIR__ . '/../includes/bootstrap.php';
 requireComplaintAccess();
 
 $user = getCurrentUser();
-$isAdmin = hasRole([ROLE_ADMIN]);
+$isSuperAdmin = ($user['role'] ?? null) === ROLE_SUPERADMIN;
+$hasAreaSupport = hasAreaAssignmentSupport();
+$canModify = canModifyComplaints($user);   // superadmin + investigador
+$canDelete = canDeleteComplaints($user);   // solo superadmin
+$canDecryptData = canDecrypt($user);       // superadmin + investigador
 
 $id = (int)($_GET['id'] ?? 0);
 if (!$id) {
@@ -20,12 +24,22 @@ if (!$complaint) {
     redirect('/denuncias_admin', 'Denuncia no encontrada.', 'danger');
 }
 
+if ($hasAreaSupport && !isComplaintInUserArea($complaint, $user)) {
+    redirect('/denuncias_admin', 'No tienes acceso a esta denuncia (área no asignada para tu perfil).', 'danger');
+}
+
 // Protección de conflicto de interés: ningún usuario revisor puede ver denuncias en su contra.
 if (isComplaintConflict($id, $user)) {
     redirect('/denuncias_admin', 'No tienes acceso a esta denuncia (conflicto de interés).', 'danger');
 }
 
-logActivity($_SESSION['user_id'], 'ver_denuncia', 'complaint', $id, 'Acceso a denuncia desencriptada');
+$logMsg = $canDecryptData ? 'Acceso a denuncia (datos sensibles)' : 'Acceso a denuncia (modo lectura)';
+logActivity($_SESSION['user_id'], 'ver_denuncia', 'complaint', $id, $logMsg);
+
+// Acciones POST: solo para roles con permisos de modificación
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$canModify) {
+    redirect('/detalle_denuncia?id=' . $id, 'No tienes permisos para modificar esta denuncia.', 'danger');
+}
 
 // Procesar acciones POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
@@ -69,6 +83,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
     }
 
     if ($action === 'assign_investigator') {
+        if (!$isSuperAdmin) {
+            redirect("/detalle_denuncia?id=$id", 'Solo el superadmin puede reasignar delegados.', 'danger');
+        }
         $investigatorId = (int)($_POST['investigator_id'] ?? 0);
         $pdo->prepare("UPDATE complaints SET investigator_id = ?, assigned_at = NOW(), status = 'en_investigacion' WHERE id = ?")
             ->execute([$investigatorId ?: null, $id]);
@@ -77,6 +94,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
         $complaintNum = $complaint['complaint_number'] ?? "#$id";
         sendNotification('asignacion', "Caso asignado: $complaintNum", 'Un investigador ha sido asignado a este caso', 'complaint', $id);
         redirect("/detalle_denuncia?id=$id", 'Investigador asignado.');
+    }
+
+    if ($action === 'assign_area') {
+        if (!$hasAreaSupport) {
+            redirect("/detalle_denuncia?id=$id", 'La asignación por área aún no está habilitada en base de datos.', 'danger');
+        }
+
+        if (!$isSuperAdmin) {
+            redirect("/detalle_denuncia?id=$id", 'Solo el superadmin puede asignar áreas de investigación.', 'danger');
+        }
+
+        $newArea = normalizeInvestigationArea($_POST['assigned_area'] ?? null);
+        if (!$newArea) {
+            redirect("/detalle_denuncia?id=$id", 'Debes seleccionar un área válida.', 'danger');
+        }
+
+        $pdo->prepare("UPDATE complaints SET assigned_area = ?, status = 'en_investigacion', assigned_at = NOW() WHERE id = ?")
+            ->execute([$newArea, $id]);
+
+        $areaLabel = INVESTIGATION_AREAS[$newArea] ?? $newArea;
+        addComplaintLog($id, 'asignacion_area', "Área asignada al caso: {$areaLabel}", $_SESSION['user_id']);
+        logActivity($_SESSION['user_id'], 'asignar_area', 'complaint', $id, "Área: {$newArea}");
+
+        $complaintNum = $complaint['complaint_number'] ?? "#$id";
+        sendNotification('asignacion', "Caso asignado por área: $complaintNum", "Área designada: {$areaLabel}", 'complaint', $id);
+        redirect("/detalle_denuncia?id=$id", 'Área de investigación asignada correctamente.');
     }
 
     if ($action === 'change_priority') {
@@ -123,7 +166,11 @@ $notes = $notesStmt->fetchAll();
 $enc = getEncryptionService();
 
 // Investigadores disponibles
-$investigators = $pdo->query("SELECT id, name, position FROM users WHERE role = 'investigador' AND is_active = 1")->fetchAll();
+$investigators = $pdo->query(
+    $hasAreaSupport
+        ? "SELECT id, name, position, investigator_area FROM users WHERE role = 'investigador' AND is_active = 1"
+        : "SELECT id, name, position, NULL AS investigator_area FROM users WHERE role = 'investigador' AND is_active = 1"
+)->fetchAll();
 
 require_once __DIR__ . '/../includes/encabezado.php';
 require_once __DIR__ . '/../includes/barra_lateral.php';
@@ -258,9 +305,11 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-dark-blue border-0 py-3 d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold mb-0"><i class="bi bi-journal-text me-2"></i>Notas de Investigación</h6>
+                    <?php if ($canModify): ?>
                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#addNoteForm">
                         <i class="bi bi-plus me-1"></i>Agregar Nota
                     </button>
+                    <?php endif; ?>
                 </div>
                 <div class="card-body">
                     <div class="collapse mb-4" id="addNoteForm">
@@ -353,6 +402,12 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                         <small class="text-muted d-block">Delegado Asignado</small>
                         <strong><?= htmlspecialchars($complaint['investigator_name'] ?? 'Sin asignar') ?></strong>
                     </div>
+                    <?php if ($hasAreaSupport): ?>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Área Asignada</small>
+                        <strong><?= htmlspecialchars(getInvestigationAreaLabel($complaint['assigned_area'] ?? null)) ?></strong>
+                    </div>
+                    <?php endif; ?>
                     <div class="mb-3">
                         <small class="text-muted d-block">Ingresada</small>
                         <strong><?= formatDateTime($complaint['created_at']) ?></strong>
@@ -366,7 +421,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                 </div>
             </div>
 
-            <?php if ($isAdmin): ?>
+            <?php if ($canModify): ?>
             <!-- Cambiar Estado -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-dark-blue border-0 py-3">
@@ -386,6 +441,29 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                 </div>
             </div>
 
+            <?php if ($isSuperAdmin && $hasAreaSupport): ?>
+            <!-- Asignar Área -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-dark-blue border-0 py-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-diagram-3 me-2"></i>Asignar Área</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <?= csrfInput() ?>
+                        <input type="hidden" name="action" value="assign_area">
+                        <select name="assigned_area" class="form-select mb-2" required>
+                            <option value="">Seleccionar área</option>
+                            <?php foreach (INVESTIGATION_AREAS as $areaKey => $areaLabel): ?>
+                            <option value="<?= htmlspecialchars($areaKey) ?>" <?= ($complaint['assigned_area'] ?? '') === $areaKey ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($areaLabel) ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check me-1"></i>Asignar Área</button>
+                    </form>
+                </div>
+            </div>
+
             <!-- Asignar Delegado -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-dark-blue border-0 py-3">
@@ -399,7 +477,9 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                             <option value="">Sin asignar</option>
                             <?php foreach ($investigators as $inv): ?>
                             <option value="<?= $inv['id'] ?>" <?= $complaint['investigator_id'] == $inv['id'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($inv['name']) ?> (<?= htmlspecialchars($inv['position'] ?? '') ?>)
+                                <?= htmlspecialchars($inv['name']) ?>
+                                <?php if (!empty($inv['position'])): ?> (<?= htmlspecialchars($inv['position']) ?>)<?php endif; ?>
+                                · <?= htmlspecialchars(getInvestigationAreaLabel($inv['investigator_area'] ?? null)) ?>
                             </option>
                             <?php endforeach; ?>
                         </select>
@@ -407,6 +487,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                     </form>
                 </div>
             </div>
+            <?php endif; ?>
 
             <!-- Cambiar Prioridad -->
             <div class="card border-0 shadow-sm mb-4">

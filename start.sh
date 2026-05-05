@@ -127,14 +127,19 @@ GENERALES_ENCRYPTION_KEY=${GENERALES_ENCRYPTION_KEY}
 
 # ─── SMTP (compartido entre portales) ─────────
 SMTP_ENABLED=false
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
+# Deja SMTP_HOST/PORT/ENCRYPTION vacíos para autodetección por dominio de SMTP_USER
+# (gmail.com, outlook/hotmail/live, yahoo, zoho, icloud)
+SMTP_HOST=
+SMTP_PORT=
 SMTP_USER=
 SMTP_PASS=
-SMTP_ENCRYPTION=tls
+SMTP_ENCRYPTION=
 SMTP_FROM_EMAIL=denuncias@epco.cl
 SMTP_FROM_NAME=Canal de Denuncias - Empresa Portuaria Coquimbo
 SMTP_ADMIN_EMAIL=
+
+# Worker de cola de correos (lote por ejecución)
+EMAIL_QUEUE_BATCH=25
 EOF
 
     echo ""

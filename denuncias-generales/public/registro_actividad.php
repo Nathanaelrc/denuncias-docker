@@ -4,7 +4,7 @@
  */
 $pageTitle = 'Registro de Actividad';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN]);
+requireAuditAccess();
 
 // Filtros
 $filterAction = sanitize($_GET['action'] ?? '');
@@ -340,7 +340,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             <div>
                 <div style="font-size: 1.1rem; font-weight: 700; color: #1a6591;">Empresa Portuaria Coquimbo</div>
                 <div style="font-size: 1.6rem; font-weight: 800; color: #1e293b; margin-top: 4px;">Informe de Auditoría</div>
-                <div style="font-size: 0.9rem; color: #64748b; margin-top: 2px;">Registro de Actividad &mdash; Portal Ciudadano</div>
+                <div style="font-size: 0.9rem; color: #64748b; margin-top: 2px;">Registro de Actividad &mdash; Canal de Denuncias</div>
             </div>
             <div style="text-align: right; font-size: 0.8rem; color: #64748b;">
                 <div>Generado: <?= date('d/m/Y H:i') ?></div>

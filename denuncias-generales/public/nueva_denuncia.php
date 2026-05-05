@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Nueva Denuncia
+ * Canal de Denuncias Empresa Portuaria Coquimbo - Nueva Denuncia
  */
 $pageTitle = 'Realizar Denuncia';
 require_once __DIR__ . '/../includes/bootstrap.php';
@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $identidadOption = $_POST['tipo_identidad'] ?? 'anonima';
     $isAnonymous = ($identidadOption === 'anonima') ? 1 : 0;
 
-    if (strlen($description) < 50) {
-        $errors[] = 'La descripción debe tener al menos 50 caracteres.';
+    if (strlen($description) < 10) {
+        $errors[] = 'La descripción debe tener al menos 10 caracteres.';
     }
     if (empty(trim($_POST['incident_date'] ?? ''))) {
         $errors[] = 'La fecha del incidente es obligatoria.';
@@ -328,11 +328,16 @@ require_once __DIR__ . '/../includes/encabezado.php';
 </section>
 <?php else: ?>
 <section class="gradient-bg py-5">
-    <div class="container">
+    <div class="container-fluid px-3 px-lg-4 px-xl-5">
         <div class="row justify-content-center">
-            <div class="col-lg-9">
+            <div class="col-xl-11 col-xxl-10">
+                <div class="mb-3 fade-in">
+                    <a href="/" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left me-2"></i>Volver a página de Canal de Denuncias Generales
+                    </a>
+                </div>
                 <div class="text-white text-center mb-4 fade-in">
-                    <h2 class="fw-bold"><i class="bi bi-pencil-square me-2"></i>Realizar Denuncia Ciudadana</h2>
+                    <h2 class="fw-bold"><i class="bi bi-pencil-square me-2"></i>Realizar Denuncia</h2>
                     <p class="opacity-75 text-justify">Completa el formulario. Tu información será tratada con total confidencialidad y encriptación.</p>
                 </div>
 
@@ -344,7 +349,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                 <?php endif; ?>
 
                 <div class="card-form p-4 p-md-5 fade-in">
-                    <form method="POST" action="/nueva_denuncia" id="formDenuncia" enctype="multipart/form-data">
+                    <form method="POST" action="/nueva_denuncia" id="formDenuncia" data-wizard="complaint_generales" enctype="multipart/form-data">
                         <?= csrfInput() ?>
 
                         <!-- Categorías informativas (no forman parte de la denuncia) -->
@@ -352,7 +357,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                             <p class="fw-semibold text-dark mb-2 text-justify" style="font-size:.93rem;">
                                 <i class="bi bi-info-circle text-primary me-1"></i>
                                 Categorías de referencia
-                                <span class="fw-normal text-muted" style="font-size:.82rem;"> — Haz clic en cualquiera para ver la ley aplicable</span>
+                                <span class="fw-normal text-muted" style="font-size:.82rem;"> — Haz clic en cualquiera para ver la norma aplicable</span>
                             </p>
                             <!-- Tarjetas informacionales expandibles (no seleccionables) -->
                             <div class="row g-2 mb-1" id="leyCardsGrid">
@@ -396,9 +401,9 @@ require_once __DIR__ . '/../includes/encabezado.php';
                         <!-- Descripción -->
                         <div class="mb-4">
                             <label for="description" class="form-label fw-semibold text-dark">Descripción de los hechos *</label>
-                            <textarea name="description" id="description" class="form-control" rows="6" required minlength="50"
+                            <textarea name="description" id="description" class="form-control" rows="6" required minlength="10"
                                 placeholder="Describe con detalle lo ocurrido: qué pasó, cuándo, dónde, cómo te afectó..."><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
-                            <div class="form-text text-justify">Mínimo 50 caracteres.</div>
+                            <div class="form-text text-justify">Mínimo 10 caracteres.</div>
                         </div>
 
                         <!-- Fecha y Lugar (obligatorios) -->
@@ -650,6 +655,5 @@ function handleDrop(e) {
     document.getElementById('dropZone').style.cssText = 'border:2px dashed #cbd5e1;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;background:#f8fafc;transition:all 0.2s;';
     updateFileList(e.dataTransfer.files);
 }
-</script>
-
+</script><script src="/js/wizard.js"></script>
 <?php require_once __DIR__ . '/../includes/pie_pagina.php'; ?>

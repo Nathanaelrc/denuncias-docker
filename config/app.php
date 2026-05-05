@@ -70,9 +70,11 @@ define('APP_NAME', 'Canal de Denuncias');
 // =============================================
 // ROLES
 // =============================================
-define('ROLE_ADMIN', 'admin');
-define('ROLE_INVESTIGADOR', 'investigador');
-define('ROLE_VIEWER', 'viewer');
+define('ROLE_SUPERADMIN',   'superadmin');   // Ve y modifica denuncias + gestiona usuarios (con filtro de conflicto)
+define('ROLE_ADMIN',        'admin');         // Solo gestión de usuarios, sin acceso a denuncias
+define('ROLE_INVESTIGADOR', 'investigador'); // Investiga y modifica denuncias asignadas
+define('ROLE_VIEWER',       'viewer');        // Solo lectura de denuncias (sin desencriptar datos sensibles)
+define('ROLE_AUDITOR',      'auditor');       // Solo logs y registro de actividad
 
 // =============================================
 // ESTADOS DE DENUNCIA
@@ -111,6 +113,7 @@ define('ALLOWED_FILE_TYPES', [
 // =============================================
 define('PASSWORD_MIN_LENGTH', 8);
 define('CSRF_TOKEN_NAME', 'csrf_token');
+define('CSRF_TOKEN_TTL', 3600); // Token CSRF expira en 1 hora
 define('MAX_LOGIN_ATTEMPTS', 5);
 define('LOGIN_LOCKOUT_TIME', 900);
 
@@ -119,8 +122,15 @@ define('LOGIN_LOCKOUT_TIME', 900);
 // =============================================
 
 function generateCsrfToken() {
-    if (empty($_SESSION[CSRF_TOKEN_NAME])) {
+    $now = time();
+    // Regenerar si no existe o expiró
+    if (
+        empty($_SESSION[CSRF_TOKEN_NAME]) ||
+        empty($_SESSION[CSRF_TOKEN_NAME . '_time']) ||
+        ($now - (int)$_SESSION[CSRF_TOKEN_NAME . '_time']) > CSRF_TOKEN_TTL
+    ) {
         $_SESSION[CSRF_TOKEN_NAME] = bin2hex(random_bytes(32));
+        $_SESSION[CSRF_TOKEN_NAME . '_time'] = $now;
     }
     return $_SESSION[CSRF_TOKEN_NAME];
 }
@@ -129,7 +139,19 @@ function verifyCsrfToken($token) {
     if (empty($_SESSION[CSRF_TOKEN_NAME]) || empty($token)) {
         return false;
     }
-    return hash_equals($_SESSION[CSRF_TOKEN_NAME], $token);
+    // Verificar expiración
+    $tokenTime = (int)($_SESSION[CSRF_TOKEN_NAME . '_time'] ?? 0);
+    if ((time() - $tokenTime) > CSRF_TOKEN_TTL) {
+        unset($_SESSION[CSRF_TOKEN_NAME], $_SESSION[CSRF_TOKEN_NAME . '_time']);
+        return false;
+    }
+    $valid = hash_equals($_SESSION[CSRF_TOKEN_NAME], $token);
+    if ($valid) {
+        // Rotar token tras uso exitoso para prevenir reutilización
+        $_SESSION[CSRF_TOKEN_NAME] = bin2hex(random_bytes(32));
+        $_SESSION[CSRF_TOKEN_NAME . '_time'] = time();
+    }
+    return $valid;
 }
 
 function csrfInput() {

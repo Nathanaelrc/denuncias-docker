@@ -4,30 +4,47 @@
  */
 $pageTitle = 'Mis Casos';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireComplaintAccess();
+requireComplaintModify(); // Solo superadmin e investigador gestionan investigaciones
 
 $user = getCurrentUser();
+$isInvestigador = ($user['role'] ?? null) === ROLE_INVESTIGADOR;
+$userArea = normalizeInvestigationArea($user['investigator_area'] ?? null);
+$hasAreaSupport = hasAreaAssignmentSupport();
 
 $perPage = 12;
 $page    = max(1, (int)($_GET['page'] ?? 1));
-$offset  = ($page - 1) * $perPage;
 
 // Filtro de conflicto de interés: ocultar denuncias donde el investigador es el acusado
 $cf = getConflictFilter($user, 'c');
 $conflictFilter = $cf['and_sql'];
 $conflictParam  = $cf['params'];
 
-$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints c WHERE c.investigator_id = ? $conflictFilter");
-$stmtTotal->execute(array_merge([$user['id']], $conflictParam));
+$whereByScope = 'WHERE c.deleted_at IS NULL';
+$scopeParams = [];
+if ($isInvestigador && $hasAreaSupport) {
+    if (!$userArea) {
+        $whereByScope .= ' AND 1=0';
+    } else {
+        $whereByScope .= ' AND c.assigned_area = ?';
+        $scopeParams[] = $userArea;
+    }
+} elseif ($isInvestigador) {
+    $whereByScope .= ' AND c.investigator_id = ?';
+    $scopeParams[] = (int)$user['id'];
+}
+
+$stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM complaints c $whereByScope $conflictFilter");
+$stmtTotal->execute(array_merge($scopeParams, $conflictParam));
 $totalComplaints = (int)$stmtTotal->fetchColumn();
 $totalPages      = max(1, (int)ceil($totalComplaints / $perPage));
 $page            = min($page, $totalPages);
+$offset          = ($page - 1) * $perPage;
 
 $stmt = $pdo->prepare("
-    SELECT c.*, u.name as investigator_name 
+    SELECT c.*, u.name as investigator_name
     FROM complaints c 
     LEFT JOIN users u ON c.investigator_id = u.id 
-    WHERE c.investigator_id = ? $conflictFilter
+    $whereByScope $conflictFilter
     ORDER BY 
         CASE c.status 
             WHEN 'recibida' THEN 1 
@@ -37,7 +54,7 @@ $stmt = $pdo->prepare("
         c.created_at DESC
     LIMIT $perPage OFFSET $offset
 ");
-$stmt->execute(array_merge([$user['id']], $conflictParam));
+$stmt->execute(array_merge($scopeParams, $conflictParam));
 $myComplaints = $stmt->fetchAll();
 
 require_once __DIR__ . '/../includes/encabezado.php';
@@ -47,7 +64,7 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
 <div class="main-content">
     <div class="mb-4">
         <h4 class="fw-bold text-dark mb-1"><i class="bi bi-person-check me-2"></i>Mis Casos Asignados</h4>
-        <p class="text-muted mb-0"><?= $totalComplaints ?> caso(s) asignado(s)</p>
+        <p class="text-muted mb-0"><?= $totalComplaints ?> caso(s) visible(s)<?= ($isInvestigador && $hasAreaSupport) ? ' para tu área: ' . htmlspecialchars(getInvestigationAreaLabel($userArea)) : '' ?></p>
     </div>
 
     <?php if ($totalComplaints === 0): ?>
@@ -71,6 +88,9 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
                     </div>
                     <div class="mb-2"><?= getTypeBadge($c['complaint_type']) ?></div>
                     <div class="d-flex gap-2 mb-3">
+                        <?php if ($hasAreaSupport): ?>
+                        <span class="badge bg-light text-dark border"><?= htmlspecialchars(getInvestigationAreaLabel($c['assigned_area'] ?? null)) ?></span>
+                        <?php endif; ?>
                         <span class="badge bg-<?= $c['priority'] === 'urgente' ? 'danger' : ($c['priority'] === 'alta' ? 'warning text-dark' : 'secondary') ?>">
                             <?= ucfirst($c['priority']) ?>
                         </span>

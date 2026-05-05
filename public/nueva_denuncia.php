@@ -12,6 +12,13 @@ $complaintNumber = '';
 
 // Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Honeypot anti-bot: si el campo oculto viene relleno, es un bot
+    if (!empty($_POST['website'])) {
+        // Bot detectado: respuesta silenciosa para no revelar detección
+        $success = true;
+        $complaintNumber = 'DN-' . date('Ymd') . '-' . str_pad(random_int(0, 99999), 5, '0', STR_PAD_LEFT);
+    } else {
+    // ── Validación real (solo para humanos) ──────────────────────────────────
     if (!verifyCsrfToken($_POST[CSRF_TOKEN_NAME] ?? '')) {
         $errors[] = 'Token de seguridad inválido. Recarga la página.';
     }
@@ -94,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = $result['message'] ?? 'Error al registrar la denuncia.';
         }
     }
+    } // fin else honeypot
 }
 
 require_once __DIR__ . '/../includes/encabezado.php';
@@ -235,6 +243,11 @@ require_once __DIR__ . '/../includes/encabezado.php';
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-9">
+                    <div class="mb-3 fade-in">
+                        <a href="/" class="btn btn-outline-light">
+                            <i class="bi bi-arrow-left me-2"></i>Volver a página de canal Ley Karin
+                        </a>
+                    </div>
                     <div class="text-white text-center mb-4 fade-in">
                         <h2 class="fw-bold"><i class="bi bi-pencil-square me-2"></i>Realizar Denuncia</h2>
                         <p class="opacity-75 text-justify">Todos los campos marcados con * son obligatorios. Tu información será tratada de forma confidencial.</p>
@@ -253,7 +266,7 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     <?php endif; ?>
 
                     <div class="card-epco p-4 p-md-5 fade-in">
-                        <form method="POST" action="/nueva_denuncia" id="formDenuncia" enctype="multipart/form-data">
+                        <form method="POST" action="/nueva_denuncia" id="formDenuncia" data-wizard="complaint_karin" enctype="multipart/form-data">
                             <?= csrfInput() ?>
 
                             <!-- Tipo de denuncia -->
@@ -489,5 +502,6 @@ function handleDrop(e) {
     updateFileList(e.dataTransfer.files);
 }
 </script>
+<script src="/js/wizard.js"></script>
 
 <?php require_once __DIR__ . '/../includes/pie_pagina.php'; ?>

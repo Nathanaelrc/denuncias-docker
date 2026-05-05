@@ -4,7 +4,7 @@
  */
 $pageTitle = 'Registro de Actividad';
 require_once __DIR__ . '/../includes/bootstrap.php';
-requireRole([ROLE_ADMIN]);
+requireAuditAccess();
 
 // Filtros
 $filterAction = sanitize($_GET['action'] ?? '');

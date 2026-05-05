@@ -1,0 +1,330 @@
+/* =============================================================
+   Portal Ciudadano de Denuncias — Empresa Portuaria Coquimbo
+   Tema oscuro azul marino (generales)
+   ============================================================= */
+
+:root {
+    --primary-color: #1a6591;
+    --secondary-color: #ffffff;
+    --accent-color: #2380b0;
+    --accent-light: #2d9ad0;
+}
+
+* { font-family: 'Onest', sans-serif; }
+body { background: var(--primary-color); color: var(--secondary-color); min-height: 100vh; }
+
+.bg-primary-dark { background-color: var(--primary-color) !important; }
+.bg-accent        { background-color: var(--accent-color) !important; }
+.text-primary-dark{ color: var(--primary-color) !important; }
+.bg-dark-blue     { background: rgba(255,255,255,0.06) !important; }
+.section-dark     { background: #145275; }
+
+.btn-epco { background-color: var(--primary-color); border-color: var(--primary-color); color: white; transition: all 0.3s ease; }
+.btn-epco:hover { background-color: var(--accent-light); border-color: var(--accent-light); color: white; transform: translateY(-2px); }
+
+.card-epco {
+    background: rgba(255,255,255,0.08); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2); transition: all 0.3s ease; color: #fff;
+}
+.card-epco:hover { transform: translateY(-2px); box-shadow: 0 14px 45px rgba(0,0,0,0.22); border-color: rgba(255,255,255,0.18); }
+.card-epco .form-label, .card-epco h2, .card-epco h3, .card-epco h4,
+.card-epco h5, .card-epco h6, .card-epco .fw-bold, .card-epco .fw-semibold,
+.card-epco .text-dark { color: #fff !important; }
+.card-epco .text-muted  { color: rgba(255,255,255,0.55) !important; }
+.card-epco .form-text   { color: rgba(255,255,255,0.45) !important; }
+.card-epco .form-control, .card-epco .form-select {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff;
+}
+.card-epco .form-control::placeholder { color: rgba(255,255,255,0.35); }
+.card-epco .form-control:focus, .card-epco .form-select:focus {
+    background: rgba(255,255,255,0.12); border-color: #2d9ad0; color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(45,154,208,0.25);
+}
+.card-epco .btn-outline-dark { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.2); }
+.card-epco .btn-outline-dark:hover,
+.card-epco .btn-check:checked + .btn-outline-dark { background: rgba(255,255,255,0.12); border-color: #2d9ad0; color: #fff; }
+.card-epco .alert-info    { background: rgba(45,154,208,0.15); border-color: rgba(45,154,208,0.3); color: rgba(255,255,255,0.85); }
+.card-epco .alert-warning { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); color: rgba(255,255,255,0.9); }
+.card-epco .alert-danger  { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: rgba(255,255,255,0.9); }
+.card-epco .bg-light      { background: rgba(255,255,255,0.06) !important; }
+.card-epco .form-check-input { background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+.card-epco .form-check-input:checked { background-color: #2380b0; border-color: #2380b0; }
+
+.navbar-epco { background: rgba(26,101,145,0.95) !important; backdrop-filter: blur(10px); }
+.navbar-epco .navbar-brand, .navbar-epco .navbar-brand span,
+.navbar-epco .nav-link, .navbar-epco .navbar-text { color: #ffffff !important; }
+.navbar-epco .nav-link:hover, .navbar-epco .nav-link:focus { color: rgba(255,255,255,0.85) !important; }
+.navbar-epco .nav-link.active { color: #ffffff !important; font-weight: 600; }
+
+.form-control, .form-select {
+    background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: #fff;
+}
+.form-control::placeholder { color: rgba(255,255,255,0.35); }
+.form-control:focus, .form-select:focus {
+    background: rgba(255,255,255,0.12); border-color: #2d9ad0; color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(45,154,208,0.25);
+}
+.form-control:disabled, .form-control[readonly] { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); }
+.input-group-text { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.55); }
+
+.gradient-bg { background: linear-gradient(135deg, #1a6591 0%, #2380b0 50%, #2d9ad0 100%); }
+
+.card { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: #fff; }
+.card .card-header { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.08); color: #fff; }
+.card .card-footer { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.08); }
+.card .card-body  { color: #fff; }
+.card .text-dark, .text-dark { color: #fff !important; }
+.text-muted { color: rgba(255,255,255,0.55) !important; }
+
+.table { color: #fff; --bs-table-bg: transparent; }
+.table th { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.08); }
+.table td { border-color: rgba(255,255,255,0.06); }
+.table-hover tbody tr:hover { background: rgba(255,255,255,0.04); }
+
+.border { border-color: rgba(255,255,255,0.1) !important; }
+.border-top, .border-bottom { border-color: rgba(255,255,255,0.08) !important; }
+.badge { color: #fff; }
+
+.modal-content { background: #1a6591; border: 1px solid rgba(255,255,255,0.12); color: #fff; }
+.modal-header  { border-color: rgba(255,255,255,0.1); }
+.modal-footer  { border-color: rgba(255,255,255,0.1); }
+.btn-close     { filter: invert(1); }
+
+.alert-success { background: rgba(45,154,208,0.15); border-color: rgba(45,154,208,0.3); color: rgba(255,255,255,0.9); }
+.alert-info    { background: rgba(45,154,208,0.15); border-color: rgba(45,154,208,0.3); color: rgba(255,255,255,0.85); }
+.alert-warning { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); color: rgba(255,255,255,0.9); }
+.alert-danger  { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: rgba(255,255,255,0.9); }
+
+.pagination .page-link { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: #93c5fd; }
+.pagination .page-item.active .page-link { background: #2380b0; border-color: #2380b0; color: #fff; }
+.pagination .page-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+a { color: #93c5fd; } a:hover { color: #b3d4f7; }
+.btn-outline-secondary { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.2); }
+.btn-outline-secondary:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+.fade-in { opacity: 0; transform: translateY(12px); }
+.slide-in-left  { opacity: 0; transform: translateX(-20px); }
+.slide-in-right { opacity: 0; transform: translateX(20px); }
+.scale-in       { opacity: 0; transform: scale(0.97); }
+
+@keyframes pageEntrance { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes navSlideDown  { 0% { opacity: 0; transform: translateY(-100%); } 100% { opacity: 1; transform: translateY(0); } }
+
+.page-entrance { animation: pageEntrance 0.8s ease-out forwards; }
+.nav-animate   { animation: navSlideDown 0.6s ease-out forwards; }
+
+.legal-badge {
+    background: linear-gradient(135deg, #1a6591, #2380b0); color: white;
+    padding: 3px 10px; border-radius: 6px; font-size: 0.75rem;
+    display: inline-flex; align-items: center; gap: 4px; font-weight: 600;
+}
+.stagger-1 { animation-delay: 0.1s; } .stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; } .stagger-4 { animation-delay: 0.4s; }
+.text-justify { text-align: justify; text-justify: inter-word; hyphens: auto; }
+
+.btn-identidad {
+    border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.75); transition: all 0.3s ease; border-radius: 12px;
+}
+.btn-identidad:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.12); color: #fff; }
+.btn-check:checked + .btn-identidad {
+    border-color: #2d9ad0; background: rgba(45,154,208,0.2); color: #fff;
+    box-shadow: 0 4px 15px rgba(45,154,208,0.3);
+}
+
+/* Topbar y Sidebar */
+.epco-topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 60px;
+    background: linear-gradient(135deg, #0c5a8a 0%, #094a72 100%);
+    z-index: 1001; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+.epco-logo-btn {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.1); border: none;
+    padding: 8px 16px; border-radius: 12px; cursor: pointer;
+    transition: all 0.3s ease; color: white;
+}
+.epco-logo-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
+.epco-logo-btn .logo-text { font-size: 1.1rem; font-weight: 700; }
+.epco-logo-btn .menu-icon { font-size: 1.2rem; transition: transform 0.3s ease; }
+.epco-logo-btn.active .menu-icon { transform: rotate(90deg); }
+
+.topbar-right { display: flex; align-items: center; gap: 15px; }
+.topbar-clock {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.15); padding: 8px 15px;
+    border-radius: 10px; color: white; font-size: 0.9rem;
+}
+.topbar-user { display: flex; align-items: center; gap: 10px; color: white; }
+.topbar-avatar {
+    width: 38px; height: 38px; background: rgba(255,255,255,0.2);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 600;
+}
+
+.epco-sidebar {
+    position: fixed; top: 60px; left: -300px; width: 300px;
+    height: calc(100vh - 60px);
+    background: linear-gradient(180deg, #1a6591 0%, #0c3d5f 100%);
+    z-index: 1000; transition: left 0.35s cubic-bezier(.17,.67,.36,.99);
+    overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.2); padding: 20px 0;
+}
+.epco-sidebar.open { left: 0; }
+
+.sidebar-overlay {
+    position: fixed; top: 60px; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s;
+}
+.sidebar-overlay.show { display: block; opacity: 1; }
+
+.sidebar-section { padding: 0 15px; margin-bottom: 20px; }
+.sidebar-section-title {
+    color: rgba(255,255,255,0.4); font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px; padding: 0 15px; margin-bottom: 8px;
+}
+.sidebar-link {
+    display: flex; align-items: center; gap: 12px; padding: 12px 15px;
+    color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 10px;
+    transition: all 0.2s; font-weight: 500; font-size: 0.95rem;
+}
+.sidebar-link:hover { background: rgba(255,255,255,0.1); color: white; transform: translateX(5px); }
+.sidebar-link.active { background: rgba(255,255,255,0.15); color: white; font-weight: 600; }
+.sidebar-link .badge { margin-left: auto; }
+.sidebar-link i { font-size: 1.1rem; width: 24px; text-align: center; }
+
+.main-content {
+    margin-top: 60px; padding: 30px; min-height: calc(100vh - 60px);
+    background: #f1f5f9; transition: margin-left 0.35s cubic-bezier(.17,.67,.36,.99);
+}
+
+body.epco-admin-layout {
+    background: #eaf1f7;
+    color: #1e293b;
+}
+
+body.epco-admin-layout .main-content {
+    color: #1e293b;
+}
+
+body.epco-admin-layout .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+body.epco-admin-layout .card .card-header {
+    background: #ffffff !important;
+    border-color: #e2e8f0;
+    color: #0f172a;
+}
+
+body.epco-admin-layout .card .card-body,
+body.epco-admin-layout .card .card-footer {
+    color: #1e293b;
+}
+
+body.epco-admin-layout .bg-dark-blue {
+    background: linear-gradient(135deg, #0f5f8f 0%, #1a6591 100%) !important;
+    color: #ffffff !important;
+}
+
+body.epco-admin-layout .bg-dark-blue .text-muted,
+body.epco-admin-layout .bg-dark-blue .small,
+body.epco-admin-layout .bg-dark-blue .fw-normal {
+    color: rgba(255, 255, 255, 0.78) !important;
+}
+
+body.epco-admin-layout .text-dark {
+    color: #0f172a !important;
+}
+
+body.epco-admin-layout .text-muted {
+    color: #64748b !important;
+}
+
+body.epco-admin-layout .table {
+    color: #1e293b;
+    --bs-table-bg: transparent;
+}
+
+body.epco-admin-layout .table th {
+    color: #64748b;
+    border-color: #e2e8f0;
+}
+
+body.epco-admin-layout .table td {
+    border-color: #e2e8f0;
+}
+
+body.epco-admin-layout .table-light {
+    --bs-table-bg: #f8fafc;
+    color: #475569;
+}
+
+body.epco-admin-layout .table-hover tbody tr:hover {
+    background: #f8fafc;
+}
+
+body.epco-admin-layout .border {
+    border-color: #e2e8f0 !important;
+}
+
+body.epco-admin-layout .border-top,
+body.epco-admin-layout .border-bottom {
+    border-color: #e2e8f0 !important;
+}
+
+body.epco-admin-layout .btn-outline-secondary {
+    color: #475569;
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+body.epco-admin-layout .btn-outline-secondary:hover {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+body.epco-admin-layout .bg-dark-blue .btn-outline-secondary {
+    color: #ffffff;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+body.epco-admin-layout .bg-dark-blue .btn-outline-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+body.epco-admin-layout .pagination .page-link {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #1a6591;
+}
+
+body.epco-admin-layout .pagination .page-link:hover {
+    background: #eff6ff;
+    color: #0f5f8f;
+}
+
+body.epco-admin-layout .pagination .page-item.active .page-link {
+    background: #1a6591;
+    border-color: #1a6591;
+    color: #ffffff;
+}
+
+body.epco-admin-layout code {
+    color: #1d4ed8;
+    background: #eff6ff;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.35rem;
+}
+
+@media (max-width: 768px) {
+    .topbar-clock { display: none; }
+    .topbar-user span { display: none; }
+}

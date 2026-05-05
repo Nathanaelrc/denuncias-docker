@@ -1,6 +1,6 @@
 <?php
 /**
- * Portal Denuncias Ciudadanas Empresa Portuaria Coquimbo - Inicio
+ * Canal de Denuncias Empresa Portuaria Coquimbo - Inicio
  */
 $pageTitle = 'Canal de Denuncias';
 require_once __DIR__ . '/../includes/bootstrap.php';
@@ -22,15 +22,15 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     </div>
                     <div>
                         <h1 class="display-5 fw-bold text-white mb-0" style="line-height:1.15;">
-                            Canal de Denuncias <span style="color:#93c5fd;">Generales</span>
+                            Canal de <span style="color:#93c5fd;">Denuncias</span>
                         </h1>
                         <p class="mb-0 opacity-75 text-white">Empresa Portuaria Coquimbo · Puerto y Entorno</p>
                     </div>
                 </div>
                 <p class="text-white opacity-75 fs-5 mb-4 text-justify" style="line-height:1.8;">
-                    Presenta tu denuncia de forma <strong class="text-white">confidencial</strong> sobre irregularidades en las operaciones del puerto,
-                    contratos, impacto ambiental, seguridad o cualquier situación que afecte al Puerto de Coquimbo
-                    y su entorno costero.
+                    Presenta tu denuncia de forma <strong class="text-white">confidencial</strong> respecto de hechos que puedan afectar la operación portuaria,
+                    la probidad, la seguridad, el medio ambiente, la relación con usuarios o cualquier otra situación relevante
+                    dentro del ámbito institucional de Empresa Portuaria Coquimbo y su entorno operativo.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
                     <a href="/nueva_denuncia" class="btn btn-light btn-lg fw-semibold px-4 py-3">
@@ -52,6 +52,15 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     <div class="d-flex align-items-center gap-2 text-white-50 small">
                         <i class="bi bi-clock-history fs-5" style="color:#93c5fd;"></i>
                         <span>Seguimiento en tiempo real</span>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 rounded-3" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);">
+                    <div class="fw-semibold text-white mb-2"><i class="bi bi-journal-text me-2" style="color:#93c5fd;"></i>Marco de referencia</div>
+                    <div class="small text-justify" style="line-height:1.7;color:rgba(255,255,255,0.88);">
+                        Este canal considera, entre otras materias, la <strong class="text-white">Ley N° 19.542</strong>,
+                        la <strong class="text-white">Ley N° 18.575</strong>, las <strong class="text-white">Leyes N° 20.393, 21.595 y 21.121</strong>,
+                        la <strong class="text-white">Ley N° 16.744</strong>, el <strong class="text-white">DS N° 594</strong>, la <strong class="text-white">Ley N° 21.012</strong>
+                        y la <strong class="text-white">Ley N° 20.417</strong>. Las controversias contractuales directas entre EPCO y sus concesionarios se encuentran excluidas de este canal.
                     </div>
                 </div>
             </div>
@@ -103,6 +112,23 @@ require_once __DIR__ . '/../includes/encabezado.php';
                     Coquimbo podrá brindarle una respuesta a su denuncia, dentro de los plazos establecidos
                     en los procedimientos internos.
                 </p>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12 fade-in">
+                <div class="p-4 rounded-3" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                    <h5 class="fw-bold mb-3" style="color:#1e293b;">Marco legal y exclusiones del canal</h5>
+                    <p class="mb-2 text-justify" style="color:#475569;line-height:1.8;font-size:.94rem;">
+                        El portal considera denuncias relacionadas con seguridad operacional, control de accesos, prevención de la contaminación, probidad,
+                        prevención de delitos económicos, conflictos de interés, seguridad y salud ocupacional, emergencias y materias ambientales dentro del ámbito de EPCO.
+                        Se considera como norma de referencia la Ley N° 19.542,
+                        además de la Ley N° 18.575, las Leyes N° 20.393, 21.595 y 21.121, la Ley N° 16.744, el DS N° 594,
+                        la Ley N° 21.012 y la Ley N° 20.417.
+                    </p>
+                    <p class="mb-0 text-justify" style="color:#475569;line-height:1.8;font-size:.94rem;">
+                        Las controversias contractuales directas entre EPCO y Terminal Puerto Coquimbo S.A. u otros concesionarios quedan excluidas de este canal.
+                    </p>
+                </div>
             </div>
         </div>
     </div>

@@ -12,8 +12,14 @@ if (!$user) {
 }
 
 $isAdmin = $user['role'] === ROLE_ADMIN;
+$isSuperAdmin = $user['role'] === ROLE_SUPERADMIN;
 $isInvestigador = $user['role'] === ROLE_INVESTIGADOR;
+$isViewer = $user['role'] === ROLE_VIEWER;
+$isAuditor = $user['role'] === ROLE_AUDITOR;
 $hasComplaintAccess = canAccessComplaints($user);
+$canModify = canModifyComplaints($user);
+$canManageUsers = canManageUsers($user);
+$canAudit = canViewAuditLogs($user);
 $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 
 // Estadísticas para badges
@@ -40,192 +46,6 @@ $unreadNotifs = $stmtUnread->fetchColumn();
 
 ?>
 
-<!-- Topbar -->
-<style>
-    .epco-topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 60px;
-        background: linear-gradient(135deg, #0c5a8a 0%, #094a72 100%);
-        z-index: 1001;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-    }
-
-    .epco-logo-btn {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: rgba(255,255,255,0.1);
-        border: none;
-        padding: 8px 16px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        color: white;
-    }
-
-    .epco-logo-btn:hover {
-        background: rgba(255,255,255,0.2);
-        transform: scale(1.02);
-    }
-
-    .epco-logo-btn .logo-text {
-        font-size: 1.1rem;
-        font-weight: 700;
-    }
-
-    .epco-logo-btn .menu-icon {
-        font-size: 1.2rem;
-        transition: transform 0.3s ease;
-    }
-
-    .epco-logo-btn.active .menu-icon {
-        transform: rotate(90deg);
-    }
-
-    .topbar-right {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .topbar-clock {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255,255,255,0.15);
-        padding: 8px 15px;
-        border-radius: 10px;
-        color: white;
-        font-size: 0.9rem;
-    }
-
-    .topbar-user {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: white;
-    }
-
-    .topbar-avatar {
-        width: 38px;
-        height: 38px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-    }
-
-    /* Sidebar */
-    .epco-sidebar {
-        position: fixed;
-        top: 60px;
-        left: -300px;
-        width: 300px;
-        height: calc(100vh - 60px);
-        background: linear-gradient(180deg, #1a6591 0%, #0c3d5f 100%);
-        z-index: 1000;
-        transition: left 0.35s cubic-bezier(.17,.67,.36,.99);
-        overflow-y: auto;
-        box-shadow: 4px 0 20px rgba(0,0,0,0.2);
-        padding: 20px 0;
-    }
-
-    .epco-sidebar.open {
-        left: 0;
-    }
-
-    .sidebar-overlay {
-        position: fixed;
-        top: 60px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 999;
-        display: none;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    .sidebar-overlay.show {
-        display: block;
-        opacity: 1;
-    }
-
-    .sidebar-section {
-        padding: 0 15px;
-        margin-bottom: 20px;
-    }
-
-    .sidebar-section-title {
-        color: rgba(255,255,255,0.4);
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        padding: 0 15px;
-        margin-bottom: 8px;
-    }
-
-    .sidebar-link {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 15px;
-        color: rgba(255,255,255,0.7);
-        text-decoration: none;
-        border-radius: 10px;
-        transition: all 0.2s;
-        font-weight: 500;
-        font-size: 0.95rem;
-    }
-
-    .sidebar-link:hover {
-        background: rgba(255,255,255,0.1);
-        color: white;
-        transform: translateX(5px);
-    }
-
-    .sidebar-link.active {
-        background: rgba(255,255,255,0.15);
-        color: white;
-        font-weight: 600;
-    }
-
-    .sidebar-link .badge {
-        margin-left: auto;
-    }
-
-    .sidebar-link i {
-        font-size: 1.1rem;
-        width: 24px;
-        text-align: center;
-    }
-
-    /* Content push */
-    .main-content {
-        margin-top: 60px;
-        padding: 30px;
-        min-height: calc(100vh - 60px);
-        background: #f1f5f9;
-        transition: margin-left 0.35s cubic-bezier(.17,.67,.36,.99);
-    }
-
-    @media (max-width: 768px) {
-        .topbar-clock { display: none; }
-        .topbar-user span { display: none; }
-    }
-</style>
-
 <!-- Top Bar -->
 <div class="epco-topbar">
     <button class="epco-logo-btn" id="sidebarToggle" onclick="toggleSidebar()">
@@ -251,9 +71,17 @@ $unreadNotifs = $stmtUnread->fetchColumn();
         <div class="topbar-user">
             <span class="d-none d-md-inline small">
                 <?= htmlspecialchars($user['name']) ?>
-                <span class="badge bg-<?= $isAdmin ? 'danger' : ($isInvestigador ? 'warning' : 'secondary') ?> ms-1 small">
-                    <?= ucfirst($user['role']) ?>
-                </span>
+                <?php
+                $roleBadge = match($user['role']) {
+                    ROLE_SUPERADMIN   => ['color' => 'danger',  'label' => 'Superadmin'],
+                    ROLE_ADMIN        => ['color' => 'warning', 'label' => 'Admin'],
+                    ROLE_INVESTIGADOR => ['color' => 'info',    'label' => 'Investigador'],
+                    ROLE_VIEWER       => ['color' => 'success', 'label' => 'Viewer'],
+                    ROLE_AUDITOR      => ['color' => 'secondary','label' => 'Auditor'],
+                    default           => ['color' => 'secondary','label' => ucfirst($user['role'])],
+                };
+                ?>
+                <span class="badge bg-<?= $roleBadge['color'] ?> ms-1 small"><?= $roleBadge['label'] ?></span>
             </span>
             <div class="topbar-avatar">
                 <?= strtoupper(substr($user['name'], 0, 1)) ?>
@@ -300,14 +128,16 @@ $unreadNotifs = $stmtUnread->fetchColumn();
     <?php if ($hasComplaintAccess): ?>
     <div class="sidebar-section">
         <div class="sidebar-section-title">Investigación</div>
+        <?php if ($canModify): ?>
         <a href="/mis_investigaciones" class="sidebar-link <?= $currentPage === 'mis_investigaciones' ? 'active' : '' ?>">
             <i class="bi bi-search"></i> Mis Investigaciones
             <?php if ($stats['en_investigacion'] > 0): ?>
             <span class="badge bg-warning text-dark"><?= $stats['en_investigacion'] ?></span>
             <?php endif; ?>
         </a>
+        <?php endif; ?>
         <a href="/detalle_denuncia" class="sidebar-link <?= $currentPage === 'detalle_denuncia' ? 'active' : '' ?>">
-            <i class="bi bi-file-earmark-lock"></i> Ver Denuncia
+            <i class="bi bi-file-earmark-<?= $canModify ? 'lock' : 'text' ?>"></i> <?= $canModify ? 'Ver Denuncia' : 'Consultar Denuncia' ?>
         </a>
         <a href="/reportes" class="sidebar-link <?= $currentPage === 'reportes' ? 'active' : '' ?>">
             <i class="bi bi-graph-up"></i> Reportes
@@ -326,13 +156,23 @@ $unreadNotifs = $stmtUnread->fetchColumn();
         </a>
     </div>
 
-    <!-- Administración -->
-    <?php if ($isAdmin): ?>
+    <!-- Administración: usuarios (superadmin + admin) -->
+    <?php if ($canManageUsers): ?>
     <div class="sidebar-section">
         <div class="sidebar-section-title">Administración</div>
         <a href="/admin_usuarios" class="sidebar-link <?= $currentPage === 'admin_usuarios' ? 'active' : '' ?>">
             <i class="bi bi-people-fill"></i> Usuarios
         </a>
+        <?php if ($canAudit): ?>
+        <a href="/registro_actividad" class="sidebar-link <?= $currentPage === 'registro_actividad' ? 'active' : '' ?>">
+            <i class="bi bi-journal-text"></i> Registro de Actividad
+        </a>
+        <?php endif; ?>
+    </div>
+    <?php elseif ($canAudit): ?>
+    <!-- Auditoría: solo auditor (sin gestión de usuarios) -->
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Auditoría</div>
         <a href="/registro_actividad" class="sidebar-link <?= $currentPage === 'registro_actividad' ? 'active' : '' ?>">
             <i class="bi bi-journal-text"></i> Registro de Actividad
         </a>

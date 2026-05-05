@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_mysql mysqli mbstring xml zip gd bcmath sodium \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 RUN a2enmod rewrite
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
@@ -33,6 +36,9 @@ RUN mkdir -p /var/www/html/logs \
     && chown -R www-data:www-data /var/www/html
 
 COPY --chown=www-data:www-data . /var/www/html/
+
+# Instalar dependencias PHP via Composer (PHPMailer y otras)
+RUN cd /var/www/html && composer install --no-dev --no-interaction --optimize-autoloader --no-progress 2>/dev/null || true
 
 RUN chmod -R 755 /var/www/html \
     && chmod -R 775 /var/www/html/logs \

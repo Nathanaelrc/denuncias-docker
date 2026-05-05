@@ -1,0 +1,14 @@
+{
+    "name": "epco/denuncias-generales",
+    "description": "Canal de Denuncias Ciudadanas — Empresa Portuaria Coquimbo",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}

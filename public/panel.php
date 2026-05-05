@@ -7,7 +7,7 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 requireComplaintAccess();
 
 $user = getCurrentUser();
-$isAdmin = hasRole([ROLE_ADMIN]);
+$canModifyComplaints = canModifyComplaints(getCurrentUser());
 $isInvestigador = hasRole([ROLE_INVESTIGADOR]);
 
 // Filtro de conflicto de interés para investigadores

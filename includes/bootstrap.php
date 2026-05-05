@@ -48,9 +48,19 @@ if (!defined('DENUNCIAS_APP')) {
 
 define('DENUNCIAS_ROOT', dirname(__DIR__));
 
+// Load logging FIRST (needed by error_handler)
+require_once DENUNCIAS_ROOT . '/includes/logging.php';
+// Then load error handler (uses logging)
+require_once DENUNCIAS_ROOT . '/includes/error_handler.php';
+
 require_once DENUNCIAS_ROOT . '/config/app.php';
 require_once DENUNCIAS_ROOT . '/config/database.php';
 require_once DENUNCIAS_ROOT . '/includes/encriptacion.php';
 require_once DENUNCIAS_ROOT . '/includes/correo.php';
 require_once DENUNCIAS_ROOT . '/includes/utilidades.php';
+require_once DENUNCIAS_ROOT . '/includes/notificaciones.php';
+require_once DENUNCIAS_ROOT . '/includes/denuncias.php';
 require_once DENUNCIAS_ROOT . '/includes/autenticacion.php';
+require_once DENUNCIAS_ROOT . '/includes/validacion.php';
+require_once DENUNCIAS_ROOT . '/includes/query_optimization.php';
+require_once DENUNCIAS_ROOT . '/includes/search.php';

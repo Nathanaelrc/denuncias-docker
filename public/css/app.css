@@ -1,0 +1,259 @@
+/* =============================================================
+   Portal de Denuncias — Empresa Portuaria Coquimbo
+   Hoja de estilos principal (extraída de encabezado.php y barra_lateral.php)
+   ============================================================= */
+
+/* ── Variables globales ──────────────────────────────────────── */
+:root {
+    --primary-color: #1a6591;
+    --secondary-color: #ffffff;
+    --accent-color: #2380b0;
+    --accent-light: #2d4a6f;
+}
+
+/* ── Base ─────────────────────────────────────────────────────── */
+* { font-family: 'Onest', sans-serif; }
+
+body {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    min-height: 100vh;
+}
+
+/* ── Utilidades de color ─────────────────────────────────────── */
+.bg-primary-dark { background-color: var(--primary-color) !important; }
+.bg-accent        { background-color: var(--accent-color) !important; }
+.text-primary-dark{ color: var(--primary-color) !important; }
+
+/* ── Modal ───────────────────────────────────────────────────── */
+.modal-content { color: #1e293b; }
+
+/* ── Botón principal EPCO ────────────────────────────────────── */
+.btn-epco {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transition: all 0.3s ease;
+}
+.btn-epco:hover {
+    background-color: var(--accent-light);
+    border-color: var(--accent-light);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ── Card EPCO ───────────────────────────────────────────────── */
+.card-epco {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+.card-epco:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 45px rgba(0,0,0,0.22);
+}
+
+/* ── Navbar pública ──────────────────────────────────────────── */
+.navbar-epco { background: rgba(10, 37, 64, 0.95) !important; backdrop-filter: blur(10px); }
+.navbar-epco .navbar-brand,
+.navbar-epco .navbar-brand span,
+.navbar-epco .nav-link,
+.navbar-epco .navbar-text { color: #ffffff !important; }
+.navbar-epco .nav-link:hover,
+.navbar-epco .nav-link:focus { color: rgba(255,255,255,0.85) !important; }
+.navbar-epco .nav-link.active { color: #ffffff !important; font-weight: 600; }
+
+/* ── Formularios ─────────────────────────────────────────────── */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(10, 37, 64, 0.25);
+}
+
+/* ── Fondo degradado ─────────────────────────────────────────── */
+.gradient-bg {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+}
+
+/* ── Animaciones de scroll (GSAP las activa) ─────────────────── */
+.fade-in       { opacity: 0; transform: translateY(12px); }
+.slide-in-left { opacity: 0; transform: translateX(-20px); }
+.slide-in-right{ opacity: 0; transform: translateX(20px); }
+.scale-in      { opacity: 0; transform: scale(0.97); }
+
+/* ── Entrada de página ───────────────────────────────────────── */
+@keyframes pageEntrance {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes navSlideDown {
+    0%   { opacity: 0; transform: translateY(-100%); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.page-entrance { animation: pageEntrance 0.8s ease-out forwards; }
+.nav-animate   { animation: navSlideDown 0.6s ease-out forwards; }
+
+/* ── Badge legal ─────────────────────────────────────────────── */
+.legal-badge {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+}
+
+/* ── Delays de animación ─────────────────────────────────────── */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* ── Texto justificado ───────────────────────────────────────── */
+.text-justify {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+}
+
+/* ── Botones de identidad (form denuncia) ────────────────────── */
+.btn-identidad {
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+.btn-identidad:hover {
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+}
+.btn-check:checked + .btn-identidad {
+    border-color: #0d6efd;
+    background: #eef1f6;
+    color: #084298;
+    box-shadow: 0 4px 15px rgba(13,110,253,0.15);
+}
+.btn-check:checked + .btn-identidad strong { color: #084298; }
+.btn-check:checked + .btn-identidad i { transform: scale(1.1); }
+
+/* =============================================================
+   Panel de administración — Topbar y Sidebar
+   ============================================================= */
+
+/* ── Topbar ──────────────────────────────────────────────────── */
+.epco-topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(135deg, #0c5a8a 0%, #094a72 100%);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+.epco-logo-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+.epco-logo-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
+.epco-logo-btn .logo-text { font-size: 1.1rem; font-weight: 700; }
+.epco-logo-btn .menu-icon { font-size: 1.2rem; transition: transform 0.3s ease; }
+.epco-logo-btn.active .menu-icon { transform: rotate(90deg); }
+
+.topbar-right { display: flex; align-items: center; gap: 15px; }
+.topbar-clock {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.15);
+    padding: 8px 15px; border-radius: 10px;
+    color: white; font-size: 0.9rem;
+}
+.topbar-user { display: flex; align-items: center; gap: 10px; color: white; }
+.topbar-avatar {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.epco-sidebar {
+    position: fixed;
+    top: 60px; left: -300px;
+    width: 300px;
+    height: calc(100vh - 60px);
+    background: linear-gradient(180deg, #1a6591 0%, #0c3d5f 100%);
+    z-index: 1000;
+    transition: left 0.35s cubic-bezier(.17,.67,.36,.99);
+    overflow-y: auto;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+    padding: 20px 0;
+}
+.epco-sidebar.open { left: 0; }
+
+.sidebar-overlay {
+    position: fixed;
+    top: 60px; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none; opacity: 0;
+    transition: opacity 0.3s;
+}
+.sidebar-overlay.show { display: block; opacity: 1; }
+
+.sidebar-section { padding: 0 15px; margin-bottom: 20px; }
+.sidebar-section-title {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 0 15px; margin-bottom: 8px;
+}
+.sidebar-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 15px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.2s;
+    font-weight: 500; font-size: 0.95rem;
+}
+.sidebar-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    transform: translateX(5px);
+}
+.sidebar-link.active {
+    background: rgba(255,255,255,0.15);
+    color: white; font-weight: 600;
+}
+.sidebar-link .badge { margin-left: auto; }
+.sidebar-link i { font-size: 1.1rem; width: 24px; text-align: center; }
+
+/* ── Área de contenido principal (admin) ─────────────────────── */
+.main-content {
+    margin-top: 60px;
+    padding: 30px;
+    min-height: calc(100vh - 60px);
+    background: #f1f5f9;
+    transition: margin-left 0.35s cubic-bezier(.17,.67,.36,.99);
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .topbar-clock { display: none; }
+    .topbar-user span { display: none; }
+}

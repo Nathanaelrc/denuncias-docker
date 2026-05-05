@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canal de Denuncias EPCO - Documento Ejecutivo</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 1.2cm;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #243746;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      background: #ffffff;
+    }
+
+    h1, h2, h3, p, ul, ol, table {
+      orphans: 3;
+      widows: 3;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .cover {
+      min-height: 26cm;
+      padding: 1.4cm;
+      color: #ffffff;
+      background: #12324b;
+    }
+
+    .cover-tag {
+      display: inline-block;
+      padding: 7px 14px;
+      border: 1px solid rgba(255,255,255,0.28);
+      font-size: 9pt;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .cover h1 {
+      margin: 28px 0 14px;
+      font-size: 30pt;
+      line-height: 1.08;
+    }
+
+    .cover-subtitle {
+      width: 88%;
+      font-size: 13pt;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 26px;
+    }
+
+    .cover-box {
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .cover-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 10.5pt;
+    }
+
+    .cover-box p {
+      margin: 0;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .cover-meta {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 44px;
+    }
+
+    .cover-meta td {
+      width: 33.33%;
+      padding: 12px 10px 0 0;
+      vertical-align: top;
+      border-top: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .cover-meta strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 10pt;
+    }
+
+    .cover-meta span {
+      color: rgba(255,255,255,0.88);
+      font-size: 9.8pt;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #d9e8f1;
+      color: #12324b;
+      font-size: 18pt;
+    }
+
+    .sub-title {
+      margin: 14px 0 8px;
+      color: #1c5d87;
+      font-size: 12.5pt;
+    }
+
+    p {
+      margin: 0 0 9px;
+    }
+
+    ul, ol {
+      margin: 6px 0 12px 20px;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    .lead {
+      font-size: 11.4pt;
+      color: #314a5a;
+    }
+
+    .info-table,
+    .grid-table,
+    .kpi-table,
+    .cover-meta,
+    .roles-table,
+    .service-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .kpi-table {
+      margin: 14px 0 18px;
+    }
+
+    .kpi-table td {
+      width: 25%;
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    .kpi-box {
+      border: 1px solid #d5e0e8;
+      background: #f4f8fb;
+      padding: 14px;
+      min-height: 86px;
+    }
+
+    .kpi-number {
+      display: block;
+      margin-bottom: 5px;
+      color: #12324b;
+      font-size: 24pt;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .kpi-text {
+      color: #5d7281;
+      font-size: 9.5pt;
+      line-height: 1.4;
+    }
+
+    .grid-table td {
+      width: 50%;
+      padding: 8px;
+      vertical-align: top;
+    }
+
+    .grid-table.grid-3 td {
+      width: 33.33%;
+    }
+
+    .panel {
+      border: 1px solid #d5e0e8;
+      background: #f4f8fb;
+      padding: 14px;
+      min-height: 120px;
+    }
+
+    .panel.alt {
+      background: #eef5fa;
+    }
+
+    .callout {
+      border-left: 5px solid #1c5d87;
+      background: #eef5fa;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    .note {
+      border-left: 5px solid #0f766e;
+      background: #f2fbf9;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    .warning {
+      border-left: 5px solid #9a5b0a;
+      background: #fff7ed;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    .service-table,
+    .roles-table,
+    .info-table {
+      margin: 12px 0 16px;
+      font-size: 9.7pt;
+    }
+
+    .service-table th,
+    .service-table td,
+    .roles-table th,
+    .roles-table td,
+    .info-table th,
+    .info-table td {
+      border: 1px solid #d5e0e8;
+      padding: 8px 9px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .service-table th,
+    .roles-table th,
+    .info-table th {
+      background: #edf4f9;
+      color: #12324b;
+    }
+
+    .pills {
+      margin-top: 10px;
+    }
+
+    .pill {
+      display: inline-block;
+      margin: 0 6px 6px 0;
+      padding: 5px 10px;
+      border: 1px solid #cfe0ea;
+      background: #eaf3f8;
+      color: #1c5d87;
+      font-size: 9pt;
+    }
+
+    .figure-page {
+      page-break-before: always;
+    }
+
+    .figure-title {
+      margin: 0 0 8px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #d9e8f1;
+      color: #12324b;
+      font-size: 18pt;
+    }
+
+    .figure-text {
+      margin-bottom: 10px;
+      color: #314a5a;
+    }
+
+    .figure-frame {
+      border: 1px solid #d5e0e8;
+      background: #ffffff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .figure-frame img {
+      width: 100%;
+      height: auto;
+      max-height: 22.8cm;
+    }
+
+    .figure-caption {
+      margin-top: 8px;
+      color: #5d7281;
+      font-size: 9.4pt;
+    }
+
+    .footer {
+      margin-top: 18px;
+      text-align: center;
+      color: #5d7281;
+      font-size: 9pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <div class="cover-tag">Documento ejecutivo para gerencia</div>
+    <h1>Plataforma institucional de canal de denuncias</h1>
+    <div class="cover-subtitle">
+      Resumen ejecutivo de la solución implementada para Empresa Portuaria Coquimbo, con énfasis en su arquitectura,
+      resguardo de información, operación y aporte al control interno.
+    </div>
+
+    <div class="cover-box">
+      <strong>Propósito del documento</strong>
+      <p>Presentar de manera clara y ordenada cómo está construido el sistema, cuál es su alcance y de qué forma responde a exigencias de confidencialidad, trazabilidad y continuidad operacional.</p>
+    </div>
+
+    <div class="cover-box">
+      <strong>Alcance considerado</strong>
+      <p>Landing pública, Portal Ley Karin, Portal de Denuncias Generales, bases de datos separadas, roles, seguridad, auditoría, reportes, notificaciones e infraestructura dockerizada.</p>
+    </div>
+
+    <table class="cover-meta">
+      <tr>
+        <td>
+          <strong>Organización</strong>
+          <span>Empresa Portuaria Coquimbo</span>
+        </td>
+        <td>
+          <strong>Fecha</strong>
+          <span>04 de mayo de 2026</span>
+        </td>
+        <td>
+          <strong>Versión</strong>
+          <span>Edición ejecutiva para presentación gerencial</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="page-break section">
+    <h2 class="section-title">1. Resumen Ejecutivo</h2>
+    <p class="lead">La solución implementada corresponde a una plataforma institucional de denuncias compuesta por dos portales especializados y un punto de entrada único. Su diseño permite separar materias asociadas a Ley Karin de aquellas vinculadas a denuncias generales, manteniendo independencia funcional y de datos entre ambos ámbitos.</p>
+    <p>Desde la perspectiva de la organización, el proyecto resuelve una necesidad concreta: disponer de un canal formal para la recepción y gestión de denuncias que combine facilidad de uso, resguardo de información sensible y capacidad de seguimiento. La arquitectura adoptada responde a esa exigencia mediante cifrado de datos, control por roles, auditoría de acciones y despliegue estructurado sobre contenedores.</p>
+    <p>En términos operativos, la plataforma no se limita a recibir antecedentes. También organiza el ciclo de vida del caso, restringe quién puede intervenir, entrega soporte para revisión interna y deja trazabilidad suficiente para supervisión y control.</p>
+
+    <table class="kpi-table">
+      <tr>
+        <td><div class="kpi-box"><span class="kpi-number">3</span><div class="kpi-text">superficies visibles: landing, portal Ley Karin y portal de denuncias generales</div></div></td>
+        <td><div class="kpi-box"><span class="kpi-number">2</span><div class="kpi-text">bases de datos MySQL separadas por dominio de denuncia</div></div></td>
+        <td><div class="kpi-box"><span class="kpi-number">5</span><div class="kpi-text">roles internos para operación, administración, lectura y auditoría</div></div></td>
+        <td><div class="kpi-box"><span class="kpi-number">1</span><div class="kpi-text">punto de acceso externo centralizado mediante Nginx</div></div></td>
+      </tr>
+    </table>
+
+    <table class="grid-table grid-3">
+      <tr>
+        <td><div class="panel"><h3 class="sub-title">Confidencialidad</h3><p>Los datos sensibles se almacenan cifrados y su lectura queda limitada a perfiles autorizados dentro de la aplicación.</p></div></td>
+        <td><div class="panel"><h3 class="sub-title">Trazabilidad</h3><p>La plataforma registra actividad, cambios y eventos relevantes, facilitando revisión posterior y control interno.</p></div></td>
+        <td><div class="panel"><h3 class="sub-title">Operación</h3><p>La solución se despliega en contenedores y contempla arranque, respaldo y actualización con criterios homogéneos.</p></div></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">2. Propósito del Proyecto y Alcance Funcional</h2>
+    <table class="grid-table">
+      <tr>
+        <td>
+          <div class="panel">
+            <h3 class="sub-title">Propósito institucional</h3>
+            <p>El sistema fue concebido para ofrecer a la organización un canal formal, seguro y trazable para la recepción y gestión de denuncias. Su alcance no se limita al ingreso de antecedentes, sino que cubre también su administración, revisión, seguimiento y registro operacional.</p>
+            <h3 class="sub-title">Problemas que resuelve</h3>
+            <ul>
+              <li>Ordena la recepción de denuncias en un entorno controlado y homogéneo.</li>
+              <li>Reduce el riesgo de exposición de información sensible.</li>
+              <li>Separa funciones de administración, investigación y auditoría.</li>
+              <li>Permite seguimiento del caso sin exponer el expediente al público.</li>
+            </ul>
+          </div>
+        </td>
+        <td>
+          <div class="panel alt">
+            <h3 class="sub-title">Alcance implementado</h3>
+            <ul>
+              <li>Landing pública para orientar al usuario hacia el canal correspondiente.</li>
+              <li>Portal Ley Karin con reglas específicas para materias laborales reguladas.</li>
+              <li>Portal de denuncias generales para hechos de naturaleza institucional o externa.</li>
+              <li>Backoffice con panel, gestión de casos, reportes, notificaciones y usuarios.</li>
+              <li>Controles de seguridad, auditoría y despliegue sobre Docker Compose.</li>
+            </ul>
+            <div class="callout">
+              <strong>Decisión de diseño.</strong>
+              Ambos portales comparten una base técnica semejante, lo que favorece mantenimiento y consistencia, pero conservan independencia de datos y reglas para no mezclar dominios normativos distintos.
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">3. Visión General de la Arquitectura</h2>
+    <p class="lead">La arquitectura responde a un criterio simple: un único punto de entrada externo, dos aplicaciones separadas por naturaleza de denuncia y una base de datos exclusiva para cada una de ellas.</p>
+    <p>Todo el tráfico ingresa por Nginx, que actúa como puerta de entrada y mecanismo de enrutamiento. Desde allí se deriva la navegación hacia la landing pública o hacia uno de los dos portales. Cada portal opera sobre PHP y Apache, reutiliza módulos de seguridad y negocio, y se conecta únicamente con su propia base de datos MySQL.</p>
+
+    <table class="info-table">
+      <tr>
+        <th>Componente</th>
+        <th>Rol dentro de la solución</th>
+        <th>Valor que aporta</th>
+      </tr>
+      <tr>
+        <td>Nginx</td>
+        <td>Canaliza y distribuye el tráfico entrante.</td>
+        <td>Centraliza el acceso y simplifica la exposición del sistema.</td>
+      </tr>
+      <tr>
+        <td>Landing</td>
+        <td>Orienta al usuario al canal correcto.</td>
+        <td>Disminuye errores de ingreso y mejora la experiencia inicial.</td>
+      </tr>
+      <tr>
+        <td>Portal Ley Karin</td>
+        <td>Gestiona denuncias laborales reguladas.</td>
+        <td>Permite un tratamiento específico según la normativa aplicable.</td>
+      </tr>
+      <tr>
+        <td>Portal de denuncias generales</td>
+        <td>Gestiona denuncias generales o institucionales.</td>
+        <td>Canaliza materias fuera del ámbito propio de Ley Karin.</td>
+      </tr>
+      <tr>
+        <td>Bases de datos separadas</td>
+        <td>Aíslan almacenamiento y operación por dominio.</td>
+        <td>Refuerzan orden, claridad administrativa y contención de riesgo.</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="figure-page">
+    <h2 class="figure-title">Figura 1. Arquitectura general de la plataforma</h2>
+    <div class="figure-text">La siguiente lámina presenta la relación entre el punto de entrada único, los dos portales, las bases de datos independientes y los servicios transversales que complementan la operación.</div>
+    <div class="figure-frame">
+      <img src="img/arquitectura-general.svg" alt="Arquitectura general del sistema">
+    </div>
+    <div class="figure-caption">La imagen se presenta a página completa para facilitar lectura en pantalla y en impresión.</div>
+  </div>
+
+  <div class="page-break section">
+    <h2 class="section-title">4. Organización por Capas</h2>
+    <p>La solución se estructura en capas para facilitar mantenimiento, lectura técnica y evolución controlada. Este enfoque evita que la presentación, la seguridad, la lógica de negocio y la persistencia se mezclen innecesariamente, reduciendo complejidad y riesgo de error.</p>
+    <p>En la práctica, el sistema puede leerse desde la entrada del usuario hasta el almacenamiento de datos: primero el enrutamiento, luego las pantallas públicas e internas, después la capa de contexto y seguridad, a continuación los servicios de negocio y finalmente la persistencia y la operación.</p>
+
+    <table class="grid-table">
+      <tr>
+        <td>
+          <div class="panel">
+            <h3 class="sub-title">Ventajas del enfoque</h3>
+            <ul>
+              <li>Favorece claridad técnica y mantenimiento futuro.</li>
+              <li>Permite intervenir una capa sin alterar innecesariamente las demás.</li>
+              <li>Facilita la incorporación de nuevas reglas, reportes o integraciones.</li>
+            </ul>
+          </div>
+        </td>
+        <td>
+          <div class="panel alt">
+            <h3 class="sub-title">Lectura recomendada</h3>
+            <p>Para comprender el proyecto conviene seguir el flujo natural de uso: acceso, pantallas, seguridad, negocio y base de datos. Esa secuencia coincide con la forma en que fue construido el sistema.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="figure-page">
+    <h2 class="figure-title">Figura 2. Capas del sistema</h2>
+    <div class="figure-text">La lámina siguiente resume cómo se distribuyen las responsabilidades en ambos portales, desde la capa de acceso y enrutamiento hasta los componentes de persistencia y operación.</div>
+    <div class="figure-frame">
+      <img src="img/capas-del-sistema.svg" alt="Capas del sistema">
+    </div>
+    <div class="figure-caption">La separación por capas facilita soporte, lectura del proyecto y futuras ampliaciones sin comprometer el conjunto completo.</div>
+  </div>
+
+  <div class="page-break section">
+    <h2 class="section-title">5. Flujo Principal de una Denuncia</h2>
+    <p class="lead">El proceso central del sistema comienza en un formulario público y culmina con la generación de un código de seguimiento. Entre ambos extremos se ejecutan validaciones, cifrado, persistencia, registro de eventos y notificaciones internas.</p>
+    <p>La lógica fue diseñada para que el expediente nazca estructurado, con controles básicos de seguridad desde el primer momento. Eso significa que la información sensible no se persiste en texto abierto, que las acciones relevantes dejan trazabilidad y que el usuario obtiene un identificador único para consultar el estado de su caso sin exponer el contenido reservado.</p>
+
+    <h3 class="sub-title">Secuencia funcional</h3>
+    <ol>
+      <li>La persona ingresa al portal adecuado desde la landing o mediante un acceso directo.</li>
+      <li>El formulario aplica controles de consistencia y seguridad, incluyendo CSRF y captcha.</li>
+      <li>La aplicación organiza los datos del caso, de las personas involucradas y de la evidencia.</li>
+      <li>Los campos sensibles se cifran antes de almacenarse en base de datos.</li>
+      <li>Se registran logs, tokens de conflicto, adjuntos y notificaciones cuando corresponde.</li>
+      <li>Se entrega un código único para el seguimiento posterior.</li>
+    </ol>
+
+    <div class="note">
+      <strong>Resguardo del contenido.</strong>
+      El seguimiento público sólo muestra información operativa de alto nivel, nunca el detalle íntegro de la denuncia ni los antecedentes internos de investigación.
+    </div>
+  </div>
+
+  <div class="figure-page">
+    <h2 class="figure-title">Figura 3. Flujo de ingreso de una denuncia</h2>
+    <div class="figure-text">A continuación se presenta la secuencia funcional completa desde el ingreso del formulario hasta la emisión del código final de seguimiento.</div>
+    <div class="figure-frame">
+      <img src="img/flujo-denuncia.svg" alt="Flujo de ingreso de una denuncia">
+    </div>
+    <div class="figure-caption">El diagrama detalla validación, armado del caso, cifrado, persistencia, adjuntos y comunicación interna.</div>
+  </div>
+
+  <div class="page-break section">
+    <h2 class="section-title">6. Seguridad, Confidencialidad y Trazabilidad</h2>
+    <p>Una característica central del proyecto es que la seguridad no descansa en una sola barrera. El sistema combina controles complementarios que actúan en distintos puntos del flujo, desde el ingreso de un formulario hasta la revisión de un expediente por parte del equipo interno.</p>
+
+    <table class="grid-table">
+      <tr>
+        <td>
+          <div class="panel">
+            <h3 class="sub-title">Controles implementados</h3>
+            <ul>
+              <li>Cifrado de datos sensibles en reposo con libsodium.</li>
+              <li>Tokens CSRF en formularios críticos.</li>
+              <li>Captcha y limitación por IP en superficies públicas.</li>
+              <li>Cabeceras HTTP de seguridad y política CSP.</li>
+              <li>Cambio obligatorio de contraseña y reglas mínimas de robustez.</li>
+              <li>Bloqueo temporal por múltiples intentos fallidos.</li>
+              <li>Registro de actividad y eventos del expediente.</li>
+            </ul>
+          </div>
+        </td>
+        <td>
+          <div class="panel alt">
+            <h3 class="sub-title">Principios de resguardo</h3>
+            <ul>
+              <li>La base de datos conserva cifrado el contenido reservado del caso.</li>
+              <li>El desencriptado ocurre sólo dentro de la aplicación y según rol.</li>
+              <li>Las notas de investigación y resoluciones permanecen protegidas.</li>
+              <li>La consulta pública se limita a estado y metadatos operativos.</li>
+              <li>La actividad relevante puede ser revisada a posteriori.</li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div class="warning">
+      <strong>Regla especialmente relevante.</strong>
+      La plataforma incorpora control de conflicto de interés. Si una persona revisora aparece vinculada como denunciada en un caso, el sistema puede excluir ese expediente de su visibilidad mediante tokens derivados y HMAC, evitando comparaciones sobre texto sensible desencriptado.
+    </div>
+  </div>
+
+  <div class="page-break section">
+    <h2 class="section-title">7. Modelo Operativo y Segregación de Funciones</h2>
+    <p>La solución contempla una estructura de roles que separa administración general, gestión de usuarios, investigación, lectura controlada y auditoría. Esta definición responde a una necesidad de gobierno interno, control de acceso y prevención de privilegios excesivos.</p>
+
+    <table class="roles-table">
+      <tr>
+        <th>Rol</th>
+        <th>Función principal</th>
+        <th>Limitación relevante</th>
+      </tr>
+      <tr>
+        <td>Superadmin</td>
+        <td>Administra usuarios y puede operar denuncias.</td>
+        <td>Se mantiene sujeto al filtro de conflicto de interés.</td>
+      </tr>
+      <tr>
+        <td>Admin</td>
+        <td>Gestiona usuarios y soporte administrativo.</td>
+        <td>No accede al contenido de denuncias.</td>
+      </tr>
+      <tr>
+        <td>Investigador</td>
+        <td>Revisa, asigna, actualiza y resuelve casos.</td>
+        <td>No gestiona usuarios y puede quedar excluido por conflicto.</td>
+      </tr>
+      <tr>
+        <td>Viewer</td>
+        <td>Consulta denuncias en modo lectura.</td>
+        <td>No modifica ni accede a contenido sensible desencriptado.</td>
+      </tr>
+      <tr>
+        <td>Auditor</td>
+        <td>Revisa actividad del sistema y trazabilidad.</td>
+        <td>No administra usuarios ni accede al detalle del expediente.</td>
+      </tr>
+    </table>
+
+    <p>Esta segregación ordena el trabajo interno y fortalece la confiabilidad del canal. Desde la perspectiva gerencial, evita que una misma cuenta concentre tareas incompatibles y deja una base clara para supervisión y control.</p>
+  </div>
+
+  <div class="figure-page">
+    <h2 class="figure-title">Figura 4. Visibilidad del sistema y ciclo del caso</h2>
+    <div class="figure-text">La siguiente figura muestra la diferencia entre lo que puede ver el usuario público y lo que gestiona el equipo interno, junto con los estados principales del expediente.</div>
+    <div class="figure-frame">
+      <img src="img/visibilidad-y-ciclo.svg" alt="Visibilidad del sistema y ciclo del caso">
+    </div>
+    <div class="figure-caption">La separación entre vista pública, operación interna y estados del caso refuerza control, privacidad y trazabilidad.</div>
+  </div>
+
+  <div class="page-break section">
+    <h2 class="section-title">8. Infraestructura, Despliegue y Operación</h2>
+    <p>La plataforma se despliega mediante Docker Compose, lo que permite levantar todos los servicios con una configuración uniforme y repetible. Esta decisión reduce dependencia de ajustes manuales por servidor y mejora la capacidad de reinstalación, respaldo y continuidad operacional.</p>
+
+    <table class="service-table">
+      <tr>
+        <th>Servicio</th>
+        <th>Función operacional</th>
+      </tr>
+      <tr><td>nginx</td><td>Puerta de entrada y proxy inverso.</td></tr>
+      <tr><td>landing</td><td>Selector inicial de portales.</td></tr>
+      <tr><td>app</td><td>Portal Ley Karin sobre PHP y Apache.</td></tr>
+      <tr><td>db</td><td>Base de datos del portal Ley Karin.</td></tr>
+      <tr><td>app-generales</td><td>Portal de denuncias generales sobre PHP y Apache.</td></tr>
+      <tr><td>db-generales</td><td>Base de datos del portal de denuncias generales.</td></tr>
+      <tr><td>phpmyadmin</td><td>Apoyo de administración en ambientes de desarrollo.</td></tr>
+    </table>
+
+    <table class="grid-table">
+      <tr>
+        <td>
+          <div class="panel">
+            <h3 class="sub-title">Prácticas operativas contempladas</h3>
+            <ul>
+              <li>Arranque automatizado del entorno.</li>
+              <li>Scripts de actualización y respaldo.</li>
+              <li>Endpoint de salud para verificación básica.</li>
+              <li>Centralización de versiones y parámetros relevantes.</li>
+            </ul>
+          </div>
+        </td>
+        <td>
+          <div class="panel alt">
+            <h3 class="sub-title">Valor para la organización</h3>
+            <p>El enfoque reduce fricción en soporte, facilita despliegues consistentes y deja una base favorable para automatización futura, incluyendo monitoreo, pruebas operativas y eventuales pipelines de integración o entrega continua.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">9. Valor Institucional y Recomendaciones</h2>
+    <table class="grid-table grid-3">
+      <tr>
+        <td><div class="panel"><h3 class="sub-title">Reducción de riesgo</h3><p>Se disminuye la exposición de información sensible y se ordena el acceso a expedientes de acuerdo con responsabilidades concretas.</p></div></td>
+        <td><div class="panel"><h3 class="sub-title">Mayor control</h3><p>La solución deja evidencia de accesos, cambios y acciones relevantes, lo que favorece revisión posterior y control interno.</p></div></td>
+        <td><div class="panel"><h3 class="sub-title">Capacidad de evolución</h3><p>La base técnica permite ampliar funcionalidades sin necesidad de replantear la arquitectura completa.</p></div></td>
+      </tr>
+    </table>
+
+    <div class="sub-title">Capacidades disponibles</div>
+    <div class="pills">
+      <span class="pill">Ingreso público de denuncias</span>
+      <span class="pill">Seguimiento por código</span>
+      <span class="pill">Backoffice con roles</span>
+      <span class="pill">Cifrado en reposo</span>
+      <span class="pill">Auditoría</span>
+      <span class="pill">Notificaciones</span>
+      <span class="pill">Reportes</span>
+      <span class="pill">Dockerización</span>
+      <span class="pill">Respaldos</span>
+    </div>
+
+    <h3 class="sub-title">Recomendaciones de continuidad</h3>
+    <ol>
+      <li>Formalizar un procedimiento institucional para alta, modificación y revisión periódica de roles de usuario.</li>
+      <li>Establecer una política programada de respaldos y pruebas de restauración.</li>
+      <li>Definir monitoreo básico de salud del servicio, correo y almacenamiento de adjuntos.</li>
+      <li>Preparar documentación operativa complementaria orientada a usuarios no técnicos.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">10. Conclusión</h2>
+    <p>La plataforma desarrollada constituye una base sólida para la recepción y gestión institucional de denuncias. Su principal fortaleza no reside únicamente en la existencia de formularios o paneles administrativos, sino en la forma en que combina confidencialidad, segregación de funciones, trazabilidad y operación controlada.</p>
+    <p>Desde una mirada gerencial, se trata de una solución técnicamente consistente, ordenada para su mantenimiento y suficientemente flexible para evolucionar. En ese sentido, el proyecto no debe entenderse como un sitio web aislado, sino como un sistema formal de gestión de casos con capacidad real de sostener operación institucional.</p>
+
+    <div class="footer">
+      Documento preparado a partir de la implementación vigente del repositorio denuncias-docker y de sus diagramas técnicos asociados.
+    </div>
+  </div>
+</body>
+</html>

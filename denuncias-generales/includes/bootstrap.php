@@ -46,9 +46,19 @@ if (!defined('GENERALES_APP')) {
 
 define('GENERALES_ROOT', dirname(__DIR__));
 
+// Load logging FIRST (needed by error_handler)
+require_once GENERALES_ROOT . '/includes/logging.php';
+// Then load error handler (uses logging)
+require_once GENERALES_ROOT . '/includes/error_handler.php';
+
 require_once GENERALES_ROOT . '/config/app.php';
 require_once GENERALES_ROOT . '/config/database.php';
 require_once GENERALES_ROOT . '/includes/encriptacion.php';
 require_once GENERALES_ROOT . '/includes/correo.php';
 require_once GENERALES_ROOT . '/includes/utilidades.php';
+require_once GENERALES_ROOT . '/includes/notificaciones.php';
+require_once GENERALES_ROOT . '/includes/denuncias.php';
 require_once GENERALES_ROOT . '/includes/autenticacion.php';
+require_once GENERALES_ROOT . '/includes/validacion.php';
+require_once GENERALES_ROOT . '/includes/query_optimization.php';
+require_once GENERALES_ROOT . '/includes/search.php';
