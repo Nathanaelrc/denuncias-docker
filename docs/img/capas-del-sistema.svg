@@ -1,111 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="860" viewBox="0 0 1280 860" role="img" aria-labelledby="title desc">
   <title id="title">Capas del sistema</title>
-  <desc id="desc">Diagrama apilado de capas: acceso, presentacion, seguridad, negocio, persistencia y operacion.</desc>
+  <desc id="desc">Vista por capas de la solucion en ambos canales.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#f7fafc"/>
-      <stop offset="100%" stop-color="#eef4f8"/>
+      <stop offset="0%" stop-color="#f8fcff"/>
+      <stop offset="100%" stop-color="#edf4fa"/>
     </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.10"/>
-    </filter>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M0,0 L12,6 L0,12 z" fill="#7a8f9d"/>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7990a1"/>
     </marker>
     <style>
-      .title { font: 800 34px 'Segoe UI', Arial, sans-serif; fill: #12344d; }
-      .subtitle { font: 500 18px 'Segoe UI', Arial, sans-serif; fill: #607789; }
-      .card-title { font: 800 24px 'Segoe UI', Arial, sans-serif; fill: #16364d; }
-      .card-text { font: 500 17px 'Segoe UI', Arial, sans-serif; fill: #4f6877; }
-      .chip { font: 700 14px 'Segoe UI', Arial, sans-serif; fill: #1a6591; }
-      .num { font: 800 22px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
-      .lane { fill: #ffffff; stroke: #d8e4ed; stroke-width: 2; rx: 26; }
-      .line { stroke: #8ea3b2; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .h1 { font: 800 34px 'Google Sans Text','Noto Sans','Segoe UI',Arial,sans-serif; fill:#173a55; }
+      .sub { font: 500 19px 'Google Sans Text','Noto Sans','Segoe UI',Arial,sans-serif; fill:#60798c; }
+      .lane { fill:#fff; stroke:#cfdeea; stroke-width:2; rx:20; }
+      .num { font:800 22px 'Google Sans Text','Noto Sans','Segoe UI',Arial,sans-serif; fill:#fff; }
+      .ttl { font:800 36px 'Google Sans Text','Noto Sans','Segoe UI',Arial,sans-serif; fill:#1d3f5b; }
+      .txt { font:500 20px 'Google Sans Text','Noto Sans','Segoe UI',Arial,sans-serif; fill:#4f687a; }
+      .chip { fill:#eaf3fb; }
+      .chipt { font:700 15px 'Google Sans Text','Noto Sans','Segoe UI',Arial,sans-serif; fill:#1a6591; }
+      .line { stroke:#7990a1; stroke-width:3.5; fill:none; marker-end:url(#arr); }
     </style>
   </defs>
+  <rect width="1280" height="860" fill="url(#bg)"/>
+  <text x="56" y="62" class="h1">Capas del sistema</text>
+  <text x="56" y="92" class="sub">Misma base tecnica en ambos canales, con reglas distintas por dominio.</text>
 
-  <rect width="1600" height="980" fill="url(#bg)"/>
-  <text x="90" y="75" class="title">Capas del sistema</text>
-  <text x="90" y="108" class="subtitle">La misma estructura se repite en los dos portales; lo que cambia es el dominio y algunas reglas funcionales.</text>
+  <rect x="70" y="130" width="1140" height="105" class="lane"/>
+  <circle cx="115" cy="182" r="24" fill="#1a6591"/><text x="107" y="190" class="num">1</text>
+  <text x="160" y="174" class="ttl" style="font-size:39px;">Acceso y routing</text>
+  <text x="160" y="206" class="txt">Entrada publica y enrutamiento a cada portal.</text>
+  <rect x="940" y="156" width="140" height="28" rx="14" class="chip"/><text x="958" y="175" class="chipt">nginx.conf</text>
+  <rect x="1092" y="156" width="104" height="28" rx="14" class="chip"/><text x="1108" y="175" class="chipt">compose</text>
 
-  <g filter="url(#shadow)">
-    <rect x="110" y="150" width="1380" height="110" class="lane"/>
-    <circle cx="170" cy="205" r="28" fill="#1a6591"/>
-    <text x="161" y="213" class="num">1</text>
-    <text x="225" y="195" class="card-title">Acceso y routing</text>
-    <text x="225" y="225" class="card-text">Define por donde entra el usuario y a que portal termina llegando.</text>
-    <rect x="930" y="176" width="180" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="958" y="199" class="chip">nginx/nginx.conf</text>
-    <rect x="1130" y="176" width="210" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="1164" y="199" class="chip">docker-compose.yml</text>
-  </g>
+  <path d="M640 235 L640 260" class="line"/>
 
-  <path d="M800 260 L800 292" class="line"/>
+  <rect x="70" y="270" width="1140" height="105" class="lane"/>
+  <circle cx="115" cy="322" r="24" fill="#2380b0"/><text x="107" y="330" class="num">2</text>
+  <text x="160" y="314" class="ttl" style="font-size:39px;">Presentacion</text>
+  <text x="160" y="346" class="txt">Landing, formularios, login, seguimiento y panel.</text>
+  <rect x="900" y="296" width="120" height="28" rx="14" class="chip"/><text x="930" y="315" class="chipt">public/*</text>
+  <rect x="1032" y="296" width="164" height="28" rx="14" class="chip"/><text x="1048" y="315" class="chipt">generales/public/*</text>
 
-  <g filter="url(#shadow)">
-    <rect x="110" y="300" width="1380" height="120" class="lane"/>
-    <circle cx="170" cy="360" r="28" fill="#2380b0"/>
-    <text x="161" y="368" class="num">2</text>
-    <text x="225" y="347" class="card-title">Presentacion publica y administrativa</text>
-    <text x="225" y="377" class="card-text">Pantallas de landing, formularios, seguimiento, login, panel, detalle y notificaciones.</text>
-    <rect x="760" y="332" width="180" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="795" y="355" class="chip">public/*.php</text>
-    <rect x="960" y="332" width="260" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="990" y="355" class="chip">denuncias-generales/public/*</text>
-    <rect x="1240" y="332" width="170" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="1272" y="355" class="chip">landing/public</text>
-  </g>
+  <path d="M640 375 L640 400" class="line"/>
 
-  <path d="M800 420 L800 452" class="line"/>
+  <rect x="70" y="410" width="1140" height="105" class="lane"/>
+  <circle cx="115" cy="462" r="24" fill="#0f9ac5"/><text x="107" y="470" class="num">3</text>
+  <text x="160" y="454" class="ttl" style="font-size:39px;">Contexto y seguridad</text>
+  <text x="160" y="486" class="txt">Sesion, CSRF, captcha, roles y autenticacion.</text>
+  <rect x="930" y="436" width="128" height="28" rx="14" class="chip"/><text x="950" y="455" class="chipt">bootstrap.php</text>
+  <rect x="1070" y="436" width="126" height="28" rx="14" class="chip"/><text x="1095" y="455" class="chipt">app.php</text>
 
-  <g filter="url(#shadow)">
-    <rect x="110" y="460" width="1380" height="120" class="lane"/>
-    <circle cx="170" cy="520" r="28" fill="#0f9ac5"/>
-    <text x="161" y="528" class="num">3</text>
-    <text x="225" y="507" class="card-title">Contexto y seguridad</text>
-    <text x="225" y="537" class="card-text">Sesion, CSRF, cabeceras, roles, captcha, redirecciones y reglas comunes de autenticacion.</text>
-    <rect x="820" y="492" width="196" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="848" y="515" class="chip">includes/bootstrap.php</text>
-    <rect x="1036" y="492" width="150" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="1066" y="515" class="chip">config/app.php</text>
-    <rect x="1206" y="492" width="222" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="1235" y="515" class="chip">includes/autenticacion.php</text>
-  </g>
+  <path d="M640 515 L640 540" class="line"/>
 
-  <path d="M800 580 L800 612" class="line"/>
+  <rect x="70" y="550" width="1140" height="105" class="lane"/>
+  <circle cx="115" cy="602" r="24" fill="#1a6591"/><text x="107" y="610" class="num">4</text>
+  <text x="160" y="594" class="ttl" style="font-size:39px;">Servicios de negocio</text>
+  <text x="160" y="626" class="txt">Denuncias, cifrado, notificaciones y conflicto de interes.</text>
+  <rect x="870" y="576" width="144" height="28" rx="14" class="chip"/><text x="890" y="595" class="chipt">utilidades.php</text>
+  <rect x="1028" y="576" width="168" height="28" rx="14" class="chip"/><text x="1045" y="595" class="chipt">encriptacion.php</text>
 
-  <g filter="url(#shadow)">
-    <rect x="110" y="620" width="1380" height="120" class="lane"/>
-    <circle cx="170" cy="680" r="28" fill="#1a6591"/>
-    <text x="161" y="688" class="num">4</text>
-    <text x="225" y="667" class="card-title">Servicios de negocio</text>
-    <text x="225" y="697" class="card-text">Alta de denuncias, cifrado, notificaciones, conflicto de interes, logs del caso y reglas de proceso.</text>
-    <rect x="735" y="652" width="196" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="764" y="675" class="chip">includes/utilidades.php</text>
-    <rect x="951" y="652" width="212" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="980" y="675" class="chip">includes/encriptacion.php</text>
-    <rect x="1183" y="652" width="164" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="1218" y="675" class="chip">includes/correo.php</text>
-  </g>
+  <path d="M640 655 L640 680" class="line"/>
 
-  <path d="M800 740 L800 772" class="line"/>
-
-  <g filter="url(#shadow)">
-    <rect x="110" y="780" width="1380" height="120" class="lane"/>
-    <circle cx="170" cy="840" r="28" fill="#4f6b7d"/>
-    <text x="161" y="848" class="num">5</text>
-    <text x="225" y="827" class="card-title">Persistencia y operacion</text>
-    <text x="225" y="857" class="card-text">PDO, SQL inicial, uploads, logs, healthcheck y scripts de despliegue, actualizacion y respaldo.</text>
-    <rect x="800" y="812" width="190" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="828" y="835" class="chip">config/database.php</text>
-    <rect x="1010" y="812" width="160" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="1042" y="835" class="chip">database/init.sql</text>
-    <rect x="1190" y="812" width="152" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="1224" y="835" class="chip">public/salud.php</text>
-    <rect x="1362" y="812" width="102" height="34" rx="17" fill="#e7f2f9"/>
-    <text x="1382" y="835" class="chip">scripts/*</text>
-  </g>
-
-  <rect x="1140" y="70" width="350" height="46" rx="23" fill="#dcebf5"/>
-  <text x="1170" y="99" style="font:700 16px 'Segoe UI', Arial, sans-serif; fill:#1a6591;">Lectura recomendada: de arriba hacia abajo y luego volver al detalle</text>
+  <rect x="70" y="690" width="1140" height="105" class="lane"/>
+  <circle cx="115" cy="742" r="24" fill="#587386"/><text x="107" y="750" class="num">5</text>
+  <text x="160" y="734" class="ttl" style="font-size:39px;">Persistencia y operacion</text>
+  <text x="160" y="766" class="txt">Base de datos, salud de servicio, scripts y respaldos.</text>
+  <rect x="880" y="716" width="138" height="28" rx="14" class="chip"/><text x="900" y="735" class="chipt">database.php</text>
+  <rect x="1030" y="716" width="166" height="28" rx="14" class="chip"/><text x="1052" y="735" class="chipt">database/init.sql</text>
 </svg>

@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guia funcional de canales de denuncias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f2f6fb;
+      --ink: #11283d;
+      --muted: #4f6780;
+      --card: #ffffff;
+      --line: #d3deea;
+      --brand: #0f5f8f;
+      --brand-2: #1b6a99;
+      --ok: #167a4b;
+      --warn: #9a6700;
+      --soft: #eaf2fb;
+      --soft-2: #f7fbff;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 0% 0%, #e3eef9 0%, rgba(227,238,249,0) 34%),
+        radial-gradient(circle at 100% 10%, #e6f1fb 0%, rgba(230,241,251,0) 28%),
+        var(--bg);
+      line-height: 1.62;
+    }
+    header {
+      background: radial-gradient(circle at 20% 0%, #2f8bc0 0%, #14567f 45%, #10344f 100%);
+      color: #fff;
+      padding: 52px 20px 34px;
+      border-bottom: 6px solid #0d2f47;
+    }
+    .wrap { max-width: 1140px; margin: 0 auto; }
+    .hero {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .hero img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      background: rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 8px;
+    }
+    h1 { margin: 0 0 6px; font-size: 2rem; letter-spacing: -0.02em; }
+    .subtitle { margin: 0; color: #dbeeff; font-weight: 500; }
+    main { padding: 24px 20px 44px; }
+    nav {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      position: sticky;
+      top: 12px;
+      z-index: 9;
+      box-shadow: 0 10px 24px rgba(12, 48, 74, 0.08);
+    }
+    nav ul {
+      margin: 10px 0 0;
+      padding-left: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 14px;
+    }
+    nav a {
+      color: #0f5f8f;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-block;
+      padding: 5px 0;
+    }
+    nav a:hover { text-decoration: underline; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 26px rgba(16,34,53,0.06);
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: var(--brand-2);
+      letter-spacing: -0.01em;
+      font-size: 1.35rem;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 9px;
+    }
+    h3 { color: var(--brand); margin-bottom: 8px; margin-top: 6px; }
+    p { margin: 8px 0; color: #274259; }
+    ul, ol { margin: 8px 0; padding-left: 22px; color: #274259; }
+    li { margin: 3px 0; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .grid-2 > article {
+      background: var(--soft-2);
+      border: 1px solid #d9e6f2;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .note {
+      border-left: 4px solid #1a6591;
+      background: #ecf5fb;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: #14344b;
+    }
+    .ok {
+      border-left-color: var(--ok);
+      background: #eaf8f1;
+      color: #0d4f2f;
+    }
+    .warn {
+      border-left-color: var(--warn);
+      background: #fff7e7;
+      color: #6b4a00;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.95rem;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #eaf2fb;
+      color: #12364f;
+      font-weight: 700;
+    }
+    tbody tr:nth-child(even) td { background: #fbfdff; }
+    code {
+      background: #eef5fc;
+      border: 1px solid #d8e4f0;
+      padding: 1px 6px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.9em;
+    }
+    .img-block {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #f9fcff;
+      margin-top: 10px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
+    }
+    .img-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .img-block img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .caption {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+    .mini-diagram {
+      border: 1px dashed #8db4d0;
+      border-radius: 12px;
+      background: #f5fbff;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    footer {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    @media (max-width: 900px) {
+      nav { position: static; }
+      nav ul { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .img-grid { grid-template-columns: 1fr; }
+      .hero { grid-template-columns: 70px 1fr; }
+      .hero img { width: 70px; height: 70px; }
+      h1 { font-size: 1.55rem; }
+      section { padding: 16px; }
+    }
+    @media print {
+      nav { display: none; }
+      section { box-shadow: none; break-inside: avoid; }
+      a { color: #000; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <img src="../public/img/Logo01.png" alt="Logo EPCO">
+      <div>
+        <h1>Guia funcional y operativa de ambos canales</h1>
+        <p class="subtitle">Plataforma de denuncias EPCO: canal Ley Karin + canal General/Ciudadano</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav>
+      <strong>Indice rapido</strong>
+      <ul>
+        <li><a href="#objetivo">1. Objetivo y alcance</a></li>
+        <li><a href="#arquitectura">2. Arquitectura general</a></li>
+        <li><a href="#canales">3. Funcionamiento de cada canal</a></li>
+        <li><a href="#flujo">4. Flujo completo de denuncia</a></li>
+        <li><a href="#roles">5. Roles y visibilidad de denuncias</a></li>
+        <li><a href="#seguridad">6. Seguridad, cifrado y auditoria</a></li>
+        <li><a href="#operacion">7. Operacion y despliegue</a></li>
+      </ul>
+    </nav>
+
+    <section id="objetivo">
+      <h2>1. Objetivo y alcance</h2>
+      <p>Esta guia explica en forma practica como opera la solucion completa de denuncias en produccion, considerando:</p>
+      <ul>
+        <li>Canal <strong>Ley Karin</strong> en <code>/karin</code>.</li>
+        <li>Canal <strong>General/Ciudadano</strong> en <code>/generales</code>.</li>
+        <li>Backoffice interno con autenticacion, seguimiento, investigacion y auditoria.</li>
+      </ul>
+      <div class="note ok">
+        El sistema utiliza una sola entrada web (Nginx), pero separa aplicaciones y base de datos por canal para aislar operaciones y riesgos.
+      </div>
+    </section>
+
+    <section id="arquitectura">
+      <h2>2. Arquitectura general</h2>
+      <div class="img-grid">
+        <div class="img-block">
+          <img src="img/arquitectura-general.svg" alt="Arquitectura general de la plataforma">
+          <div class="caption">Arquitectura general: entrada unica Nginx y separacion por canal.</div>
+        </div>
+        <div class="img-block">
+          <img src="img/capas-del-sistema.svg" alt="Capas del sistema">
+          <div class="caption">Capas: acceso, presentacion, dominio, seguridad, persistencia y operacion.</div>
+        </div>
+      </div>
+      <p>Resumen tecnico:</p>
+      <ul>
+        <li>Nginx enruta: <code>/</code> landing, <code>/karin</code> canal Karin, <code>/generales</code> canal General.</li>
+        <li>Cada canal corre en su propio contenedor de app y su propia base MySQL.</li>
+        <li>SMTP unificado para notificaciones internas y avisos a denunciantes.</li>
+      </ul>
+    </section>
+
+    <section id="canales">
+      <h2>3. Funcionamiento de cada canal</h2>
+      <div class="grid-2">
+        <article>
+          <h3>Canal Ley Karin (/karin)</h3>
+          <ul>
+            <li>Formulario con tipificacion de denuncia seleccionable.</li>
+            <li>Seguimiento por codigo de denuncia.</li>
+            <li>Backoffice de investigacion y resolucion.</li>
+            <li>Correos de eventos con etiqueta "Nueva Denuncia Ley Karin".</li>
+          </ul>
+        </article>
+        <article>
+          <h3>Canal General/Ciudadano (/generales)</h3>
+          <ul>
+            <li>Formulario publico con categorias referenciales (solo informativas).</li>
+            <li>El tipo funcional se maneja como <code>general</code> para consistencia operativa.</li>
+            <li>Dashboard sin desglose por tipo (alineado al uso real del formulario).</li>
+            <li>Correos de eventos con etiqueta "Nueva Denuncia Portal General".</li>
+          </ul>
+        </article>
+      </div>
+      <div class="note">
+        En ambos canales existe opcion de denuncia anonima con correo opcional para notificaciones de estado, sin romper el anonimato.
+      </div>
+    </section>
+
+    <section id="flujo">
+      <h2>4. Flujo completo de denuncia</h2>
+      <div class="img-block">
+        <img src="img/flujo-denuncia.svg" alt="Flujo de denuncia">
+        <div class="caption">Desde formulario publico hasta seguimiento e investigacion interna.</div>
+      </div>
+      <ol>
+        <li><strong>Ingreso:</strong> usuario entra por landing y elige el canal correcto.</li>
+        <li><strong>Validacion:</strong> CSRF + captcha + validaciones de campos obligatorios.</li>
+        <li><strong>Cifrado:</strong> datos sensibles se almacenan cifrados antes de persistir.</li>
+        <li><strong>Persistencia:</strong> se crea denuncia, logs de caso y tokens de conflicto.</li>
+        <li><strong>Notificaciones:</strong> aviso a equipo interno y opcionalmente al denunciante.</li>
+        <li><strong>Seguimiento:</strong> consulta publica por codigo con informacion acotada.</li>
+        <li><strong>Investigacion:</strong> backoffice gestiona estado, notas, asignaciones y cierre.</li>
+      </ol>
+
+      <div class="mini-diagram" aria-label="Diagrama de flujo resumido">
+        <svg viewBox="0 0 980 180" width="100%" role="img" aria-label="Diagrama simplificado del flujo">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+              <polygon points="0,0 10,4 0,8" fill="#1a6591"></polygon>
+            </marker>
+          </defs>
+          <rect x="15" y="45" width="150" height="66" rx="10" fill="#e8f3fb" stroke="#1a6591"/>
+          <text x="90" y="72" text-anchor="middle" fill="#12364f" font-size="14">Formulario</text>
+          <text x="90" y="91" text-anchor="middle" fill="#12364f" font-size="14">publico</text>
+
+          <line x1="165" y1="78" x2="255" y2="78" stroke="#1a6591" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+          <rect x="255" y="45" width="170" height="66" rx="10" fill="#edf7ef" stroke="#1a7a46"/>
+          <text x="340" y="72" text-anchor="middle" fill="#0d4f2f" font-size="14">Validacion +</text>
+          <text x="340" y="91" text-anchor="middle" fill="#0d4f2f" font-size="14">cifrado</text>
+
+          <line x1="425" y1="78" x2="515" y2="78" stroke="#1a6591" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+          <rect x="515" y="45" width="165" height="66" rx="10" fill="#fff5e9" stroke="#b46900"/>
+          <text x="597" y="72" text-anchor="middle" fill="#6b4a00" font-size="14">Base de</text>
+          <text x="597" y="91" text-anchor="middle" fill="#6b4a00" font-size="14">datos + logs</text>
+
+          <line x1="680" y1="78" x2="770" y2="78" stroke="#1a6591" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+          <rect x="770" y="45" width="195" height="66" rx="10" fill="#f2efff" stroke="#5240a3"/>
+          <text x="868" y="72" text-anchor="middle" fill="#352872" font-size="14">Backoffice +</text>
+          <text x="868" y="91" text-anchor="middle" fill="#352872" font-size="14">seguimiento</text>
+        </svg>
+      </div>
+    </section>
+
+    <section id="roles">
+      <h2>5. Roles y visibilidad de denuncias</h2>
+      <p>Matriz vigente para ambos canales:</p>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Rol</th>
+            <th>Ver denuncias</th>
+            <th>Modificar denuncias</th>
+            <th>Eliminar denuncias</th>
+            <th>Datos sensibles desencriptados</th>
+            <th>Gestion de usuarios</th>
+            <th>Reset de contrasena usuarios</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Superadmin</td>
+            <td>Si</td>
+            <td>Si</td>
+            <td>Si</td>
+            <td>Si</td>
+            <td>Si</td>
+            <td>Si</td>
+          </tr>
+          <tr>
+            <td>Admin</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+            <td>Si</td>
+            <td>Si</td>
+          </tr>
+          <tr>
+            <td>Investigador</td>
+            <td>Si</td>
+            <td>Si</td>
+            <td>No</td>
+            <td>Si</td>
+            <td>No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Viewer</td>
+            <td>Si</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <td>Auditor</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Alcance real de visibilidad (filtros adicionales)</h3>
+      <div class="img-block">
+        <img src="img/visibilidad-y-ciclo.svg" alt="Visibilidad y ciclo de denuncia">
+        <div class="caption">Restricciones de visibilidad por rol y ciclo de investigacion.</div>
+      </div>
+      <ul>
+        <li><strong>Portal Karin:</strong> se aplica filtro de conflicto de interes por tokens/HMAC para excluir casos sensibles respecto del revisor.</li>
+        <li><strong>Portal General:</strong> investigadores ven solo su area asignada; sin area, no ven denuncias. Tambien aplica filtro de conflicto.</li>
+      </ul>
+
+      <div class="note warn">
+        Politica vigente: se puede desactivar usuarios de cualquier rol (incluyendo admin/superadmin), incluso si son los ultimos activos de ese rol.
+      </div>
+    </section>
+
+    <section id="seguridad">
+      <h2>6. Seguridad, cifrado y auditoria</h2>
+      <div class="grid-2">
+        <article>
+          <h3>Controles de entrada</h3>
+          <ul>
+            <li>CSRF token en formularios.</li>
+            <li>Captcha en formularios publicos.</li>
+            <li>Rate limiting en login y seguimiento.</li>
+            <li>Headers de seguridad y politicas de sesion.</li>
+          </ul>
+        </article>
+        <article>
+          <h3>Proteccion de datos</h3>
+          <ul>
+            <li>Cifrado de campos sensibles en base de datos.</li>
+            <li>Desencriptado solo para roles autorizados.</li>
+            <li>Tokens/HMAC para conflicto de interes sin exponer texto plano.</li>
+            <li>Registro de actividad y bitacora de caso para trazabilidad.</li>
+          </ul>
+        </article>
+      </div>
+      <p>Health check:</p>
+      <ul>
+        <li>Endpoint <code>/salud</code> protegido por <code>HEALTH_CHECK_TOKEN</code> para consultas externas.</li>
+        <li>Healthcheck interno de contenedor permitido desde localhost.</li>
+      </ul>
+    </section>
+
+    <section id="operacion">
+      <h2>7. Operacion y despliegue</h2>
+      <h3>Rutas de acceso esperadas</h3>
+      <ul>
+        <li>Landing: <code>/</code></li>
+        <li>Ley Karin: <code>/karin</code></li>
+        <li>Portal General: <code>/generales</code></li>
+      </ul>
+
+      <h3>Buenas practicas de despliegue</h3>
+      <ul>
+        <li>Usar <code>.env</code> de servidor con claves propias y token de salud activo.</li>
+        <li>Rebuild de imagen al cambiar archivos PHP incluidos en <code>COPY</code>.</li>
+        <li>Verificar estado de contenedores y healthchecks tras cada redeploy.</li>
+      </ul>
+
+      <h3>Archivos clave</h3>
+      <ul>
+        <li><code>docker-compose.yml</code></li>
+        <li><code>includes/autenticacion.php</code></li>
+        <li><code>includes/utilidades.php</code></li>
+        <li><code>denuncias-generales/includes/autenticacion.php</code></li>
+        <li><code>denuncias-generales/includes/utilidades.php</code></li>
+      </ul>
+
+      <footer>
+        Ultima actualizacion: 2026-05-05. Documento generado para operacion y gobierno funcional de ambos canales.
+      </footer>
+    </section>
+  </main>
+</body>
+</html>
