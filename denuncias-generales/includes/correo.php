@@ -243,29 +243,26 @@ function notifyAdminsNewComplaint(int $complaintId, string $complaintNumber, str
     global $pdo;
     $stmt = $pdo->query("SELECT email, name, role, position, department FROM users WHERE role IN ('investigador','admin','superadmin') AND is_active = 1 AND email IS NOT NULL AND email <> ''");
     $admins = $stmt->fetchAll();
-    $typeLabel = COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType;
-    $leyRef    = COMPLAINT_TYPES[$complaintType]['ley'] ?? '';
     $fecha     = date('d/m/Y H:i');
     $appUrl    = getenv('APP_URL') ?: 'http://localhost:8093';
 
     $content = '
-        <p style="color:#374151;font-size:14px;line-height:1.7;">Se ha recibido una <strong>nueva denuncia en el Portal General</strong> que requiere su atención.</p>
+        <p style="color:#374151;font-size:14px;line-height:1.7;">Se ha recibido una <strong>nueva denuncia en el Portal General</strong> y requiere revisión del equipo investigador.</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:8px;padding:20px;margin:15px 0;">
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;width:40%;">N° de Denuncia:</td>
                 <td style="padding:8px 15px;color:#1a6591;font-weight:700;font-size:14px;">' . htmlspecialchars($complaintNumber) . '</td></tr>
-            <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;">Tipo:</td>
-                <td style="padding:8px 15px;color:#1a6591;font-weight:600;font-size:14px;">' . htmlspecialchars($typeLabel) . ' <small style="color:#9ca3af;">(' . htmlspecialchars($leyRef) . ')</small></td></tr>
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;">Modalidad:</td>
                 <td style="padding:8px 15px;color:#1a6591;font-size:14px;">' . ($isAnonymous ? 'Anónima' : 'Identificada') . '</td></tr>
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;">Fecha:</td>
                 <td style="padding:8px 15px;color:#1a6591;font-size:14px;">' . $fecha . '</td></tr>
         </table>
+        <p style="color:#64748b;font-size:13px;line-height:1.6;margin:0 0 12px;">Ingresa al panel para revisar antecedentes, asignar investigador y comenzar el proceso.</p>
         <div style="text-align:center;margin:25px 0 10px;">
             <a href="' . $appUrl . '/acceso" style="background:linear-gradient(135deg,#1a6591,#2380b0);color:#ffffff;text-decoration:none;padding:12px 30px;border-radius:8px;font-weight:600;font-size:14px;display:inline-block;">Ir al Dashboard</a>
         </div>';
 
-    $subject = "Nueva Denuncia Portal General: $complaintNumber - $typeLabel";
-    $html    = emailTemplate('Nueva Denuncia Portal General', $content);
+    $subject = "Nueva Denuncia Portal General: $complaintNumber";
+    $html    = emailTemplate('Nueva denuncia recibida - Portal General', $content);
 
     foreach ($admins as $admin) {
         if (isComplaintConflict($complaintId, $admin)) {
@@ -277,7 +274,6 @@ function notifyAdminsNewComplaint(int $complaintId, string $complaintNumber, str
 
 function notifyComplainant(string $email, string $complaintNumber, string $complaintType): void {
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) return;
-    $typeLabel = COMPLAINT_TYPES[$complaintType]['label'] ?? $complaintType;
     $appUrl    = getenv('APP_URL') ?: 'http://localhost:8093';
 
     $content = '
@@ -285,8 +281,6 @@ function notifyComplainant(string $email, string $complaintNumber, string $compl
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e8f0f6;border:1px solid #b3d4e8;border-radius:8px;padding:20px;margin:15px 0;">
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;width:45%;">Código de seguimiento:</td>
                 <td style="padding:8px 15px;color:#1a6591;font-weight:700;font-size:16px;">' . htmlspecialchars($complaintNumber) . '</td></tr>
-            <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;">Tipo de denuncia:</td>
-                <td style="padding:8px 15px;color:#1a6591;font-weight:600;font-size:14px;">' . htmlspecialchars($typeLabel) . '</td></tr>
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;">Fecha:</td>
                 <td style="padding:8px 15px;color:#1a6591;font-size:14px;">' . date('d/m/Y H:i') . '</td></tr>
         </table>
@@ -324,15 +318,11 @@ function notifyStatusChange(int $complaintId, string $newStatus): void {
     $statuses  = COMPLAINT_STATUSES;
     $statusCfg = $statuses[$newStatus] ?? ['label' => $newStatus, 'color' => 'secondary'];
     $appUrl    = getenv('APP_URL') ?: 'http://localhost:8093';
-    $typeLabel = COMPLAINT_TYPES[$complaint['complaint_type']]['label'] ?? $complaint['complaint_type'];
-
     $content = '
         <p style="color:#374151;font-size:14px;line-height:1.7;">El estado de su denuncia <strong>' . htmlspecialchars($complaint['complaint_number']) . '</strong> ha sido actualizado.</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:8px;padding:20px;margin:15px 0;">
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;width:40%;">N° Denuncia:</td>
                 <td style="padding:8px 15px;color:#1a6591;font-weight:700;font-size:14px;">' . htmlspecialchars($complaint['complaint_number']) . '</td></tr>
-            <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;">Tipo:</td>
-                <td style="padding:8px 15px;color:#1a6591;font-size:14px;">' . htmlspecialchars($typeLabel) . '</td></tr>
             <tr><td style="padding:8px 15px;color:#6b7280;font-size:13px;">Nuevo estado:</td>
                 <td style="padding:8px 15px;font-size:14px;font-weight:700;color:#1a6591;">' . htmlspecialchars($statusCfg['label']) . '</td></tr>
         </table>

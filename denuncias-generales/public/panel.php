@@ -20,12 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'run_c
 
     $daysAgo = random_int(0, 30);
     $incidentDate = (new DateTimeImmutable('today'))->sub(new DateInterval('P' . $daysAgo . 'D'))->format('Y-m-d');
-    $typeKeys = array_keys(COMPLAINT_TYPES);
-    $randomType = !empty($typeKeys) ? $typeKeys[array_rand($typeKeys)] : 'general';
+    $fixedType = 'general';
     $token = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
 
     $result = createComplaint([
-        'complaint_type'       => $randomType,
+        'complaint_type'       => $fixedType,
         'description'          => 'TEST AUTOMATICO DE CANAL [' . $token . ']. Verificacion interna del flujo completo desde creacion hasta envio.',
         'is_anonymous'         => 1,
         'involved_persons'     => 'Prueba automatizada desde dashboard',
@@ -74,10 +73,6 @@ $stmtStats = $pdo->prepare("
 ");
 $stmtStats->execute($conflictParams);
 $stats = $stmtStats->fetch();
-
-$stmtType = $pdo->prepare("SELECT complaint_type, COUNT(*) as total FROM complaints c $whereDashboard GROUP BY complaint_type ORDER BY total DESC");
-$stmtType->execute($conflictParams);
-$byType = $stmtType->fetchAll();
 
 $perPage = 10;
 $page    = max(1, (int)($_GET['page'] ?? 1));
@@ -254,16 +249,15 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
-                        <tr><th>Número</th><th>Tipo</th><th>Estado</th><th>Área</th><th>Modalidad</th><th>Hace</th><th></th></tr>
+                        <tr><th>Número</th><th>Estado</th><th>Área</th><th>Modalidad</th><th>Hace</th><th></th></tr>
                     </thead>
                     <tbody>
                         <?php if (empty($recent)): ?>
-                        <tr><td colspan="7" class="text-center text-muted py-4"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay denuncias registradas</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-4"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay denuncias registradas</td></tr>
                         <?php else: ?>
                         <?php foreach ($recent as $row): ?>
                         <tr class="complaint-row-clickable" data-href="/detalle_denuncia?id=<?= (int)$row['id'] ?>">
                             <td><code class="fw-bold"><?= htmlspecialchars($row['complaint_number']) ?></code></td>
-                            <td><?= getTypeBadge($row['complaint_type']) ?></td>
                             <td><?= getStatusBadge($row['status']) ?></td>
                             <td class="text-muted small"><?= htmlspecialchars(getInvestigationAreaLabel($row['assigned_area'] ?? null)) ?></td>
                             <td><span class="badge bg-<?= $row['is_anonymous'] ? 'secondary' : 'info' ?>"><?= $row['is_anonymous'] ? 'Anónima' : 'Identificada' ?></span></td>
@@ -310,19 +304,8 @@ require_once __DIR__ . '/../includes/barra_lateral.php';
     </div>
 
     <div class="row g-4">
-        <!-- Gráfico por tipo -->
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-dark-blue border-0 py-3">
-                    <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2"></i>Por Tipo de Denuncia</h6>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <canvas id="chartType" style="max-height:280px;"></canvas>
-                </div>
-            </div>
-        </div>
         <!-- Gráfico mensual -->
-        <div class="col-lg-7">
+        <div class="col-12">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-dark-blue border-0 py-3">
                     <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart me-2"></i>Últimos 6 Meses</h6>
@@ -347,16 +330,6 @@ document.querySelectorAll('tr.complaint-row-clickable').forEach((row) => {
             window.location.href = href;
         }
     });
-});
-
-// Chart: Por tipo
-const typeLabels = <?= json_encode(array_map(fn($r) => COMPLAINT_TYPES[$r['complaint_type']]['label'] ?? $r['complaint_type'], $byType)) ?>;
-const typeData   = <?= json_encode(array_column($byType, 'total')) ?>;
-const blues = ['#1a6591','#2380b0','#2d9ad0','#4db8e0','#7dcbea','#a3d9f0','#145275','#0f3d58','#2a7ab5','#5ba8d4','#93c5fd'];
-new Chart(document.getElementById('chartType'), {
-    type: 'doughnut',
-    data: { labels: typeLabels, datasets: [{ data: typeData, backgroundColor: blues.slice(0, typeData.length), borderWidth: 2, borderColor: '#fff' }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8, color: '#64748b' } } } }
 });
 
 // Chart: Mensual
