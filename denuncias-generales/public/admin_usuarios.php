@@ -73,18 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
 
             if (!$target) {
                 $errors[] = 'Usuario no encontrado.';
-            } elseif (!$isSuperAdmin && $target['role'] === ROLE_SUPERADMIN) {
-                $errors[] = 'Solo el superadmin puede modificar el estado de otro superadmin.';
-            } elseif ((int)$target['is_active'] === 1 && $target['role'] === ROLE_ADMIN) {
-                $adminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = 1")->fetchColumn();
-                if ($adminCount <= 1) {
-                    $errors[] = 'No se puede desactivar el último administrador activo.';
-                }
-            } elseif ((int)$target['is_active'] === 1 && $target['role'] === ROLE_SUPERADMIN) {
-                $superAdminCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'superadmin' AND is_active = 1")->fetchColumn();
-                if ($superAdminCount <= 1) {
-                    $errors[] = 'No se puede desactivar el último superadmin activo.';
-                }
             }
 
             if (empty($errors)) {
