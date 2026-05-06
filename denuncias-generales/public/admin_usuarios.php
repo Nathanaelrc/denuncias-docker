@@ -102,8 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verifyCsrfToken($_POST[CSRF_TOKEN_N
 
         if ($targetRole === false) {
             $errors[] = 'Usuario no encontrado.';
-        } elseif (!$isSuperAdmin && $targetRole === ROLE_SUPERADMIN) {
-            $errors[] = 'Solo el superadmin puede resetear la contraseña de otro superadmin.';
         } elseif ($userId && empty($passErrors)) {
             $pdo->prepare("UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?")->execute([password_hash($newPass, PASSWORD_DEFAULT), $userId]);
             logActivity($_SESSION['user_id'], 'reset_password', 'user', $userId, '');
